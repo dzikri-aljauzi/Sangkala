@@ -1,0 +1,253 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ===== NextAuth.js Required Models =====
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ===== Assessment Center Models =====
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String
+  role          String    // ADMIN, ASESOR, KLIEN, STAFF_KLIEN
+  assessmentId  String?
+  image         String?
+  isActive      Boolean   @default(true)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  assessment       Assessment?      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  uploadedDocuments Document[]      @relation("UploadedDocuments")
+  uploadedResumes   Resume[]        @relation("UploadedResumes")
+  uploadedDocs      Documentation[] @relation("UploadedDocs")
+  uploadedAttendances Attendance[]  @relation("UploadedAttendances")
+  accounts          Account[]
+  sessions          Session[]
+
+  @@index([assessmentId])
+  @@map("users")
+}
+
+model Assessment {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  clientName  String
+  clientLogo  String?  // Path to logo file
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users          User[]
+  documents      Document[]
+  resumes        Resume[]
+  documentations Documentation[]
+  progresses     Progress[]
+  echelons       Echelon[]
+  attendances    Attendance[]
+
+  @@map("assessments")
+}
+
+model Document {
+  id           String   @id @default(cuid())
+  title        String
+  fileName     String
+  filePath     String
+  assessmentId String
+  uploadedById String
+  createdAt    DateTime @default(now())
+
+  // Relations
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  uploadedBy User       @relation("UploadedDocuments", fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([uploadedById])
+  @@map("documents")
+}
+
+model Resume {
+  id           String   @id @default(cuid())
+  title        String
+  fileName     String
+  filePath     String
+  category     String   @default("UMUM") // UMUM, ESELON, INDIVIDU
+  echelonId    String?  // Hanya diisi jika category = ESELON
+  assessmentId String
+  uploadedById String
+  createdAt    DateTime @default(now())
+
+  // Relations
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  uploadedBy User       @relation("UploadedResumes", fields: [uploadedById], references: [id], onDelete: Cascade)
+  echelon    Echelon?   @relation(fields: [echelonId], references: [id], onDelete: SetNull)
+
+  @@index([assessmentId])
+  @@index([uploadedById])
+  @@index([echelonId])
+  @@map("resumes")
+}
+
+// Echelon untuk klasifikasi resume per eselon
+model Echelon {
+  id           String   @id @default(cuid())
+  name         String   // "Eselon 2", "Eselon 3", etc
+  order        Int      @default(0)
+  assessmentId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  resumes    Resume[]
+
+  @@index([assessmentId])
+  @@map("echelons")
+}
+
+model Documentation {
+  id           String   @id @default(cuid())
+  title        String
+  fileName     String
+  filePath     String
+  assessmentId String
+  uploadedById String
+  createdAt    DateTime @default(now())
+
+  // Relations
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  uploadedBy User       @relation("UploadedDocs", fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([uploadedById])
+  @@map("documentations")
+}
+
+// Progress tracking for assessment activities
+model Progress {
+  id           String   @id @default(cuid())
+  activityName String   // Nama kegiatan
+  percentage   Int      @default(0) // 0-100
+  description  String?  // Deskripsi opsional
+  order        Int      @default(0) // Urutan tampilan
+  assessmentId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@map("progresses")
+}
+
+// Attendance files for assessment
+model Attendance {
+  id           String   @id @default(cuid())
+  title        String   // Judul/nama file absensi
+  fileName     String   // Nama file asli
+  filePath     String   // Path file di server
+  assessmentId String
+  uploadedById String
+  createdAt    DateTime @default(now())
+
+  // Relations
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  uploadedBy User       @relation("UploadedAttendances", fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+  @@index([uploadedById])
+  @@map("attendances")
+}
+
+// ===== Insights/Article Models =====
+
+model Article {
+  id            String   @id @default(cuid())
+  slug          String   @unique // URL-friendly identifier
+
+  // Dual language content
+  titleId       String   // Judul (Indonesia)
+  titleEn       String   // Title (English)
+  contentId     String   // Konten (Indonesia) - stored as HTML/Markdown
+  contentEn     String   // Content (English) - stored as HTML/Markdown
+  excerptId     String?  // Ringkasan singkat (Indonesia)
+  excerptEn     String?  // Short excerpt (English)
+
+  // Author info
+  authorName    String   // Nama penulis
+  authorPosition String? // Jabatan penulis (opsional)
+
+  // Category: ARTICLE, WHITEPAPER, WEBINAR, CASE_STUDY, TEMPLATE
+  category      String   @default("ARTICLE")
+
+  // Image
+  coverImage    String?  // Path to cover image
+  imagePosition String   @default("TOP") // TOP, LEFT, RIGHT, CENTER
+
+  // Status and visibility
+  status        String   @default("DRAFT") // DRAFT, PUBLISHED
+  isFeatured    Boolean  @default(false) // Tampilkan di homepage/featured section
+
+  // Dates
+  publishedAt   DateTime? // Tanggal publish
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([isFeatured])
+  @@map("articles")
+}
