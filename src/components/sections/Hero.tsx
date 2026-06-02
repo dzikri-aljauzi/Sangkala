@@ -60,7 +60,7 @@ export default function Hero() {
         />
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 sm:pt-28 lg:pt-0 pb-8 sm:pb-12 lg:pb-0">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 sm:pt-28 lg:pt-24 pb-8 sm:pb-12 lg:pb-12">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
 
           {/* Content - Text Section */}
@@ -95,7 +95,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold sm:leading-tight mb-4 sm:mb-6 text-slate-800"
+              className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold sm:leading-tight mb-4 sm:mb-6 text-slate-800"
             >
               {t("hero.headline")}
             </motion.h1>
@@ -105,7 +105,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600 mb-6 sm:mb-8 max-w-xl leading-relaxed"
+              className="text-sm sm:text-base md:text-lg text-slate-600 mb-6 sm:mb-8 max-w-xl leading-relaxed"
             >
               {t("hero.subheadline")}
             </motion.p>
@@ -170,7 +170,7 @@ export default function Hero() {
               </p>
             </motion.div>
 
-            <div className="relative w-full max-w-[300px] sm:max-w-[340px] md:max-w-[400px] lg:max-w-none h-[300px] sm:h-[340px] md:h-[400px] lg:h-[500px] xl:h-[560px] flex items-center justify-center mx-auto">
+            <div className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-none h-[280px] sm:h-[320px] md:h-[380px] lg:h-[450px] xl:h-[500px] flex items-center justify-center mx-auto">
               <Suspense
                 fallback={
                   <div className="w-full h-full flex items-center justify-center">
