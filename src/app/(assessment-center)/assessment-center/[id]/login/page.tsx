@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, AlertCircle, Shield, UserCheck, Building2, Users } from "lucide-react";
+import { Mail, Lock, AlertCircle, UserCheck, Building2, Users } from "lucide-react";
 
 interface Assessment {
   id: string;
@@ -16,16 +16,9 @@ interface Assessment {
   clientLogo: string | null;
 }
 
-type LoginRole = "ADMIN" | "ASESOR" | "KLIEN" | "STAFF_KLIEN";
+type LoginRole = "ASESOR" | "KLIEN" | "STAFF_KLIEN";
 
 const roleTabs: { role: LoginRole; label: string; icon: any; color: string; description: string }[] = [
-  {
-    role: "ADMIN",
-    label: "Admin",
-    icon: Shield,
-    color: "from-indigo-500 to-purple-600",
-    description: "Login sebagai administrator",
-  },
   {
     role: "ASESOR",
     label: "Asesor",
@@ -98,7 +91,7 @@ export default function AssessmentLoginPage({
       const result = await signIn("credentials", {
         email,
         password,
-        assessmentId: selectedRole === "ADMIN" ? "" : assessmentId,
+        assessmentId,
         loginRole: loginRole,
         redirect: false,
       });
@@ -168,7 +161,7 @@ export default function AssessmentLoginPage({
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3 text-center">
               Login Sebagai
             </p>
-            <div className="grid grid-cols-4 gap-1.5 p-1 bg-slate-100 rounded-xl">
+            <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl">
               {roleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = selectedRole === tab.role;

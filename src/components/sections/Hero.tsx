@@ -60,7 +60,7 @@ export default function Hero() {
         />
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 sm:pt-28 lg:pt-0 pb-8 sm:pb-12 lg:pb-0">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 sm:pt-28 lg:pt-28 pb-8 sm:pb-12 lg:pb-8">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
 
           {/* Content - Text Section */}
@@ -95,7 +95,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold sm:leading-tight mb-4 sm:mb-6 text-slate-800"
+              className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold sm:leading-tight mb-4 sm:mb-6 text-slate-800"
             >
               {t("hero.headline")}
             </motion.h1>

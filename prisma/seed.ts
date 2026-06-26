@@ -13,7 +13,7 @@ async function main() {
 
   const admin1 = await prisma.user.upsert({
     where: { email: "admin@lna.com" },
-    update: {},
+    update: { password: await bcrypt.hash("admin123", 10), role: "ADMIN", isActive: true },
     create: {
       email: "admin@lna.com",
       password: await bcrypt.hash("admin123", 10),
@@ -25,7 +25,7 @@ async function main() {
 
   const admin2 = await prisma.user.upsert({
     where: { email: "ferry.hermansyah@lna.com" },
-    update: {},
+    update: { password: await bcrypt.hash("admin123", 10), role: "ADMIN", isActive: true },
     create: {
       email: "ferry.hermansyah@lna.com",
       password: await bcrypt.hash("admin123", 10),
@@ -37,7 +37,7 @@ async function main() {
 
   const admin3 = await prisma.user.upsert({
     where: { email: "jasmine.putri@lna.com" },
-    update: {},
+    update: { password: await bcrypt.hash("admin123", 10), role: "ADMIN", isActive: true },
     create: {
       email: "jasmine.putri@lna.com",
       password: await bcrypt.hash("admin123", 10),
