@@ -25,6 +25,7 @@ import {
   Building,
   User,
   AlertCircle,
+  Pencil,
 } from "lucide-react";
 import Link from "next/link";
 import * as XLSX from "xlsx";
@@ -59,7 +60,8 @@ export default function CertificatesPage() {
   const router = useRouter();
 
   // View state
-  const [view, setView] = useState<"list" | "create">("list");
+  const [view, setView] = useState<"list" | "create" | "edit">("list");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -223,14 +225,27 @@ export default function CertificatesPage() {
     setParticipants([]);
   };
 
-  // Submit new certificate
+  // Start editing a certificate
+  const handleStartEdit = async (cert: Certificate) => {
+    setEditingId(cert.id);
+    setType(cert.type as "INDIVIDU" | "INSTANSI");
+    setCertCode(cert.certCode);
+    setRecipientName(cert.recipientName);
+    setProgramName(cert.programName);
+    setDescription(cert.description);
+    setIssuedDate(new Date(cert.issuedDate).toISOString().split("T")[0]);
+    setParticipants([]);
+    setView("edit");
+  };
+
+  // Submit new certificate / Update existing
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!certCode || !recipientName || !programName || !description || !issuedDate) {
       showToast("error", "Mohon isi semua field wajib");
       return;
     }
-    if (type === "INSTANSI" && participants.length === 0) {
+    if (view !== "edit" && type === "INSTANSI" && participants.length === 0) {
       showToast("error", "Mohon masukkan minimal 1 peserta untuk tipe Instansi");
       return;
     }
@@ -238,36 +253,44 @@ export default function CertificatesPage() {
     setSubmitLoading(true);
 
     try {
-      const res = await fetch("/api/certificates", {
-        method: "POST",
+      const isEditing = view === "edit" && editingId;
+      const method = isEditing ? "PUT" : "POST";
+      const url = isEditing ? `/api/certificates/${editingId}` : "/api/certificates";
+      const body: Record<string, unknown> = {
+        certCode,
+        recipientName,
+        programName,
+        description,
+        issuedDate,
+      };
+      if (!isEditing) {
+        body.type = type;
+        body.participants = type === "INSTANSI" ? participants : [];
+      }
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          certCode,
-          type,
-          recipientName,
-          programName,
-          description,
-          issuedDate,
-          participants: type === "INSTANSI" ? participants : [],
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        showToast("success", "Sertifikat berhasil diterbitkan!");
+        showToast("success", isEditing ? "Sertifikat berhasil diperbarui!" : "Sertifikat berhasil diterbitkan!");
         // Reset form
         setCertCode("");
         setRecipientName("");
         setProgramName("");
         setDescription("");
         setParticipants([]);
+        setEditingId(null);
         setView("list");
         
         // Redirect to preview page
         router.push(`/assessment-center/admin/dashboard/certificates/${data.id}/preview`);
       } else {
-        showToast("error", data.error || "Gagal membuat sertifikat");
+        showToast("error", data.error || (isEditing ? "Gagal memperbarui sertifikat" : "Gagal membuat sertifikat"));
       }
     } catch (err) {
       console.error(err);
@@ -383,8 +406,16 @@ export default function CertificatesPage() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => {
-                if (view === "create") {
+                if (view === "create" || view === "edit") {
                   setView("list");
+                  setEditingId(null);
+                  setCertCode("");
+                  setRecipientName("");
+                  setProgramName("");
+                  setDescription("");
+                  setIssuedDate(new Date().toISOString().split("T")[0]);
+                  setParticipants([]);
+                  setType("INDIVIDU");
                 } else {
                   router.push("/assessment-center/admin/dashboard");
                 }
@@ -395,11 +426,13 @@ export default function CertificatesPage() {
             </button>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">
-                {view === "create" ? "Terbitkan Sertifikat Baru" : "Kelola Sertifikat"}
+                {view === "create" ? "Terbitkan Sertifikat Baru" : view === "edit" ? "Edit Sertifikat" : "Kelola Sertifikat"}
               </h1>
               <p className="text-slate-500 mt-1">
                 {view === "create"
                   ? "Pilih jenis sertifikat, isi formulir utama, dan terbitkan PDF"
+                  : view === "edit"
+                  ? "Ubah data sertifikat, simpan untuk memperbarui PDF"
                   : "Kelola sertifikat individu & instansi kolektif, unduh berkas, atau hapus"}
               </p>
             </div>
@@ -567,6 +600,13 @@ export default function CertificatesPage() {
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => handleStartEdit(cert)}
+                                className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors border border-slate-200"
+                                title="Edit Sertifikat"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </button>
                               <Link
                                 href={`/assessment-center/admin/dashboard/certificates/${cert.id}/preview`}
                                 className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200"
@@ -620,39 +660,48 @@ export default function CertificatesPage() {
           <div className="space-y-6">
             {/* Navigation Tabs between Individu and Instansi */}
             <div className="flex border-b border-slate-200 bg-white p-1.5 rounded-xl border max-w-md">
-              <button
-                type="button"
-                onClick={() => setType("INDIVIDU")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
-                  type === "INDIVIDU"
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <User className="w-4 h-4" />
-                Sertifikat Individu
-              </button>
-              <button
-                type="button"
-                onClick={() => setType("INSTANSI")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
-                  type === "INSTANSI"
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <Building className="w-4 h-4" />
-                Sertifikat Instansi
-              </button>
+              {view === "edit" ? (
+                <div className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold bg-blue-600 text-white shadow-sm">
+                  {type === "INSTANSI" ? <Building className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                  {type === "INSTANSI" ? "Sertifikat Instansi" : "Sertifikat Individu"}
+                </div>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setType("INDIVIDU")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
+                      type === "INDIVIDU"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                    }`}
+                  >
+                    <User className="w-4 h-4" />
+                    Sertifikat Individu
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setType("INSTANSI")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
+                      type === "INSTANSI"
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                    }`}
+                  >
+                    <Building className="w-4 h-4" />
+                    Sertifikat Instansi
+                  </button>
+                </>
+              )}
             </div>
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Form Fields Column */}
-              <div className={type === "INDIVIDU" ? "lg:col-span-3 max-w-4xl w-full" : "lg:col-span-2 space-y-6"}>
+              <div className={view === "edit" ? "lg:col-span-3 max-w-4xl w-full" : type === "INDIVIDU" ? "lg:col-span-3 max-w-4xl mx-auto w-full" : "lg:col-span-2 space-y-6"}>
                 <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                   <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
                     <FileText className="w-5 h-5 text-blue-600" />
-                    Informasi Utama Sertifikat ({type === "INDIVIDU" ? "Individu" : "Kolektif Instansi"})
+                    {view === "edit" ? "Edit Sertifikat" : `Informasi Utama Sertifikat (${type === "INDIVIDU" ? "Individu" : "Kolektif Instansi"})`}
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -739,7 +788,7 @@ export default function CertificatesPage() {
                   </div>
 
                   {/* Submit Button inside main card if Individu */}
-                  {type === "INDIVIDU" && (
+                  {(type === "INDIVIDU" || view === "edit") && (
                     <button
                       type="submit"
                       disabled={submitLoading}
@@ -753,7 +802,7 @@ export default function CertificatesPage() {
                       ) : (
                         <>
                           <Award className="w-4 h-4" />
-                          Terbitkan
+                          {view === "edit" ? "Simpan Perubahan" : "Terbitkan"}
                         </>
                       )}
                     </button>
@@ -761,8 +810,8 @@ export default function CertificatesPage() {
                 </div>
               </div>
 
-              {/* Participants column (Instansi only) */}
-              {type === "INSTANSI" && (
+              {/* Participants column (Instansi only, hide in edit mode — use modal instead) */}
+              {type === "INSTANSI" && view !== "edit" && (
                 <div className="space-y-6">
                   {/* Excel Bulk Upload Card */}
                   <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
