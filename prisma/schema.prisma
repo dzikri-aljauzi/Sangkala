@@ -73,6 +73,7 @@ model User {
   uploadedAttendances Attendance[]  @relation("UploadedAttendances")
   accounts          Account[]
   sessions          Session[]
+  certificates      Certificate[]   @relation("CreatedCertificates")
 
   @@index([assessmentId])
   @@map("users")
@@ -251,3 +252,42 @@ model Article {
   @@index([isFeatured])
   @@map("articles")
 }
+
+// ===== Certificate Models =====
+
+model Certificate {
+  id               String   @id @default(cuid())
+  certCode         String   @unique // Contoh: LNA/06062026/PLTH-GRK/001
+  type             String   @default("INSTANSI") // 'INDIVIDU' atau 'INSTANSI'
+  verifyHash       String   @unique // Hash acak untuk URL verifikasi publik
+  recipientName    String   // Nama Instansi (atau Nama Individu)
+  programName      String   // Nama Program / Pelatihan
+  description      String   // Deskripsi paragraf sertifikat
+  maturityLevel    String?  // Contoh: Leader, Mature, Foundation (khusus Instansi)
+  issuedDate       DateTime 
+  qrCodeData       String?  // DataURL QR code
+  pdfPath          String?  // Path file PDF di server
+  createdById      String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relasi
+  createdBy        User                     @relation("CreatedCertificates", fields: [createdById], references: [id])
+  participants     CertificateParticipant[] // Relasi ke peserta instansi
+
+  @@map("certificates")
+}
+
+model CertificateParticipant {
+  id              String   @id @default(cuid())
+  name            String   // Nama peserta
+  certificateId   String
+  createdAt       DateTime @default(now())
+
+  // Relasi
+  certificate     Certificate @relation(fields: [certificateId], references: [id], onDelete: Cascade)
+
+  @@index([certificateId])
+  @@map("certificate_participants")
+}
+
