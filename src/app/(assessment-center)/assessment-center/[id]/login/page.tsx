@@ -238,7 +238,7 @@ export default function AssessmentLoginPage({
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        placeholder="nama@email.com"
+                        placeholder="example@example.com"
                       />
                     </div>
                   </div>
