@@ -687,7 +687,15 @@ export default function CertificatesPage() {
                       required
                       rows={3}
                       value={description}
-                      onChange={(e) => setDescription(e.target.value)}
+                      onChange={(e) => {
+                        const cleaned = e.target.value.replace(/[\r\n]+/g, " ");
+                        setDescription(cleaned);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                        }
+                      }}
                       className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
                     />
                   </div>
@@ -770,7 +778,7 @@ export default function CertificatesPage() {
 
                     {/* Download Template Button */}
                     <a
-                      href="/template-bulk-nama-peserta.xlsx"
+                      href="/template-excel/template-bulk-nama-peserta.xlsx"
                       download
                       className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors border border-slate-200"
                     >
