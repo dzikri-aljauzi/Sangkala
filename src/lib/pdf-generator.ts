@@ -317,8 +317,10 @@ export async function generateCertificatePdf(
     fs.mkdirSync(dirPath, { recursive: true });
   }
 
-  // Safe filename replacing / with -
-  const filename = `${data.certCode.replace(/\//g, "-")}.pdf`;
+  // Random mixed-case letters + timestamp for unique filename
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const randomPart = Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const filename = `${randomPart}-${Date.now()}.pdf`;
   const pdfFilePath = path.join(dirPath, filename);
   
   const pdfBytes = await pdfDoc.save();
