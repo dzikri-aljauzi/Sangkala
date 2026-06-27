@@ -52,6 +52,58 @@ export async function POST(
   }
 }
 
+// PUT update a participant name
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<Params> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const body = await request.json();
+    const { participantId, name } = body;
+
+    if (!participantId || !name) {
+      return NextResponse.json(
+        { error: "Participant ID and name are required" },
+        { status: 400 }
+      );
+    }
+
+    const participant = await prisma.certificateParticipant.findFirst({
+      where: {
+        id: participantId,
+        certificateId: id,
+      },
+    });
+
+    if (!participant) {
+      return NextResponse.json(
+        { error: "Participant not found for this certificate" },
+        { status: 404 }
+      );
+    }
+
+    const updated = await prisma.certificateParticipant.update({
+      where: { id: participantId },
+      data: { name },
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Error updating participant:", error);
+    return NextResponse.json(
+      { error: "Failed to update participant" },
+      { status: 500 }
+    );
+  }
+}
+
 // DELETE a participant from a certificate
 export async function DELETE(
   request: NextRequest,

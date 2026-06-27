@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import * as XLSX from "xlsx";
+import ParticipantManager from "@/components/certificate/ParticipantManager";
 
 interface Participant {
   id: string;
@@ -80,6 +81,9 @@ export default function CertificatesPage() {
   // File Upload Drag & Drop State
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Participant management modal
+  const [managingCert, setManagingCert] = useState<{ id: string; name: string } | null>(null);
 
   // Status message
   const [toast, setToast] = useState<{ type: "success" | "error" | "warning"; message: string } | null>(null);
@@ -549,8 +553,17 @@ export default function CertificatesPage() {
                             <span className="font-semibold text-slate-900">{cert.recipientName}</span>
                           </td>
                           <td className="px-6 py-4 text-slate-600">{cert.programName}</td>
-                          <td className="px-6 py-4 font-semibold text-slate-900">
-                            {cert.type === "INSTANSI" ? `${cert._count?.participants || 0} Orang` : "-"}
+                          <td className="px-6 py-4">
+                            {cert.type === "INSTANSI" ? (
+                              <button
+                                onClick={() => setManagingCert({ id: cert.id, name: cert.recipientName })}
+                                className="font-semibold text-slate-900 hover:text-blue-600 transition-colors underline underline-offset-2 decoration-slate-300 hover:decoration-blue-400"
+                              >
+                                {cert._count?.participants || 0} Orang
+                              </button>
+                            ) : (
+                              <span className="text-slate-400">-</span>
+                            )}
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
@@ -561,6 +574,15 @@ export default function CertificatesPage() {
                               >
                                 <Eye className="w-4 h-4" />
                               </Link>
+                              {cert.type === "INSTANSI" && (
+                                <button
+                                  onClick={() => setManagingCert({ id: cert.id, name: cert.recipientName })}
+                                  className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-slate-200"
+                                  title="Kelola Peserta"
+                                >
+                                  <Users className="w-4 h-4" />
+                                </button>
+                              )}
                               {cert.pdfPath && (
                                 <a
                                   href={cert.pdfPath}
@@ -875,6 +897,16 @@ export default function CertificatesPage() {
           </div>
         )}
       </div>
+
+      {/* Participant Management Modal */}
+      {managingCert && (
+        <ParticipantManager
+          certificateId={managingCert.id}
+          recipientName={managingCert.name}
+          onClose={() => setManagingCert(null)}
+          onUpdate={fetchCertificates}
+        />
+      )}
     </div>
   );
 }
