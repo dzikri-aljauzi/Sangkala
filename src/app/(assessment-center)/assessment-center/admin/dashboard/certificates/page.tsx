@@ -24,6 +24,7 @@ import {
   CheckCircle,
   Building,
   User,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import * as XLSX from "xlsx";
@@ -81,9 +82,9 @@ export default function CertificatesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Status message
-  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [toast, setToast] = useState<{ type: "success" | "error" | "warning"; message: string } | null>(null);
 
-  const showToast = (type: "success" | "error", message: string) => {
+  const showToast = (type: "success" | "error" | "warning", message: string) => {
     setToast({ type, message });
     setTimeout(() => {
       setToast(null);
@@ -198,9 +199,12 @@ export default function CertificatesPage() {
   const addManualParticipant = (e: React.FormEvent) => {
     e.preventDefault();
     const name = manualParticipantName.trim();
-    if (!name) return;
+    if (!name) {
+      showToast("warning", "Nama peserta tidak boleh kosong");
+      return;
+    }
     if (participants.includes(name)) {
-      showToast("error", "Nama peserta sudah ada di daftar");
+      showToast("warning", "Nama peserta sudah ada di daftar");
       return;
     }
     setParticipants((prev) => [...prev, name]);
@@ -322,10 +326,18 @@ export default function CertificatesPage() {
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: -20, x: "-50%" }}
             className={`fixed top-4 left-1/2 z-50 px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 text-white ${
-              toast.type === "success" ? "bg-emerald-600" : "bg-rose-600"
+              toast.type === "success" 
+                ? "bg-emerald-600" 
+                : toast.type === "warning"
+                ? "bg-amber-500"
+                : "bg-rose-600"
             }`}
           >
-            <CheckCircle className="w-5 h-5 shrink-0" />
+            {toast.type === "success" ? (
+              <CheckCircle className="w-5 h-5 shrink-0" />
+            ) : (
+              <AlertCircle className="w-5 h-5 shrink-0" />
+            )}
             <span className="text-sm font-medium">{toast.message}</span>
           </motion.div>
         )}
@@ -392,7 +404,7 @@ export default function CertificatesPage() {
           {view === "list" && (
             <button
               onClick={() => setView("create")}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-linear-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
             >
               <Plus className="w-4 h-4" />
               Sertifikat Baru
@@ -448,7 +460,7 @@ export default function CertificatesPage() {
                   placeholder="Cari kode, nama instansi atau program..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
                 />
               </div>
             </div>
@@ -460,7 +472,7 @@ export default function CertificatesPage() {
                 onClick={() => setFilterType("ALL")}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
                   filterType === "ALL"
-                    ? "bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-sm"
+                    ? "bg-blue-600 text-white shadow-sm"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
@@ -472,7 +484,7 @@ export default function CertificatesPage() {
                 onClick={() => setFilterType("INSTANSI")}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
                   filterType === "INSTANSI"
-                    ? "bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-sm"
+                    ? "bg-blue-600 text-white shadow-sm"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
@@ -484,7 +496,7 @@ export default function CertificatesPage() {
                 onClick={() => setFilterType("INDIVIDU")}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
                   filterType === "INDIVIDU"
-                    ? "bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-sm"
+                    ? "bg-blue-600 text-white shadow-sm"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
@@ -591,7 +603,7 @@ export default function CertificatesPage() {
                 onClick={() => setType("INDIVIDU")}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
                   type === "INDIVIDU"
-                    ? "bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-sm"
+                    ? "bg-blue-600 text-white shadow-sm"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
@@ -603,7 +615,7 @@ export default function CertificatesPage() {
                 onClick={() => setType("INSTANSI")}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
                   type === "INSTANSI"
-                    ? "bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-sm"
+                    ? "bg-blue-600 text-white shadow-sm"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
@@ -614,7 +626,7 @@ export default function CertificatesPage() {
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Form Fields Column */}
-              <div className={type === "INDIVIDU" ? "lg:col-span-3 max-w-4xl mx-auto w-full" : "lg:col-span-2 space-y-6"}>
+              <div className={type === "INDIVIDU" ? "lg:col-span-3 max-w-4xl w-full" : "lg:col-span-2 space-y-6"}>
                 <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
                   <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
                     <FileText className="w-5 h-5 text-blue-600" />
@@ -623,7 +635,7 @@ export default function CertificatesPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                      <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2">
                         Kode Sertifikat <span className="text-rose-500">*</span>
                       </label>
                       <input
@@ -632,12 +644,12 @@ export default function CertificatesPage() {
                         required
                         value={certCode}
                         onChange={(e) => setCertCode(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                      <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2">
                         {type === "INSTANSI" ? "Nama Instansi / Penerima Utama" : "Nama Lengkap Penerima"}{" "}
                         <span className="text-rose-500">*</span>
                       </label>
@@ -647,13 +659,13 @@ export default function CertificatesPage() {
                         required
                         value={recipientName}
                         onChange={(e) => setRecipientName(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2">
                       Program Sertifikasi <span className="text-rose-500">*</span>
                     </label>
                     <input
@@ -662,12 +674,12 @@ export default function CertificatesPage() {
                       required
                       value={programName}
                       onChange={(e) => setProgramName(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                    <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2">
                       Deskripsi / Ruang Lingkup Program <span className="text-rose-500">*</span>
                     </label>
                     <textarea
@@ -676,13 +688,13 @@ export default function CertificatesPage() {
                       rows={3}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                         <Calendar className="w-4 h-4 text-slate-400" />
                         Tanggal Terbit <span className="text-rose-500">*</span>
                       </label>
@@ -691,7 +703,7 @@ export default function CertificatesPage() {
                         required
                         value={issuedDate}
                         onChange={(e) => setIssuedDate(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
                       />
                     </div>
                   </div>
@@ -701,7 +713,7 @@ export default function CertificatesPage() {
                     <button
                       type="submit"
                       disabled={submitLoading}
-                      className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
                     >
                       {submitLoading ? (
                         <>
@@ -792,7 +804,7 @@ export default function CertificatesPage() {
                         placeholder="Nama lengkap peserta..."
                         value={manualParticipantName}
                         onChange={(e) => setManualParticipantName(e.target.value)}
-                        className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-800"
+                        className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
                       />
                       <button
                         type="button"
@@ -834,7 +846,7 @@ export default function CertificatesPage() {
                     <button
                       type="submit"
                       disabled={submitLoading}
-                      className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
                     >
                       {submitLoading ? (
                         <>
