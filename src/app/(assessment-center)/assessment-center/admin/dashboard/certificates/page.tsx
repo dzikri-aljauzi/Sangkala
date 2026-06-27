@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,52 +8,18 @@ import {
   Shield,
   LogOut,
   ArrowLeft,
-  Award,
   Plus,
-  Search,
-  Trash2,
-  Download,
-  FileSpreadsheet,
-  Upload,
-  UserPlus,
-  X,
-  Eye,
-  Calendar,
-  FileText,
-  Users,
   CheckCircle,
   Building,
   User,
   AlertCircle,
-  Pencil,
+  Award,
 } from "lucide-react";
-import Link from "next/link";
-import * as XLSX from "xlsx";
 import ParticipantManager from "@/components/certificate/ParticipantManager";
-
-interface Participant {
-  id: string;
-  name: string;
-  createdAt: string;
-}
-
-interface Certificate {
-  id: string;
-  certCode: string;
-  type: string;
-  recipientName: string;
-  programName: string;
-  description: string;
-  maturityLevel: string | null;
-  issuedDate: string;
-  qrCodeData: string | null;
-  pdfPath: string | null;
-  verifyHash: string;
-  createdAt: string;
-  _count?: {
-    participants: number;
-  };
-}
+import CertificateTable, { Certificate } from "@/components/certificate/dashboard/CertificateTable";
+import CertificateForm from "@/components/certificate/dashboard/CertificateForm";
+import BulkUploadCard from "@/components/certificate/dashboard/BulkUploadCard";
+import ParticipantListCard from "@/components/certificate/dashboard/ParticipantListCard";
 
 export default function CertificatesPage() {
   const { data: session, status } = useSession();
@@ -65,8 +31,6 @@ export default function CertificatesPage() {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<"ALL" | "INDIVIDU" | "INSTANSI">("ALL");
 
   // Creation Type State: INDIVIDU or INSTANSI
   const [type, setType] = useState<"INDIVIDU" | "INSTANSI">("INDIVIDU");
@@ -78,11 +42,6 @@ export default function CertificatesPage() {
   const [description, setDescription] = useState("");
   const [issuedDate, setIssuedDate] = useState("");
   const [participants, setParticipants] = useState<string[]>([]);
-  const [manualParticipantName, setManualParticipantName] = useState("");
-
-  // File Upload Drag & Drop State
-  const [dragOver, setDragOver] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Participant management modal
   const [managingCert, setManagingCert] = useState<{ id: string; name: string } | null>(null);
@@ -126,103 +85,26 @@ export default function CertificatesPage() {
     }
   };
 
-  // Excel parsing
-  const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    processExcelFile(files[0]);
-  };
-
-  const processExcelFile = (file: File) => {
-    if (!file.name.match(/\.(xlsx|xls|csv)$/)) {
-      showToast("error", "Format berkas harus berupa Excel (.xlsx, .xls) atau CSV");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
-
-        if (json.length === 0) {
-          showToast("error", "File Excel kosong");
-          return;
-        }
-
-        // Find best column matching name
-        const keys = Object.keys(json[0]);
-        const nameKey = keys.find(
-          (k) =>
-            k.toLowerCase().includes("nama") ||
-            k.toLowerCase().includes("name") ||
-            k.toLowerCase().includes("peserta")
-        ) || keys[0];
-
-        const names: string[] = json
-          .map((row) => String(row[nameKey] || "").trim())
-          .filter((name) => name.length > 0);
-
-        if (names.length === 0) {
-          showToast("error", "Tidak dapat membaca nama peserta dari berkas");
-          return;
-        }
-
-        setParticipants((prev) => {
-          const combined = [...prev, ...names];
-          return Array.from(new Set(combined));
-        });
-        showToast("success", `Berhasil mengimpor ${names.length} peserta dari ${file.name}`);
-      } catch (err) {
-        console.error("Error reading excel:", err);
-        showToast("error", "Gagal memproses file Excel");
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(true);
-  };
-
-  const handleDragLeave = () => {
-    setDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      processExcelFile(files[0]);
-    }
-  };
-
-  const addManualParticipant = (e: React.FormEvent) => {
-    e.preventDefault();
-    const name = manualParticipantName.trim();
-    if (!name) {
-      showToast("warning", "Nama peserta tidak boleh kosong");
-      return;
-    }
+  // Add participant
+  const addParticipantName = (name: string) => {
     if (participants.includes(name)) {
       showToast("warning", "Nama peserta sudah ada di daftar");
       return;
     }
     setParticipants((prev) => [...prev, name]);
-    setManualParticipantName("");
   };
 
+  // Remove participant
   const removeParticipant = (index: number) => {
     setParticipants((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const clearParticipants = () => {
-    setParticipants([]);
+  // Bulk add participants from excel
+  const importParticipants = (names: string[]) => {
+    setParticipants((prev) => {
+      const combined = [...prev, ...names];
+      return Array.from(new Set(combined));
+    });
   };
 
   // Start editing a certificate
@@ -321,17 +203,6 @@ export default function CertificatesPage() {
       showToast("error", "Terjadi kesalahan saat menghapus sertifikat");
     }
   };
-
-  const filteredCertificates = certificates.filter((c) => {
-    const matchesSearch =
-      c.certCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.recipientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.programName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === "ALL" || c.type === filterType;
-    return matchesSearch && matchesType;
-  });
-
-  const totalCertificates = certificates.length;
 
   if (status === "loading" || (status === "authenticated" && loading)) {
     return (
@@ -450,212 +321,13 @@ export default function CertificatesPage() {
         </div>
 
         {view === "list" ? (
-          <div className="space-y-6">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                  <Award className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-500">Total Sertifikat</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-1">{totalCertificates}</p>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-                <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-                  <Users className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-500">Sertifikat Instansi</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-1">
-                    {certificates.filter((c) => c.type === "INSTANSI").length}
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-                <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                  <User className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-500">Sertifikat Individu</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-1">
-                    {certificates.filter((c) => c.type === "INDIVIDU").length}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* List Controls */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full md:w-96">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Cari kode, nama instansi atau program..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
-                />
-              </div>
-            </div>
-
-            {/* Filter Tabs */}
-            <div className="flex border-b border-slate-200 bg-white p-1.5 rounded-xl border max-w-md">
-              <button
-                type="button"
-                onClick={() => setFilterType("ALL")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
-                  filterType === "ALL"
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <Award className="w-4 h-4" />
-                Semua
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterType("INSTANSI")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
-                  filterType === "INSTANSI"
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <Building className="w-4 h-4" />
-                Instansi
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterType("INDIVIDU")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all ${
-                  filterType === "INDIVIDU"
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                }`}
-              >
-                <User className="w-4 h-4" />
-                Individu
-              </button>
-            </div>
-
-            {/* Certificates Table */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      <th className="px-6 py-4">Kode Sertifikat</th>
-                      <th className="px-6 py-4">Tipe</th>
-                      <th className="px-6 py-4">Penerima</th>
-                      <th className="px-6 py-4">Program Sertifikasi</th>
-                      <th className="px-6 py-4">Peserta Kolektif</th>
-                      <th className="px-6 py-4 text-right">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
-                    {filteredCertificates.length > 0 ? (
-                      filteredCertificates.map((cert) => (
-                        <tr key={cert.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="px-6 py-4 font-mono font-medium text-blue-600">{cert.certCode}</td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${
-                                cert.type === "INSTANSI"
-                                  ? "bg-indigo-50 text-indigo-700 border-indigo-200"
-                                  : "bg-emerald-50 text-emerald-700 border-emerald-200"
-                              }`}
-                            >
-                              {cert.type === "INSTANSI" ? (
-                                <>
-                                  <Building className="w-3 h-3" />
-                                  Instansi
-                                </>
-                              ) : (
-                                <>
-                                  <User className="w-3 h-3" />
-                                  Individu
-                                </>
-                              )}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="font-semibold text-slate-900">{cert.recipientName}</span>
-                          </td>
-                          <td className="px-6 py-4 text-slate-600">{cert.programName}</td>
-                          <td className="px-6 py-4">
-                            {cert.type === "INSTANSI" ? (
-                              <button
-                                onClick={() => setManagingCert({ id: cert.id, name: cert.recipientName })}
-                                className="font-semibold text-slate-900 hover:text-blue-600 transition-colors underline underline-offset-2 decoration-slate-300 hover:decoration-blue-400"
-                              >
-                                {cert._count?.participants || 0} Orang
-                              </button>
-                            ) : (
-                              <span className="text-slate-400">-</span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <button
-                                onClick={() => handleStartEdit(cert)}
-                                className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors border border-slate-200"
-                                title="Edit Sertifikat"
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </button>
-                              <Link
-                                href={`/assessment-center/admin/dashboard/certificates/${cert.id}/preview`}
-                                className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200"
-                                title="Lihat Pratinjau Sertifikat"
-                              >
-                                <Eye className="w-4 h-4" />
-                              </Link>
-                              {cert.type === "INSTANSI" && (
-                                <button
-                                  onClick={() => setManagingCert({ id: cert.id, name: cert.recipientName })}
-                                  className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-slate-200"
-                                  title="Kelola Peserta"
-                                >
-                                  <Users className="w-4 h-4" />
-                                </button>
-                              )}
-                              {cert.pdfPath && (
-                                <a
-                                  href={cert.pdfPath}
-                                  download
-                                  className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors border border-slate-200"
-                                  title="Unduh Sertifikat PDF"
-                                >
-                                  <Download className="w-4 h-4" />
-                                </a>
-                              )}
-                              <button
-                                onClick={() => handleDelete(cert.id, cert.certCode)}
-                                className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200"
-                                title="Hapus Sertifikat"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
-                          {loading ? "Memuat sertifikat..." : "Tidak ada sertifikat yang ditemukan"}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+          <CertificateTable
+            certificates={certificates}
+            loading={loading}
+            onEdit={handleStartEdit}
+            onManage={setManagingCert}
+            onDelete={handleDelete}
+          />
         ) : (
           <div className="space-y-6">
             {/* Navigation Tabs between Individu and Instansi */}
@@ -697,249 +369,60 @@ export default function CertificatesPage() {
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Form Fields Column */}
-              <div className={view === "edit" ? "lg:col-span-3 max-w-4xl w-full" : type === "INDIVIDU" ? "lg:col-span-3 max-w-4xl mx-auto w-full" : "lg:col-span-2 space-y-6"}>
-                <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                  <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-blue-600" />
-                    {view === "edit" ? "Edit Sertifikat" : `Informasi Utama Sertifikat (${type === "INDIVIDU" ? "Individu" : "Kolektif Instansi"})`}
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2">
-                        Kode Sertifikat <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Contoh: LNA/CERT/ERM31K/2026/001"
-                        required
-                        value={certCode}
-                        onChange={(e) => setCertCode(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2">
-                        {type === "INSTANSI" ? "Nama Instansi / Penerima Utama" : "Nama Lengkap Penerima"}{" "}
-                        <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder={type === "INSTANSI" ? "Contoh: Badan Karantina Indonesia" : "Contoh: Ahmad Syahrial, MBA"}
-                        required
-                        value={recipientName}
-                        onChange={(e) => setRecipientName(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2">
-                      Program Sertifikasi <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Contoh: Program Sertifikasi Asesmen Kompetensi Eksekutif"
-                      required
-                      value={programName}
-                      onChange={(e) => setProgramName(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2">
-                      Deskripsi / Ruang Lingkup Program <span className="text-rose-500">*</span>
-                    </label>
-                    <textarea
-                      placeholder="Contoh: Tingkat Kematangan Manajemen Risiko Indeks ERM-31000"
-                      required
-                      rows={3}
-                      value={description}
-                      onChange={(e) => {
-                        const cleaned = e.target.value.replace(/[\r\n]+/g, " ");
-                        setDescription(cleaned);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                        }
-                      }}
-                      className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <Calendar className="w-4 h-4 text-slate-400" />
-                        Tanggal Terbit <span className="text-rose-500">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        required
-                        value={issuedDate}
-                        onChange={(e) => setIssuedDate(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Submit Button inside main card if Individu */}
-                  {(type === "INDIVIDU" || view === "edit") && (
-                    <button
-                      type="submit"
-                      disabled={submitLoading}
-                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
-                    >
-                      {submitLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                          Memproses & Menggambar PDF...
-                        </>
-                      ) : (
-                        <>
-                          <Award className="w-4 h-4" />
-                          {view === "edit" ? "Simpan Perubahan" : "Terbitkan"}
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
+              <div className={view === "edit" ? "lg:col-span-3 max-w-4xl w-full" : type === "INDIVIDU" ? "lg:col-span-3 max-w-4xl w-full" : "lg:col-span-2 space-y-6"}>
+                <CertificateForm
+                  type={type}
+                  view={view}
+                  certCode={certCode}
+                  setCertCode={setCertCode}
+                  recipientName={recipientName}
+                  setRecipientName={setRecipientName}
+                  programName={programName}
+                  setProgramName={setProgramName}
+                  description={description}
+                  setDescription={setDescription}
+                  issuedDate={issuedDate}
+                  setIssuedDate={setIssuedDate}
+                  submitLoading={submitLoading}
+                />
               </div>
 
               {/* Participants column (Instansi only, hide in edit mode — use modal instead) */}
               {type === "INSTANSI" && view !== "edit" && (
                 <div className="space-y-6">
                   {/* Excel Bulk Upload Card */}
-                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <FileSpreadsheet className="w-5 h-5 text-emerald-600" />
-                      Bulk Upload Peserta
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Unggah berkas Excel (.xlsx, .xls) atau CSV untuk mengekstrak nama peserta secara massal.
-                    </p>
-
-                    {/* Drag and Drop Box */}
-                    <div
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                      onClick={() => fileInputRef.current?.click()}
-                      className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
-                        dragOver
-                          ? "border-blue-500 bg-blue-50/50"
-                          : "border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-50"
-                      }`}
-                    >
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleExcelUpload}
-                        accept=".xlsx,.xls,.csv"
-                        className="hidden"
-                      />
-                      <Upload className="w-8 h-8 text-slate-400" />
-                      <span className="text-xs font-semibold text-slate-700">Pilih berkas atau tarik ke sini</span>
-                      <span className="text-[10px] text-slate-400">Kolom dibaca: Nama, Name, Nama Lengkap</span>
-                    </div>
-
-                    {/* Download Template Button */}
-                    <a
-                      href="/template-excel/template-bulk-nama-peserta.xlsx"
-                      download
-                      className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors border border-slate-200"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Unduh Template Excel Peserta
-                    </a>
-                  </div>
+                  <BulkUploadCard
+                    onImport={importParticipants}
+                    onError={(msg) => showToast("error", msg)}
+                    onSuccess={(msg) => showToast("success", msg)}
+                  />
 
                   {/* Participants list Card */}
-                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 flex flex-col max-h-[500px]">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <Users className="w-5 h-5 text-indigo-600" />
-                        Peserta ({participants.length})
-                      </h3>
-                      {participants.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={clearParticipants}
-                          className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline"
-                        >
-                          Hapus Semua
-                        </button>
-                      )}
-                    </div>
+                  <ParticipantListCard
+                    participants={participants}
+                    onAdd={addParticipantName}
+                    onRemove={removeParticipant}
+                    onClearAll={() => setParticipants([])}
+                  />
 
-                    {/* Manual entry */}
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Nama lengkap peserta..."
-                        value={manualParticipantName}
-                        onChange={(e) => setManualParticipantName(e.target.value)}
-                        className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
-                      />
-                      <button
-                        type="button"
-                        onClick={addManualParticipant}
-                        className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors flex items-center justify-center"
-                        title="Tambah Manual"
-                      >
-                        <UserPlus className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    {/* List container */}
-                    <div className="flex-1 overflow-y-auto space-y-2 border border-slate-100 p-2 rounded-xl bg-slate-50/50 min-h-[150px]">
-                      {participants.length > 0 ? (
-                        participants.map((name, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between bg-white px-3 py-1.5 rounded-lg border border-slate-100 text-xs text-slate-800 shadow-sm hover:border-slate-200 transition-all group"
-                          >
-                            <span className="font-medium truncate max-w-[180px]">{name}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeParticipant(index)}
-                              className="text-slate-400 hover:text-rose-600 transition-colors"
-                              title="Hapus"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="h-full flex items-center justify-center text-slate-400 text-xs italic py-8">
-                          Belum ada peserta
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Submit button */}
-                    <button
-                      type="submit"
-                      disabled={submitLoading}
-                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
-                    >
-                      {submitLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                          Memproses & Menggambar PDF...
-                        </>
-                      ) : (
-                        <>
-                          <Award className="w-4 h-4" />
-                          Terbitkan
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  {/* Submit button at bottom of list */}
+                  <button
+                    type="submit"
+                    disabled={submitLoading}
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-all shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+                  >
+                    {submitLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                        Memproses & Menggambar PDF...
+                      </>
+                    ) : (
+                      <>
+                        <Award className="w-4 h-4" />
+                        Terbitkan
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
             </form>
