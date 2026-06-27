@@ -543,10 +543,9 @@ export default function CertificatesPage() {
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <Link
-                                href={`/verify/${cert.verifyHash}`}
-                                target="_blank"
+                                href={`/assessment-center/admin/dashboard/certificates/${cert.id}/preview`}
                                 className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200"
-                                title="Lihat Halaman Verifikasi"
+                                title="Lihat Pratinjau Sertifikat"
                               >
                                 <Eye className="w-4 h-4" />
                               </Link>
