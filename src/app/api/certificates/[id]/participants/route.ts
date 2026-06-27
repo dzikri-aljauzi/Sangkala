@@ -7,6 +7,11 @@ type Params = {
   id: string;
 };
 
+interface PostRequest {
+  name?: string;
+  names?: string[];
+}
+
 // POST add a participant to a certificate
 export async function POST(
   request: NextRequest,
@@ -20,11 +25,11 @@ export async function POST(
     }
 
     const { id } = await params;
-    const body = await request.json();
-    const { name } = body;
+    const body = (await request.json()) as PostRequest;
+    const { name, names } = body;
 
-    if (!name) {
-      return NextResponse.json({ error: "Participant name is required" }, { status: 400 });
+    if (!name && (!names || !Array.isArray(names))) {
+      return NextResponse.json({ error: "Participant name or names array is required" }, { status: 400 });
     }
 
     const certificate = await prisma.certificate.findUnique({
@@ -35,9 +40,23 @@ export async function POST(
       return NextResponse.json({ error: "Certificate not found" }, { status: 404 });
     }
 
+    if (names && Array.isArray(names)) {
+      const created = await prisma.$transaction(
+        names.map((n: string) =>
+          prisma.certificateParticipant.create({
+            data: {
+              name: n,
+              certificateId: id,
+            },
+          })
+        )
+      );
+      return NextResponse.json(created, { status: 201 });
+    }
+
     const participant = await prisma.certificateParticipant.create({
       data: {
-        name,
+        name: name || "",
         certificateId: id,
       },
     });
@@ -50,6 +69,11 @@ export async function POST(
       { status: 500 }
     );
   }
+}
+
+interface PutRequest {
+  participantId?: string;
+  name?: string;
 }
 
 // PUT update a participant name
@@ -65,7 +89,7 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const body = await request.json();
+    const body = (await request.json()) as PutRequest;
     const { participantId, name } = body;
 
     if (!participantId || !name) {

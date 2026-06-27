@@ -200,17 +200,17 @@ export default function ParticipantManager({
           return;
         }
 
-        let added = 0;
-        for (const name of names) {
-          const res = await fetch(`/api/certificates/${certificateId}/participants`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name }),
-          });
-          if (res.ok) added++;
-        }
+        const res = await fetch(`/api/certificates/${certificateId}/participants`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ names }),
+        });
 
-        showToast("success", `Berhasil menambahkan ${added} peserta`);
+        if (res.ok) {
+          showToast("success", `Berhasil menambahkan ${names.length} peserta`);
+        } else {
+          showToast("error", "Gagal menambahkan peserta");
+        }
         await fetchParticipants();
         onUpdate();
       } catch {
