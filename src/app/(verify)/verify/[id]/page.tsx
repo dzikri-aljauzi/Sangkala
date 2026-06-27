@@ -1,8 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import ParticipantsSearch from "@/components/certificate/ParticipantsSearch";
+import { Award, Calendar, Shield, Download, CheckCircle, FileText } from "lucide-react";
 
-// ─── Sample Data (hardcoded sementara) ──────────────────────────────────────
+// ─── Sample Data (hardcoded fallback) ──────────────────────────────────────
 interface SignatureData {
   id: string;
   companyName: string;
@@ -73,15 +76,36 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const data = sampleData[id];
-  if (!data) {
-    return { title: "Tidak Ditemukan | Leadership Nasional Asia" };
+
+  // Try database lookup first
+  const certificate = await prisma.certificate.findFirst({
+    where: {
+      OR: [
+        { id },
+        { verifyHash: id }
+      ]
+    }
+  });
+
+  if (certificate) {
+    return {
+      title: `Verifikasi Sertifikat - ${certificate.certCode} | Leadership Nasional Asia`,
+      description: `Verifikasi resmi sertifikat untuk ${certificate.recipientName} - ${certificate.programName}`,
+      robots: { index: false, follow: false },
+    };
   }
-  return {
-    title: `Verifikasi Tanda Tangan - ${data.id} | BSMR`,
-    description: `Verifikasi tanda tangan digital untuk ${data.trainingTitle}`,
-    robots: { index: false, follow: false },
-  };
+
+  // Fallback to sampleData
+  const data = sampleData[id];
+  if (data) {
+    return {
+      title: `Verifikasi Tanda Tangan - ${data.id} | BSMR`,
+      description: `Verifikasi tanda tangan digital untuk ${data.trainingTitle}`,
+      robots: { index: false, follow: false },
+    };
+  }
+
+  return { title: "Tidak Ditemukan | Leadership Nasional Asia" };
 }
 
 // ─── Page Component ─────────────────────────────────────────────────────────
@@ -91,8 +115,149 @@ export default async function VerifySignaturePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const data = sampleData[id];
 
+  // 1. Try DB Lookup
+  const certificate = await prisma.certificate.findFirst({
+    where: {
+      OR: [
+        { id },
+        { verifyHash: id }
+      ]
+    },
+    include: {
+      participants: {
+        orderBy: { name: "asc" }
+      }
+    }
+  });
+
+  if (certificate) {
+    const formattedIssuedDate = new Date(certificate.issuedDate).toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    return (
+      <div className="min-h-screen bg-[#f8f9fc] flex flex-col font-sans">
+        {/* Top Verification Banner */}
+        <div className="bg-gradient-to-r from-[#0f172a] to-[#1e3a5f] text-white">
+          <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-start sm:items-center gap-3">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-emerald-400" />
+            </div>
+            <p className="text-xs sm:text-sm leading-relaxed">
+              <span className="font-bold text-emerald-400">Sertifikat Resmi Terverifikasi.</span>{" "}
+              Sertifikat ini diterbitkan secara sah oleh PT. Leadership Nasional Asia (LNA) dan terdaftar dalam basis data sertifikasi kami.
+            </p>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+          
+          {/* Section 1: Issuer Info */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+            <div className="p-8 sm:p-10">
+              <div className="flex flex-col items-center mb-10">
+                <div className="relative w-24 h-24 mb-4 rounded-full border border-gray-100 p-2 shadow-sm flex items-center justify-center bg-slate-50">
+                  <Image
+                    src="/logo-lna.png"
+                    alt="LNA Logo"
+                    width={80}
+                    height={80}
+                    className="object-contain"
+                  />
+                </div>
+                <span className="inline-block px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 rounded-md mb-2">
+                  Lembaga Penerbit
+                </span>
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-900 text-center">
+                  PT. Leadership Nasional Asia (LNA)
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto border-t border-slate-100 pt-8">
+                <div className="space-y-4">
+                  <InfoItem label="Email Layanan" value="leadership.nasional@gmail.com" />
+                  <InfoItem label="Alamat Kantor" value="Talavera Office Park Lt. 28, Jl. TB Simatupang Kav 22-26 Jakarta Selatan 12430" />
+                </div>
+                <div className="space-y-4">
+                  <InfoItem label="Telepon" value="+62 21-1291-5804" />
+                  <InfoItem label="Situs Resmi" value="www.leadershipnasionalasia.com" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Certificate details */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="p-8 sm:p-10">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-6 mb-8">
+                <div>
+                  <span className="text-xs font-mono font-semibold text-blue-600 tracking-wider">
+                    KODE SERTIFIKAT: {certificate.certCode}
+                  </span>
+                  <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
+                    {certificate.programName}
+                  </h1>
+                </div>
+                {certificate.pdfPath && (
+                  <a
+                    href={certificate.pdfPath}
+                    download
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    Unduh Dokumen Asli (PDF)
+                  </a>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <DetailItem label="Nama Instansi / Penerima" value={certificate.recipientName} />
+                <DetailItem label="Ruang Lingkup / Deskripsi" value={certificate.description} />
+                <DetailItem label="Tingkat Kematangan (Maturity)" value={certificate.maturityLevel || "-"} />
+              </div>
+
+              <div className="border-t border-slate-100 pt-6">
+                <DetailItem label="Tanggal Terbit" value={formattedIssuedDate} />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Participants (Search component) */}
+          {certificate.type === "INSTANSI" && certificate.participants && certificate.participants.length > 0 && (
+            <ParticipantsSearch participants={certificate.participants} />
+          )}
+
+          {/* Footer */}
+          <div className="text-center py-12">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Image
+                src="/logo-lna-transparent.png"
+                alt="LNA"
+                width={28}
+                height={28}
+                className="object-contain opacity-60"
+              />
+              <span className="text-xs font-bold text-slate-400 tracking-wider uppercase">
+                Leadership Nasional Asia
+              </span>
+            </div>
+            <p className="text-xs text-slate-400">
+              Halaman ini hanya dapat diakses untuk keperluan verifikasi keabsahan sertifikasi resmi.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Try Fallback to Hardcoded Sample Data
+  const data = sampleData[id];
   if (!data) {
     notFound();
   }
@@ -126,12 +291,13 @@ export default async function VerifySignaturePage({
 
             {/* Logo & Company Name Centered */}
             <div className="flex flex-col items-center mb-12">
-              <div className="relative w-24 h-24 mb-4 rounded-full border border-gray-100 p-2 shadow-sm">
+              <div className="relative w-24 h-24 mb-4 rounded-full border border-gray-100 p-2 shadow-sm flex items-center justify-center bg-slate-50">
                 <Image
-                  src="/logo-lna.png" // Pastikan menggunakan image logo yang bundar/sesuai
+                  src="/logo-lna.png"
                   alt="LNA"
-                  fill
-                  className="object-contain p-2"
+                  width={80}
+                  height={80}
+                  className="object-contain"
                 />
               </div>
               <span className="inline-block px-3 py-1 text-xs text-[#0ea5e9] bg-[#f0f9ff] border border-[#bae6fd] rounded-md mb-2">
@@ -233,7 +399,7 @@ export default async function VerifySignaturePage({
               </div>
             </div>
 
-            {/* Unit Kompetensi (Tetap dipertahankan dengan desain minimalis) */}
+            {/* Unit Kompetensi */}
             <div>
               <span className="block text-sm font-bold text-black mb-4">Unit Kompetensi</span>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-8">
@@ -283,22 +449,22 @@ export default async function VerifySignaturePage({
   );
 }
 
-// ─── Sub-Components Minimalis (Tanpa Ikon) ─────────────────────────────────
+// ─── Sub-Components Minimalis ─────────────────────────────────
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
       <span className="text-xs text-gray-400 font-medium">{label}</span>
-      <span className="text-sm text-gray-800 leading-relaxed">{value || "-"}</span>
+      <span className="text-sm text-gray-800 leading-relaxed font-semibold">{value || "-"}</span>
     </div>
   );
 }
 
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-2">
-      <span className="text-xs font-semibold text-gray-900">{label}</span>
-      <span className="text-sm text-gray-600 leading-relaxed">{value || "-"}</span>
+    <div className="flex flex-col gap-1">
+      <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">{label}</span>
+      <span className="text-sm text-slate-600 leading-relaxed font-medium">{value || "-"}</span>
     </div>
   );
 }

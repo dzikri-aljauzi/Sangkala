@@ -15,6 +15,7 @@ import {
   Camera,
   ChevronRight,
   LayoutDashboard,
+  Award,
 } from "lucide-react";
 
 interface Assessment {
@@ -116,10 +117,19 @@ export default function AdminGlobalDashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
-          <h1 className="text-2xl font-bold text-slate-900">Semua Assessment</h1>
-          <p className="text-slate-500 mt-1">Kelola seluruh assessment dari satu tempat</p>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Semua Assessment</h1>
+            <p className="text-slate-500 mt-1">Kelola seluruh assessment dari satu tempat</p>
+          </div>
+          <Link
+            href="/assessment-center/admin/dashboard/certificates"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
+          >
+            <Award className="w-4 h-4" />
+            Kelola Sertifikat
+          </Link>
         </motion.div>
 
         {/* Stats Row */}
