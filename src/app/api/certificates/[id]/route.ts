@@ -82,7 +82,7 @@ export async function PUT(
     }
 
     // Generate new PDF with updated data
-    const { pdfPath } = await generateCertificatePdf({
+    const { pdfPath, qrCodeDataUrl } = await generateCertificatePdf({
       certCode,
       institutionName: recipientName,
       programName,
@@ -91,7 +91,7 @@ export async function PUT(
       verifyHash: existing.verifyHash,
     });
 
-    // Update DB — keep existing qrCodeData and verifyHash
+    // Update DB — sync qrCodeData and keep verifyHash
     const updated = await prisma.certificate.update({
       where: { id },
       data: {
@@ -101,6 +101,7 @@ export async function PUT(
         description,
         issuedDate: new Date(issuedDate),
         pdfPath,
+        qrCodeData: qrCodeDataUrl,
       },
     });
 
