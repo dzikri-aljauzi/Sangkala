@@ -22,25 +22,25 @@ const LAYOUT = {
   // 1. Logo Baris Atas (LNA)
   topLogos: {
     y: 465,
-    height: 90,
+    height: 80,
     rightMargin: 75,
   },
   
   // 2. Judul Sertifikat
   title: {
     y: 465,
-    fontSize: 40,
+    fontSize: 45,
   },
 
   // 2b. Nomor Sertifikat
   certNo: {
-    y: 445,
+    y: 440,
     fontSize: 14,
   },
 
   // 2c. Teks "diberikan kepada"
   givenTo: {
-    y: 425,
+    y: 420,
     fontSize: 14,
   },
 
