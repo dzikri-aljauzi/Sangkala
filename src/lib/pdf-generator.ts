@@ -1,4 +1,4 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, PDFFont } from "pdf-lib";
 import QRCode from "qrcode";
 import fs from "fs";
 import path from "path";
@@ -19,16 +19,29 @@ interface CertificateData {
 // (PDF Ukuran A4 Landscape: 841.89 x 595.28)
 // ==========================================
 const LAYOUT = {
-  // 1. Logo Baris Atas (Profesi, ISO, LNA)
+  // 1. Logo Baris Atas (LNA)
   topLogos: {
-    y: 475,
-    height: 60,
+    y: 465,
+    height: 90,
+    rightMargin: 75,
   },
   
   // 2. Judul Sertifikat
   title: {
-    y: 435,
+    y: 465,
     fontSize: 40,
+  },
+
+  // 2b. Nomor Sertifikat
+  certNo: {
+    y: 445,
+    fontSize: 14,
+  },
+
+  // 2c. Teks "diberikan kepada"
+  givenTo: {
+    y: 425,
+    fontSize: 14,
   },
 
   // 3. Nama Lembaga / Instansi Penerima
@@ -39,7 +52,7 @@ const LAYOUT = {
 
   // 4. Teks Pernyataan (Program Sertifikasi)
   statement: {
-    startY: 345,
+    startY: 330,
     fontSize: 18,
   },
 
@@ -57,17 +70,10 @@ const LAYOUT = {
     setByFontSize: 9,
     companyY: 175,
     companyFontSize: 10,
-    columnCenter: 495,
+    columnCenter: 545,
   },
 
-  // 7. Badge Emas (logo-erm-iso.png)
-  goldBadge: {
-    y: 50,
-    height: 180,
-    aspectRatio: 1.42,
-    xAnchor: 490,
-    xOffset: 15,
-  },
+
 
   // 8. QR Code Verifikasi
   qrCode: {
@@ -78,9 +84,31 @@ const LAYOUT = {
   // 9. Catatan Kaki (Footer)
   footer: {
     y: 52,
-    fontSize: 8.5,
+    fontSize: 10,
   }
 };
+
+// Helper function to wrap text within a maximum width boundary
+function wrapText(text: string, maxWidth: number, font: PDFFont, fontSize: number): string[] {
+  const words = text.split(" ");
+  const lines: string[] = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    const testWidth = font.widthOfTextAtSize(testLine, fontSize);
+    if (testWidth > maxWidth) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+  return lines;
+}
 
 export async function generateCertificatePdf(
   data: CertificateData
@@ -125,6 +153,7 @@ export async function generateCertificatePdf(
   const colorNavy = rgb(15 / 255, 23 / 255, 42 / 255); // slate-900
   const colorSlate = rgb(71 / 255, 85 / 255, 105 / 255); // slate-600
   const colorBlack = rgb(0, 0, 0); // black
+  const colorGold = rgb(145 / 255, 114 / 255, 36 / 255); // gold
 
   // 3. Draw Background Template Image
   const bgTemplatePath = path.join(process.cwd(), "public", "certificate-assets", "templates", "bg-template.png");
@@ -145,19 +174,9 @@ export async function generateCertificatePdf(
   }
 
   // Load Logos
-  const logoIsoPath = path.join(process.cwd(), "public", "certificate-assets", "templates", "logo-iso.png");
   const logoLnaPath = path.join(process.cwd(), "public", "certificate-assets", "templates", "logo-lna.png");
-  const logoErmIsoPath = path.join(process.cwd(), "public", "certificate-assets", "templates", "logo-erm-iso.png");
 
-  let imgIso, imgLna, imgErmIso;
-  if (fs.existsSync(logoIsoPath)) {
-    const bytes = fs.readFileSync(logoIsoPath);
-    const compressed = await sharp(bytes)
-      .resize({ width: 300 })
-      .png({ compressionLevel: 9, palette: true })
-      .toBuffer();
-    imgIso = await pdfDoc.embedPng(compressed);
-  }
+  let imgLna;
   if (fs.existsSync(logoLnaPath)) {
     const bytes = fs.readFileSync(logoLnaPath);
     const compressed = await sharp(bytes)
@@ -166,27 +185,11 @@ export async function generateCertificatePdf(
       .toBuffer();
     imgLna = await pdfDoc.embedPng(compressed);
   }
-  if (fs.existsSync(logoErmIsoPath)) {
-    const bytes = fs.readFileSync(logoErmIsoPath);
-    const compressed = await sharp(bytes)
-      .resize({ width: 300 })
-      .png({ compressionLevel: 9, palette: true })
-      .toBuffer();
-    imgErmIso = await pdfDoc.embedPng(compressed);
-  }
 
-  // Draw top row logos (ISO & LNA only)
-  const wIso = imgIso ? (LAYOUT.topLogos.height * 1.10) * 2.68 : 0;
+  // Draw top row logo (LNA only)
   const wLna = imgLna ? (LAYOUT.topLogos.height * 1.10) * 2.02 : 0;
+  const currentX = width - LAYOUT.topLogos.rightMargin - wLna;
 
-  const spacing = 5;
-  const totalRowWidth = wIso + (wIso && wLna ? spacing : 0) + wLna;
-  let currentX = (width - totalRowWidth) / 2;
-
-  if (imgIso) {
-    page.drawImage(imgIso, { x: currentX - 8, y: LAYOUT.topLogos.y, width: wIso, height: LAYOUT.topLogos.height * 1.10 });
-    currentX += wIso + spacing;
-  }
   if (imgLna) {
     page.drawImage(imgLna, { x: currentX, y: LAYOUT.topLogos.y, width: wLna, height: LAYOUT.topLogos.height * 1.10 });
   }
@@ -209,10 +212,32 @@ export async function generateCertificatePdf(
     y: LAYOUT.title.y,
     size: LAYOUT.title.fontSize,
     font: fontCinzelBold,
+    color: colorBlack,
+  });
+
+  // Certificate Number: No. Sertifikat
+  const certNoText = `No. Sertifikat : ${data.certCode}`;
+  const certNoWidth = fontHelvetica.widthOfTextAtSize(certNoText, LAYOUT.certNo.fontSize);
+  page.drawText(certNoText, {
+    x: (width - certNoWidth) / 2,
+    y: LAYOUT.certNo.y,
+    size: LAYOUT.certNo.fontSize,
+    font: fontHelvetica,
     color: colorNavy,
   });
 
-  // Recipient Institution Name: BANK BPD BALI
+  // Given To Text: diberikan kepada
+  const givenToText = "Diberikan Kepada";
+  const givenToWidth = fontHelveticaBold.widthOfTextAtSize(givenToText, LAYOUT.givenTo.fontSize);
+  page.drawText(givenToText, {
+    x: (width - givenToWidth) / 2,
+    y: LAYOUT.givenTo.y,
+    size: LAYOUT.givenTo.fontSize,
+    font: fontHelvetica,
+    color: colorNavy,
+  });
+
+  // Recipient Institution / Individual Name
   const instName = data.institutionName;
   const instWidth = fontCinzelBold.widthOfTextAtSize(instName, LAYOUT.institution.fontSize);
   page.drawText(instName, {
@@ -223,28 +248,43 @@ export async function generateCertificatePdf(
     color: colorNavy,
   });
 
-  // Statement: Program Sertifikasi
-  const stmtText = data.programName;
-  const stmtWidth = fontCinzelBold.widthOfTextAtSize(stmtText, LAYOUT.statement.fontSize);
-  page.drawText(stmtText, {
-    x: (width - stmtWidth) / 2,
-    y: LAYOUT.statement.startY,
-    size: LAYOUT.statement.fontSize,
-    font: fontCinzelBold,
-    color: colorBlack,
-  });
+  // Statement: Program Sertifikasi (Wrapped to fit width bounds)
+  const maxStmtWidth = 650;
+  const stmtLines = wrapText(data.programName, maxStmtWidth, fontCinzelBold, LAYOUT.statement.fontSize);
+  const lineSpacing = LAYOUT.statement.fontSize * 1.4;
+  const startY = LAYOUT.statement.startY + ((stmtLines.length - 1) * lineSpacing) / 2;
+
+  for (let i = 0; i < stmtLines.length; i++) {
+    const lineText = stmtLines[i];
+    const lineWidth = fontCinzelBold.widthOfTextAtSize(lineText, LAYOUT.statement.fontSize);
+    page.drawText(lineText, {
+      x: (width - lineWidth) / 2,
+      y: startY - (i * lineSpacing),
+      size: LAYOUT.statement.fontSize,
+      font: fontCinzelBold,
+      color: colorGold,
+    });
+  }
 
   // Description / Ruang Lingkup
   const issuedFormatted = formatIndonesianDate(data.issuedDate);
   const descText = data.description;
-  const descWidth = fontCinzelBold.widthOfTextAtSize(descText, LAYOUT.validity.fontSize);
-  page.drawText(descText, {
-    x: (width - descWidth) / 2,
-    y: LAYOUT.validity.startY,
-    size: LAYOUT.validity.fontSize,
-    font: fontCinzelBold,
-    color: colorNavy,
-  });
+  const maxDescWidth = 700;
+  const descLines = wrapText(descText, maxDescWidth, fontCinzelBold, LAYOUT.validity.fontSize);
+  const descLineSpacing = LAYOUT.validity.fontSize * 1.4;
+  const descStartY = LAYOUT.validity.startY + ((descLines.length - 1) * descLineSpacing) / 2;
+
+  for (let i = 0; i < descLines.length; i++) {
+    const lineText = descLines[i];
+    const lineWidth = fontCinzelBold.widthOfTextAtSize(lineText, LAYOUT.validity.fontSize);
+    page.drawText(lineText, {
+      x: (width - lineWidth) / 2,
+      y: descStartY - (i * descLineSpacing),
+      size: LAYOUT.validity.fontSize,
+      font: fontCinzelBold,
+      color: colorNavy,
+    });
+  }
 
   // Place & date signature block
   const placeText = issuedFormatted;
@@ -277,17 +317,7 @@ export async function generateCertificatePdf(
     color: colorBlack,
   });
 
-  // Left side column: Gold Badge (logo-erm-iso.png)
-  if (imgErmIso) {
-    const badgeHeight = LAYOUT.goldBadge.height;
-    const badgeWidth = badgeHeight * LAYOUT.goldBadge.aspectRatio; 
-    page.drawImage(imgErmIso, {
-      x: LAYOUT.goldBadge.xAnchor - badgeWidth - LAYOUT.goldBadge.xOffset,
-      y: LAYOUT.goldBadge.y,
-      width: badgeWidth,
-      height: badgeHeight,
-    });
-  }
+
 
   // Right side column: QR Code
   const qrImage = await pdfDoc.embedPng(qrBuffer);
@@ -299,8 +329,8 @@ export async function generateCertificatePdf(
     height: LAYOUT.qrCode.size,
   });
 
-  // Footer links & cert code (Dinaikkan ke y: 52 agar di atas garis border)
-  const footerText = `Certificate No.: ${data.certCode}           www.leadershipnasionalasia.com`;
+  // Footer links (Dinaikkan ke y: 52 agar di atas garis border)
+  const footerText = "www.leadershipnasionalasia.com";
   const footerWidth = fontHelvetica.widthOfTextAtSize(footerText, LAYOUT.footer.fontSize);
 
   page.drawText(footerText, {
