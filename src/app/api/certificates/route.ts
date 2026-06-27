@@ -145,10 +145,10 @@ export async function POST(request: NextRequest) {
           recipientName,
           programName,
           description,
-          maturityLevel: "Mature",
+          maturityLevel: null,
           issuedDate: issuedDateObj,
           qrCodeData: qrCodeDataUrl,
-          pdfPath,
+          pdfPath: pdfPath,
           createdById: session.user.id,
           participants: {
             create:
