@@ -19,8 +19,8 @@ export async function GET(
       return NextResponse.json({ error: "Invalid path" }, { status: 400 });
     }
 
-    // Only allow access to uploads/articles folder for security
-    if (!filePath.startsWith("uploads/articles/")) {
+    // Only allow access to uploads/articles and uploads/logos folders for security
+    if (!filePath.startsWith("uploads/articles/") && !filePath.startsWith("uploads/logos/")) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
