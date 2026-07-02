@@ -45,3 +45,6 @@ next-env.d.ts
 
 # generated certificate pdfs
 /public/uploads/certificates/*
+
+# local docs
+/docs
