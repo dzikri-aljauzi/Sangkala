@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import DashboardWrapper from "@/components/layout/DashboardWrapper";
+import { FoldersView, BatchListView } from "@/components/shared/ResumeFolderViews";
 import {
   Users,
   FileText,
@@ -29,10 +30,24 @@ import {
   ClipboardList,
   ToggleLeft,
   ToggleRight,
+  ChevronRight,
+  ArrowLeft,
+  Search,
+  ArrowUp,
+  ArrowDown,
+  UploadCloud,
 } from "lucide-react";
 
 interface AdminDashboardProps {
   assessmentId: string;
+}
+
+interface ResumeBatch {
+  id: string;
+  name: string;
+  assessmentId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Assessment {
@@ -43,6 +58,7 @@ interface Assessment {
   clientLogo: string | null;
   documents: any[];
   resumes: any[];
+  resumeBatches: ResumeBatch[];
   documentations: any[];
   users: any[];
   echelons: Echelon[];
@@ -409,7 +425,7 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
           </div>
         )}
 
-        {activeTab === "resumes" && (
+        {activeTab === "resumes" && assessment && (
           <div>
             <div className="mb-6">
               <Button
@@ -424,11 +440,10 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
                 {t("assessmentCenter.uploadResume")}
               </Button>
             </div>
-            <DocumentList
-              documents={assessment.resumes}
+            <ResumeBatchAdminView
+              resumes={assessment.resumes}
+              echelons={assessment.echelons || []}
               onRefresh={fetchAssessment}
-              canDelete={true}
-              type="resumes"
             />
           </div>
         )}
@@ -480,6 +495,7 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
           assessmentId={assessmentId}
           type={uploadType}
           echelons={assessment.echelons || []}
+          resumeBatches={assessment.resumeBatches || []}
           onClose={() => setShowUploadModal(false)}
           onSuccess={() => {
             setShowUploadModal(false);
@@ -1453,265 +1469,516 @@ function UploadModal({
   assessmentId,
   type,
   echelons = [],
+  resumeBatches = [],
   onClose,
   onSuccess,
 }: {
   assessmentId: string;
   type: "resume" | "documentation";
   echelons?: Echelon[];
+  resumeBatches?: ResumeBatch[];
   onClose: () => void;
   onSuccess: () => void;
 }) {
   const { t } = useLanguage();
   const [title, setTitle] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  // Resume classification
+  const [error, setError] = useState("");
   const [category, setCategory] = useState<"UMUM" | "ESELON" | "INDIVIDU">("UMUM");
   const [selectedEchelonId, setSelectedEchelonId] = useState<string>("");
+  const [selectedBatchId, setSelectedBatchId] = useState<string>(resumeBatches[0]?.id || "");
+  const [showCreateBatch, setShowCreateBatch] = useState(false);
+  const [newBatchName, setNewBatchName] = useState("");
+
+  const handleCreateBatch = async () => {
+    if (!newBatchName.trim()) return;
+    try {
+      const res = await fetch("/api/resume-batches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newBatchName.trim(), assessmentId }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "Gagal membuat batch"); return; }
+      setSelectedBatchId(data.id);
+      resumeBatches.unshift(data);
+      setNewBatchName("");
+      setShowCreateBatch(false);
+      setError("");
+    } catch (e) { console.error(e); setError("Terjadi kesalahan saat membuat batch"); }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return;
-
-    // Validate echelon selection
-    if (type === "resume" && category === "ESELON" && !selectedEchelonId) {
-      alert("Pilih eselon terlebih dahulu");
-      return;
-    }
-
-    setLoading(true);
+    if (files.length === 0) return;
+    if (type === "resume" && !selectedBatchId) { setError("Pilih batch terlebih dahulu"); return; }
+    if (type === "resume" && category === "ESELON" && !selectedEchelonId) { setError("Pilih eselon terlebih dahulu"); return; }
+    setLoading(true); setError("");
     const formData = new FormData();
-    formData.append("file", file);
     formData.append("type", type);
     formData.append("assessmentId", assessmentId);
-
-    // For INDIVIDU category, use filename without extension as title
-    let finalTitle = title;
-    if (type === "resume" && category === "INDIVIDU") {
-      // Remove file extension from filename
-      finalTitle = file.name.replace(/\.[^/.]+$/, "");
-    }
-    formData.append("title", finalTitle);
-
-    // Add resume classification
+    formData.append("title", title);
+    files.forEach((f) => formData.append("files", f));
     if (type === "resume") {
       formData.append("category", category);
-      if (category === "ESELON" && selectedEchelonId) {
-        formData.append("echelonId", selectedEchelonId);
-      }
+      formData.append("resumeBatchId", selectedBatchId);
+      if (category === "ESELON" && selectedEchelonId) formData.append("echelonId", selectedEchelonId);
     }
-
     try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (res.ok) {
-        onSuccess();
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (res.ok) { onSuccess(); } else { const data = await res.json(); setError(data.error || "Gagal upload file"); }
+    } catch (e) { console.error(e); setError("Terjadi kesalahan"); }
+    finally { setLoading(false); }
   };
 
+  const filterFiles = (fileList: FileList | null) => {
+    if (!fileList) return;
+    const selected = Array.from(fileList);
+    setFiles((prev) => [...prev, ...selected]);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+  };
+
+  const isDisabled =
+    type === "resume" && category === "ESELON" && !selectedEchelonId;
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900">
-            {type === "resume"
-              ? t("assessmentCenter.uploadResume")
-              : t("assessmentCenter.uploadDocumentation")}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
+          <h2 className="text-xl font-bold text-slate-800">
+            {type === "resume" ? t("assessmentCenter.uploadResume") : t("assessmentCenter.uploadDocumentation")}
           </h2>
-          <button onClick={onClose}>
-            <X className="w-5 h-5 text-slate-400" />
+          <button onClick={onClose} className="p-2 text-slate-400 transition-colors rounded-full hover:bg-slate-100 hover:text-slate-600">
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Resume Category Selection */}
-          {type === "resume" && (
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-3">
-                Kategori Resume
-              </label>
-              <div className="grid grid-cols-1 gap-2">
-                {/* Hasil Keseluruhan - Umum */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCategory("UMUM");
-                    setSelectedEchelonId("");
-                  }}
-                  className={`flex items-center gap-3 p-3 rounded-lg border-2 text-left transition-all ${
-                    category === "UMUM"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    category === "UMUM" ? "bg-blue-500 text-white" : "bg-slate-100 text-slate-600"
-                  }`}>
-                    <FolderOpen className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className={`font-medium ${category === "UMUM" ? "text-blue-700" : "text-slate-700"}`}>
-                      Hasil Keseluruhan - Umum
-                    </p>
-                    <p className="text-xs text-slate-500">Resume hasil secara umum</p>
-                  </div>
-                </button>
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <div className="p-6 overflow-y-auto space-y-6 flex-1">
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800">{error}</div>
+            )}
 
-                {/* Hasil Keseluruhan - Per Eselon */}
-                <button
-                  type="button"
-                  onClick={() => setCategory("ESELON")}
-                  className={`flex items-center gap-3 p-3 rounded-lg border-2 text-left transition-all ${
-                    category === "ESELON"
-                      ? "border-purple-500 bg-purple-50"
-                      : "border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    category === "ESELON" ? "bg-purple-500 text-white" : "bg-slate-100 text-slate-600"
-                  }`}>
-                    <Layers className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className={`font-medium ${category === "ESELON" ? "text-purple-700" : "text-slate-700"}`}>
-                      Hasil Keseluruhan - Per Eselon
-                    </p>
-                    <p className="text-xs text-slate-500">Resume hasil per tingkat eselon</p>
-                  </div>
-                </button>
+            {type === "resume" && (
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-slate-700">Kategori Resume</label>
+                <div className="space-y-2">
+                  {[
+                    { id: "UMUM", title: "Hasil Keseluruhan - Umum", desc: "Resume hasil secara umum", icon: FolderOpen },
+                    { id: "ESELON", title: "Hasil Keseluruhan - Per Eselon", desc: "Resume hasil per tingkat eselon", icon: Layers },
+                    { id: "INDIVIDU", title: "Hasil Per Individu", desc: "Resume per kandidat (nama dari file)", icon: User },
+                  ].map((cat) => {
+                    const isSelected = category === cat.id;
+                    const Icon = cat.icon;
+                    return (
+                      <div
+                        key={cat.id}
+                        onClick={() => { setCategory(cat.id as typeof category); if (cat.id !== "ESELON") setSelectedEchelonId(""); }}
+                        className={`flex items-center p-3 transition-all border rounded-xl cursor-pointer ${isSelected ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500" : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"}`}
+                      >
+                        <div className={`p-2 rounded-lg ${isSelected ? "bg-blue-500 text-white" : "bg-slate-100 text-slate-500"}`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div className="ml-4">
+                          <h3 className={`text-sm font-medium ${isSelected ? "text-blue-700" : "text-slate-700"}`}>{cat.title}</h3>
+                          <p className="text-xs text-slate-500">{cat.desc}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
 
-                {/* Hasil Per Individu */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCategory("INDIVIDU");
-                    setSelectedEchelonId("");
-                  }}
-                  className={`flex items-center gap-3 p-3 rounded-lg border-2 text-left transition-all ${
-                    category === "INDIVIDU"
-                      ? "border-green-500 bg-green-50"
-                      : "border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    category === "INDIVIDU" ? "bg-green-500 text-white" : "bg-slate-100 text-slate-600"
-                  }`}>
-                    <User className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className={`font-medium ${category === "INDIVIDU" ? "text-green-700" : "text-slate-700"}`}>
-                      Hasil Per Individu
-                    </p>
-                    <p className="text-xs text-slate-500">Resume per kandidat (nama dari file)</p>
-                  </div>
-                </button>
-              </div>
-
-              {/* Echelon Selection - only show if ESELON category */}
-              {category === "ESELON" && (
-                <div className="mt-3 pl-4 border-l-2 border-purple-200">
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Pilih Eselon
-                  </label>
-                  {echelons.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      {echelons.map((echelon) => (
-                        <button
-                          key={echelon.id}
-                          type="button"
-                          onClick={() => setSelectedEchelonId(echelon.id)}
-                          className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
-                            selectedEchelonId === echelon.id
-                              ? "border-purple-500 bg-purple-100 text-purple-700"
-                              : "border-slate-200 text-slate-600 hover:border-purple-300"
-                          }`}
-                        >
-                          {echelon.name}
-                        </button>
-                      ))}
+                {/* Batch Selection */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-slate-700">Batch</label>
+                  {showCreateBatch ? (
+                    <div className="flex items-center space-x-2 p-1.5 bg-slate-50 rounded-lg border border-slate-200">
+                      <input
+                        type="text"
+                        autoFocus
+                        placeholder="Masukkan nama batch baru..."
+                        value={newBatchName}
+                        onChange={(e) => setNewBatchName(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleCreateBatch()}
+                        className="flex-1 px-3 py-2 text-sm bg-transparent border-none focus:outline-none focus:ring-0 text-slate-800 placeholder:text-slate-400"
+                      />
+                      <button type="button" onClick={() => { setShowCreateBatch(false); setNewBatchName(""); }} className="p-2 text-slate-500 transition-colors rounded-md hover:bg-slate-200 hover:text-slate-700"><X className="w-4 h-4" /></button>
+                      <button type="button" onClick={handleCreateBatch} disabled={!newBatchName.trim()} className="flex items-center px-3 py-2 text-sm font-medium text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"><Plus className="w-4 h-4 mr-1" />Simpan</button>
                     </div>
                   ) : (
-                    <p className="text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">
-                      Belum ada eselon. Tambahkan eselon di menu "Kelola Eselon" terlebih dahulu.
-                    </p>
+                    <div className="flex space-x-2">
+                      <select value={selectedBatchId} onChange={(e) => setSelectedBatchId(e.target.value)} className="flex-1 w-full px-3 py-2.5 text-sm border rounded-lg border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 bg-white cursor-pointer">
+                        {resumeBatches.length === 0 && <option value="">Pilih batch</option>}
+                        {resumeBatches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                      </select>
+                      <button type="button" onClick={() => setShowCreateBatch(true)} className="flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 transition-colors border border-blue-200 rounded-lg bg-blue-50 hover:bg-blue-100">
+                        <Plus className="w-4 h-4 mr-1.5" />Baru
+                      </button>
+                    </div>
                   )}
+                </div>
+
+                {category === "ESELON" && (
+                  <div className="mt-3 pl-4 border-l-2 border-purple-200">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Pilih Eselon</label>
+                    {echelons.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        {echelons.map((ec) => (
+                          <button key={ec.id} type="button" onClick={() => setSelectedEchelonId(ec.id)} className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${selectedEchelonId === ec.id ? "border-purple-500 bg-purple-100 text-purple-700" : "border-slate-200 text-slate-600 hover:border-purple-300"}`}>{ec.name}</button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">Belum ada eselon. Tambahkan eselon di menu "Kelola Eselon" terlebih dahulu.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!(type === "resume" && category === "INDIVIDU") && (
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">Title</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Judul dokumen"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-3 py-2.5 text-sm border rounded-lg border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-slate-400 text-slate-700"
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-semibold text-slate-700">File Dokumen</label>
+                <span className="text-xs text-slate-500">Bisa pilih lebih dari satu file</span>
+              </div>
+
+              <div
+                onClick={() => document.getElementById("upload-file-input")?.click()}
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={(e) => { e.preventDefault(); e.stopPropagation(); filterFiles(e.dataTransfer.files); }}
+                className="flex flex-col items-center justify-center p-6 transition-colors border-2 border-dashed rounded-xl cursor-pointer border-slate-300 bg-slate-50 hover:bg-blue-50 hover:border-blue-400 group"
+              >
+                <div className="p-3 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform mb-3">
+                  <UploadCloud className="w-6 h-6 text-blue-500" />
+                </div>
+                <p className="text-sm font-medium text-slate-700">Klik untuk browse atau seret file ke sini</p>
+                <p className="text-xs text-slate-500 mt-1">PDF, DOCX, (Max 10MB)</p>
+                <input
+                  id="upload-file-input"
+                  type="file"
+                  multiple
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  onChange={(e) => filterFiles(e.target.files)}
+                  className="hidden"
+                />
+              </div>
+
+              {files.length > 0 && (
+                <div className="mt-3 space-y-2 max-h-40 overflow-y-auto pr-1">
+                  {files.map((f, idx) => (
+                    <div key={`${f.name}-${idx}`} className="flex items-center p-3 transition-colors border rounded-lg border-slate-200 bg-white group hover:border-slate-300 shadow-sm">
+                      <div className="p-1.5 mr-3 bg-blue-50 rounded-md text-blue-600 shrink-0">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate text-slate-700">{f.name}</p>
+                        <p className="text-xs text-slate-500">{formatFileSize(f.size)}</p>
+                      </div>
+                      <button type="button" onClick={() => removeFile(idx)} className="p-1.5 text-slate-400 transition-colors rounded-md opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-600 shrink-0">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
-          )}
-
-          {/* Title input - hide for INDIVIDU category */}
-          {!(type === "resume" && category === "INDIVIDU") && (
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Title
-              </label>
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Judul dokumen"
-              />
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              File {type === "resume" && category === "INDIVIDU" && <span className="text-slate-500 font-normal">(nama file = nama kandidat)</span>}
-            </label>
-            <input
-              type="file"
-              required
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            {type === "resume" && category === "INDIVIDU" && (
-              <p className="text-xs text-slate-500 mt-1">
-                Contoh: "Budi Santoso.pdf" akan menjadi nama kandidat "Budi Santoso"
-              </p>
-            )}
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-            >
+          <div className="flex items-center justify-end px-6 py-4 space-x-3 border-t bg-slate-50/50 border-slate-100 rounded-b-2xl shrink-0">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-medium transition-colors border rounded-lg text-slate-700 border-slate-300 bg-white hover:bg-slate-50">
               {t("assessmentCenter.cancel")}
-            </Button>
-            <Button
+            </button>
+            <button
               type="submit"
-              variant="primary"
-              className="flex-1"
-              isLoading={loading}
-              disabled={type === "resume" && category === "ESELON" && !selectedEchelonId}
+              disabled={isDisabled || loading}
+              className="px-5 py-2.5 text-sm font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-sm"
             >
-              {t("assessmentCenter.upload")}
-            </Button>
+              {loading ? (
+                <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>Upload...</>
+              ) : (
+                <>Upload {files.length > 0 ? `(${files.length} File)` : ""}</>
+              )}
+            </button>
           </div>
         </form>
-      </motion.div>
+      </div>
     </div>
   );
 }
+
+// Resume Batch Admin View
+function ResumeBatchAdminView({
+  resumes,
+  echelons,
+  onRefresh,
+}: {
+  resumes: any[];
+  echelons: Echelon[];
+  onRefresh: () => void;
+}) {
+  const { t } = useLanguage();
+  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [currentView, setCurrentView] = useState<"folders" | "umum" | "eselon" | "individu">("folders");
+  const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
+  const [selectedEchelonId, setSelectedEchelonId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [page, setPage] = useState(1);
+  const perPage = 12;
+
+  const sortedResumes = [...resumes].sort((a, b) => {
+    const timeA = new Date(a.createdAt).getTime();
+    const timeB = new Date(b.createdAt).getTime();
+    return sortOrder === "asc" ? timeA - timeB : timeB - timeA;
+  });
+
+  const umumResumes = sortedResumes.filter((r) => r.category === "UMUM" || !r.category);
+  const eselonResumes = sortedResumes.filter((r) => r.category === "ESELON");
+  const individuResumes = sortedResumes.filter((r) => r.category === "INDIVIDU");
+
+  const batches = useMemo(() => {
+    const map = new Map<string, ResumeBatch>();
+    resumes.forEach((r) => { if (r.resumeBatch && !map.has(r.resumeBatch.id)) map.set(r.resumeBatch.id, r.resumeBatch as ResumeBatch); });
+    return Array.from(map.values()).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [resumes]);
+
+  const getBatchUmum = (batchId: string) => umumResumes.filter((r) => r.resumeBatch?.id === batchId);
+  const getBatchEselonGrouped = (batchId: string) =>
+    echelons.map((ec) => ({ ...ec, resumes: eselonResumes.filter((r) => r.echelonId === ec.id && r.resumeBatch?.id === batchId) }));
+  const getBatchIndividu = (batchId: string) => individuResumes.filter((r) => r.resumeBatch?.id === batchId);
+
+  useEffect(() => { setPage(1); }, [searchQuery, selectedBatchId]);
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedDocs((prev) => prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]);
+  };
+
+  const handleSelectAll = (ids: string[]) => {
+    setSelectedDocs(ids.every((id) => selectedDocs.includes(id)) ? selectedDocs.filter((id) => !ids.includes(id)) : [...new Set([...selectedDocs, ...ids])]);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedDocs.length === 0) return;
+    if (!confirm(`Hapus ${selectedDocs.length} file terpilih?`)) return;
+    setIsDeleting(true);
+    try {
+      await Promise.all(selectedDocs.map((id) => fetch(`/api/resumes/${id}`, { method: "DELETE" })));
+      setSelectedDocs([]);
+      onRefresh();
+    } catch (e) { console.error(e); } finally { setIsDeleting(false); }
+  };
+
+  const handleDeleteSingle = async (id: string) => {
+    if (!confirm("Hapus file ini?")) return;
+    await fetch(`/api/resumes/${id}`, { method: "DELETE" });
+    setSelectedDocs((prev) => prev.filter((d) => d !== id));
+    onRefresh();
+  };
+
+  const renderCard = (doc: any) => (
+    <div key={doc.id} className={`bg-white rounded-lg border ${selectedDocs.includes(doc.id) ? "border-blue-400 ring-1 ring-blue-400" : "border-slate-200"} p-4 hover:shadow-md transition-all relative group w-full`}>
+      <div className="absolute top-4 left-4 z-10">
+        <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" checked={selectedDocs.includes(doc.id)} onChange={() => handleToggleSelect(doc.id)} />
+      </div>
+      <div className="flex items-start justify-between mb-3 ml-8">
+        <FileText className="w-8 h-8 text-blue-500" />
+        <button onClick={() => handleDeleteSingle(doc.id)} className="text-slate-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4" /></button>
+      </div>
+      <div className="ml-8">
+        <h3 className="font-medium text-slate-900 mb-1 line-clamp-1" title={doc.title}>{doc.title}</h3>
+        <p className="text-xs text-slate-600 mb-2 truncate" title={doc.fileName}>{doc.fileName}</p>
+        {doc.uploadedBy && <p className="text-xs text-slate-500 mb-3">By: {doc.uploadedBy.name}</p>}
+        <a href={`/api/files${doc.filePath.replace('/uploads/', '/')}?filename=${encodeURIComponent(doc.fileName)}`} download={doc.fileName} className="text-sm text-blue-600 hover:text-blue-800 font-medium inline-block" onClick={(e) => e.stopPropagation()}>
+          {t("assessmentCenter.download")} →
+        </a>
+      </div>
+      <div className="absolute inset-0 cursor-pointer rounded-lg z-0" onClick={() => handleToggleSelect(doc.id)} />
+    </div>
+  );
+
+  const goBack = () => {
+    if (selectedBatchId) { setSelectedBatchId(null); setPage(1); setSearchQuery(""); setSelectedEchelonId(null); }
+    else if (selectedEchelonId) { setSelectedEchelonId(null); }
+    else { setCurrentView("folders"); }
+  };
+
+  if (currentView === "folders") {
+    return (
+      <FoldersView
+        umumResumes={umumResumes}
+        eselonResumes={eselonResumes}
+        individuResumes={individuResumes}
+        echelons={echelons}
+        resumes={resumes}
+        setCurrentView={setCurrentView}
+      />
+    );
+  }
+
+  if (currentView === "umum") {
+    if (!selectedBatchId) {
+      return <BatchListView batches={batches} resumes={umumResumes} title="Hasil Keseluruhan - Umum" iconColor="blue" onSelect={setSelectedBatchId} goBackToFolders={() => setCurrentView("folders")} />;
+    }
+    const batchUmum = getBatchUmum(selectedBatchId);
+    const batch = batches.find((b) => b.id === selectedBatchId);
+    const ids = batchUmum.map((d: any) => d.id);
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
+          <div className="flex items-center gap-2"><div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><FileText className="w-4 h-4 text-blue-600" /></div><div><h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Umum</h2><p className="text-xs text-slate-500">{batch?.name}</p></div></div>
+        </div>
+        {batchUmum.length === 0 ? (
+          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Belum ada resume umum di batch ini</p></div>
+        ) : (
+          <AdminFileGrid ids={ids} selectedDocs={selectedDocs} handleSelectAll={handleSelectAll} handleBulkDelete={handleBulkDelete} isDeleting={isDeleting}>
+            {batchUmum.map((doc: any) => renderCard(doc))}
+          </AdminFileGrid>
+        )}
+      </div>
+    );
+  }
+
+  if (currentView === "eselon") {
+    if (!selectedBatchId) {
+      return <BatchListView batches={batches} resumes={eselonResumes} title="Hasil Keseluruhan - Per Eselon" iconColor="purple" onSelect={setSelectedBatchId} goBackToFolders={() => setCurrentView("folders")} />;
+    }
+    if (!selectedEchelonId) {
+      const batch = batches.find((b) => b.id === selectedBatchId);
+      const batchEselonGrouped = getBatchEselonGrouped(selectedBatchId);
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
+            <div className="flex items-center gap-2"><div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><Layers className="w-4 h-4 text-purple-600" /></div><div><h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Per Eselon</h2><p className="text-xs text-slate-500">{batch?.name}</p></div></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {batchEselonGrouped.map((eg) => (
+              <motion.button key={eg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => setSelectedEchelonId(eg.id)} className="bg-white rounded-xl border border-slate-200 p-6 text-left hover:shadow-lg hover:border-purple-300 transition-all group">
+                <div className="flex items-center gap-4"><div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors"><Layers className="w-6 h-6 text-purple-600" /></div><div><p className="font-semibold text-slate-900">{eg.name}</p><p className="text-sm text-slate-500">{eg.resumes.length} file</p></div></div>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    const selectedEchelonObj = getBatchEselonGrouped(selectedBatchId).find((eg) => eg.id === selectedEchelonId);
+    const ids = selectedEchelonObj ? selectedEchelonObj.resumes.map((d: any) => d.id) : [];
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
+          <div className="flex items-center gap-2"><div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><Layers className="w-4 h-4 text-purple-600" /></div><h2 className="text-lg font-semibold text-slate-900">{selectedEchelonObj?.name}</h2></div>
+        </div>
+        {!selectedEchelonObj || selectedEchelonObj.resumes.length === 0 ? (
+          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Belum ada resume untuk eselon ini</p></div>
+        ) : (
+          <AdminFileGrid ids={ids} selectedDocs={selectedDocs} handleSelectAll={handleSelectAll} handleBulkDelete={handleBulkDelete} isDeleting={isDeleting}>
+            {selectedEchelonObj.resumes.map((doc: any) => renderCard(doc))}
+          </AdminFileGrid>
+        )}
+      </div>
+    );
+  }
+
+  if (currentView === "individu") {
+    if (!selectedBatchId) {
+      return <BatchListView batches={batches} resumes={individuResumes} title="Hasil Per Individu" iconColor="green" icon={User} onSelect={setSelectedBatchId} goBackToFolders={() => setCurrentView("folders")} />;
+    }
+    const batchIndividu = getBatchIndividu(selectedBatchId);
+    const batch = batches.find((b) => b.id === selectedBatchId);
+    const filtered = searchQuery ? batchIndividu.filter((f) => f.title.toLowerCase().includes(searchQuery.toLowerCase())) : batchIndividu;
+    const totalPages = Math.ceil(filtered.length / perPage);
+    const paginated = filtered.slice((page - 1) * perPage, page * perPage);
+    const ids = paginated.map((d: any) => d.id);
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-green-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
+            <div className="flex items-center gap-2"><div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"><User className="w-4 h-4 text-green-600" /></div><div><h2 className="text-lg font-semibold text-slate-900">Hasil Per Individu</h2><p className="text-xs text-slate-500">{batch?.name}</p></div></div>
+          </div>
+          {batchIndividu.length > 0 && (
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")} className="flex items-center gap-2 px-3 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors text-sm text-slate-600">
+                {sortOrder === "asc" ? <><ArrowUp className="w-4 h-4" /><span className="hidden sm:inline">Terlama</span></> : <><ArrowDown className="w-4 h-4" /><span className="hidden sm:inline">Terbaru</span></>}
+              </button>
+              <div className="relative flex-1 md:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input type="text" placeholder="Cari nama kandidat..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm" />
+                {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>}
+              </div>
+            </div>
+          )}
+        </div>
+        {batchIndividu.length === 0 ? (
+          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><User className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Belum ada resume per individu di batch ini</p></div>
+        ) : filtered.length === 0 ? (
+          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><Search className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Tidak ditemukan kandidat dengan nama "{searchQuery}"</p><button onClick={() => setSearchQuery("")} className="mt-3 text-green-600 hover:text-green-700 text-sm font-medium">Reset pencarian</button></div>
+        ) : (
+          <>
+            {(searchQuery || filtered.length !== batchIndividu.length) && <p className="text-sm text-slate-500">Menampilkan {filtered.length} dari {batchIndividu.length} kandidat</p>}
+            <AdminFileGrid ids={ids} selectedDocs={selectedDocs} handleSelectAll={handleSelectAll} handleBulkDelete={handleBulkDelete} isDeleting={isDeleting}>
+              {paginated.map((doc: any) => renderCard(doc))}
+            </AdminFileGrid>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 mt-6">
+                <Button variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} size="sm">Sebelumnya</Button>
+                <span className="text-sm text-slate-600">{page} / {totalPages}</span>
+                <Button variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} size="sm">Selanjutnya</Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  }
+  return null;
+}
+
+function AdminFileGrid({ ids, selectedDocs, handleSelectAll, handleBulkDelete, isDeleting, children }: { ids: string[]; selectedDocs: string[]; handleSelectAll: (ids: string[]) => void; handleBulkDelete: () => void; isDeleting: boolean; children: React.ReactNode }) {
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-3">
+        <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
+          <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600" checked={ids.length > 0 && ids.every((id) => selectedDocs.includes(id))} onChange={() => handleSelectAll(ids)} />Pilih semua ({ids.length})
+        </label>
+        {selectedDocs.filter((id) => ids.includes(id)).length > 0 && (
+          <button onClick={handleBulkDelete} disabled={isDeleting} className="text-xs text-red-600 hover:text-red-700 font-medium">Hapus terpilih</button>
+        )}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">{children}</div>
+    </div>
+  );
+}
+
 
 // Edit Assessment Modal
 function EditAssessmentModal({

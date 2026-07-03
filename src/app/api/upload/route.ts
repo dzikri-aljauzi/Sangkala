@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { writeFile } from "fs/promises";
+import { mkdir, writeFile } from "fs/promises";
 import { join } from "path";
 import { prisma } from "@/lib/prisma";
+import { ensureLegacyResumeBatch } from "@/lib/resume-batches";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,15 +15,26 @@ export async function POST(request: NextRequest) {
     }
 
     const formData = await request.formData();
-    const file = formData.get("file") as File;
-    const type = formData.get("type") as string; // 'document', 'resume', 'documentation', 'logo'
+    const type = formData.get("type") as string;
     const assessmentId = formData.get("assessmentId") as string;
     const title = formData.get("title") as string;
-    // Resume classification fields
-    const category = formData.get("category") as string; // UMUM, ESELON, INDIVIDU
+    const category = formData.get("category") as string;
     const echelonId = formData.get("echelonId") as string | null;
+    const resumeBatchId = formData.get("resumeBatchId") as string | null;
+    const files = formData
+      .getAll("files")
+      .filter((value): value is File => value instanceof File && value.size > 0);
+    const singleFile = formData.get("file");
 
-    if (!file) {
+    if (
+      singleFile instanceof File &&
+      singleFile.size > 0 &&
+      !files.some((file) => file.name === singleFile.name && file.size === singleFile.size)
+    ) {
+      files.push(singleFile);
+    }
+
+    if (files.length === 0) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
@@ -33,7 +45,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type based on upload type
     const allowedTypes: Record<string, string[]> = {
       document: [
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -56,14 +67,15 @@ export async function POST(request: NextRequest) {
       logo: ["image/jpeg", "image/png", "image/jpg", "image/svg+xml"],
     };
 
-    if (!allowedTypes[type]?.includes(file.type)) {
-      return NextResponse.json(
-        { error: "Invalid file type" },
-        { status: 400 }
-      );
+    for (const file of files) {
+      if (!allowedTypes[type]?.includes(file.type)) {
+        return NextResponse.json(
+          { error: `Invalid file type: ${file.name}` },
+          { status: 400 }
+        );
+      }
     }
 
-    // Check permissions
     if (type === "document" && session.user.role !== "ASESOR") {
       return NextResponse.json(
         { error: "Only asesor can upload documents" },
@@ -81,12 +93,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${timestamp}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    if (type === "resume") {
+      if (!resumeBatchId) {
+        return NextResponse.json(
+          { error: "Resume batch wajib dipilih" },
+          { status: 400 }
+        );
+      }
 
-    // Determine upload directory
+      if (category === "ESELON" && !echelonId) {
+        return NextResponse.json(
+          { error: "Pilih eselon terlebih dahulu" },
+          { status: 400 }
+        );
+      }
+
+      if ((category === "UMUM" || category === "ESELON") && !title?.trim()) {
+        return NextResponse.json(
+          { error: "Title wajib diisi untuk resume non-individu" },
+          { status: 400 }
+        );
+      }
+    }
+
     let uploadDir = "";
     switch (type) {
       case "document":
@@ -103,26 +132,48 @@ export async function POST(request: NextRequest) {
         break;
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const outputDir = join(process.cwd(), "public", "uploads", uploadDir);
+    await mkdir(outputDir, { recursive: true });
 
-    // Save file
-    const path = join(process.cwd(), "public", "uploads", uploadDir, fileName);
-    await writeFile(path, buffer);
+    let resolvedResumeBatchId = resumeBatchId;
+    if (type === "resume" && !resolvedResumeBatchId) {
+      const legacyBatch = await ensureLegacyResumeBatch(assessmentId);
+      resolvedResumeBatchId = legacyBatch.id;
+    }
 
-    const filePath = `/uploads/${uploadDir}/${fileName}`;
+    const records = [];
 
-    // Save to database (except for logos)
-    if (type !== "logo") {
-      let record;
+    for (const file of files) {
+      const timestamp = Date.now();
+      const fileExt = file.name.split(".").pop();
+      const generatedFileName = `${timestamp}-${Math.random()
+        .toString(36)
+        .substring(7)}.${fileExt}`;
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const path = join(outputDir, generatedFileName);
+      await writeFile(path, buffer);
+
+      const filePath = `/uploads/${uploadDir}/${generatedFileName}`;
+
+      if (type === "logo") {
+        return NextResponse.json({ filePath }, { status: 201 });
+      }
+
+      const finalTitle =
+        type === "resume" && category === "INDIVIDU"
+          ? file.name.replace(/\.[^/.]+$/, "")
+          : title || file.name;
+
       const baseData = {
-        title: title || file.name,
+        title: finalTitle,
         fileName: file.name,
         filePath,
         assessmentId,
         uploadedById: session.user.id,
       };
 
+      let record;
       switch (type) {
         case "document":
           record = await prisma.document.create({ data: baseData });
@@ -133,6 +184,7 @@ export async function POST(request: NextRequest) {
               ...baseData,
               category: category || "UMUM",
               echelonId: echelonId || null,
+              resumeBatchId: resolvedResumeBatchId,
             },
           });
           break;
@@ -141,11 +193,12 @@ export async function POST(request: NextRequest) {
           break;
       }
 
-      return NextResponse.json({ filePath, record }, { status: 201 });
+      if (record) {
+        records.push(record);
+      }
     }
 
-    // For logos, just return the path
-    return NextResponse.json({ filePath }, { status: 201 });
+    return NextResponse.json({ records }, { status: 201 });
   } catch (error) {
     console.error("Error uploading file:", error);
     return NextResponse.json(
