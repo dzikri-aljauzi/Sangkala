@@ -659,25 +659,38 @@ function UserManagement({
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => handleToggleActive(user.id, isActive)}
-                      disabled={togglingUserId === user.id}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${
                         isActive
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                          : 'bg-red-100 text-red-600 hover:bg-red-200'
-                      } ${togglingUserId === user.id ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
-                      title={isActive ? 'Klik untuk nonaktifkan' : 'Klik untuk aktifkan'}
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-600"
+                      }`}
                     >
                       {isActive ? (
                         <><ToggleRight className="w-4 h-4" /> Aktif</>
                       ) : (
                         <><ToggleLeft className="w-4 h-4" /> Nonaktif</>
                       )}
-                    </button>
+                    </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-3">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => handleToggleActive(user.id, isActive)}
+                        disabled={togglingUserId === user.id}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          isActive
+                            ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                            : "bg-green-50 text-green-700 hover:bg-green-100"
+                        } ${togglingUserId === user.id ? "opacity-50 cursor-wait" : ""}`}
+                        title={isActive ? "Nonaktifkan user tanpa menghapus data" : "Aktifkan kembali user"}
+                      >
+                        {isActive ? (
+                          <><ToggleLeft className="w-4 h-4" /> Nonaktifkan</>
+                        ) : (
+                          <><ToggleRight className="w-4 h-4" /> Aktifkan</>
+                        )}
+                      </button>
                       <button
                         onClick={() => setEditingUser(user)}
                         className="text-slate-400 hover:text-blue-600 transition-colors"
@@ -688,7 +701,7 @@ function UserManagement({
                       <button
                         onClick={async () => {
                           if (
-                            confirm("Apakah Anda yakin ingin menghapus user ini?")
+                            confirm("Hapus permanen user ini?\n\nGunakan Nonaktifkan jika hanya ingin mencabut akses. Delete permanen dapat menghapus data assessment yang diunggah user karena relasi cascade.\n\nLanjut hapus permanen?")
                           ) {
                             await fetch(`/api/users/${user.id}`, {
                               method: "DELETE",
@@ -696,7 +709,8 @@ function UserManagement({
                             onRefresh();
                           }
                         }}
-                        className="text-slate-400 hover:text-red-600 transition-colors"
+                        className="text-slate-300 hover:text-red-600 transition-colors"
+                        title="Hapus permanen user"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1916,6 +1930,7 @@ function EditUserModal({
     name: user.name,
     email: user.email,
     password: "",
+    isActive: user.isActive !== false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -1931,6 +1946,7 @@ function EditUserModal({
         email: formData.email,
         role: user.role,
         assessmentId,
+        isActive: formData.isActive,
       };
 
       // Only include password if changed
@@ -2023,6 +2039,34 @@ function EditUserModal({
               }
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-medium text-slate-900">Status Akses</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Nonaktifkan user untuk memblokir login tanpa menghapus data assessment.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData({ ...formData, isActive: !formData.isActive })
+                }
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  formData.isActive
+                    ? "bg-green-100 text-green-700 hover:bg-green-200"
+                    : "bg-red-100 text-red-600 hover:bg-red-200"
+                }`}
+              >
+                {formData.isActive ? (
+                  <><ToggleRight className="w-4 h-4" /> Aktif</>
+                ) : (
+                  <><ToggleLeft className="w-4 h-4" /> Nonaktif</>
+                )}
+              </button>
+            </div>
           </div>
 
           <div>
