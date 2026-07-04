@@ -750,13 +750,24 @@ function UserManagement({
 }
 
 // Document List Component
+interface UploadedDocument {
+  id: string;
+  title: string;
+  fileName: string;
+  filePath: string;
+  createdAt: string | Date;
+  uploadedBy?: {
+    name: string;
+  } | null;
+}
+
 function DocumentList({
   documents,
   onRefresh,
   canDelete,
   type,
 }: {
-  documents: any[];
+  documents: UploadedDocument[];
   onRefresh: () => void;
   canDelete: boolean;
   type: "documents" | "resumes" | "documentations";
@@ -874,11 +885,12 @@ function DocumentList({
               </div>
             )}
             
-            <div className={`flex items-start justify-between mb-3 ${canDelete ? "ml-8" : ""}`}>
+            <div className={`relative z-10 flex items-start justify-between mb-3 ${canDelete ? "ml-8" : ""}`}>
               <FileText className={`w-8 h-8 ${selectedDocs.includes(doc.id) ? "text-blue-600" : "text-blue-500"}`} />
               {canDelete && (
                 <button
-                  onClick={async () => {
+                  onClick={async (e) => {
+                    e.stopPropagation();
                     if (confirm("Hapus file ini?")) {
                       await fetch(`/api/${type}/${doc.id}`, {
                         method: "DELETE",
@@ -895,7 +907,7 @@ function DocumentList({
               )}
             </div>
             
-            <div className={canDelete ? "ml-8" : ""}>
+            <div className={`relative z-10 ${canDelete ? "ml-8" : ""}`}>
               <h3 className="font-medium text-slate-900 mb-1 line-clamp-1" title={doc.title}>{doc.title}</h3>
               <p className="text-xs text-slate-600 mb-2 truncate" title={doc.fileName}>{doc.fileName}</p>
               {doc.uploadedBy && (
@@ -920,9 +932,6 @@ function DocumentList({
                 onClick={() => handleToggleSelect(doc.id)}
               />
             )}
-            <div className="relative z-10 pointer-events-none">
-              {/* This ensures links and buttons are clickable above the overlay */}
-            </div>
           </div>
         ))}
       </div>
