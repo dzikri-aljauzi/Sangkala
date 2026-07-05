@@ -2,14 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { assignLegacyResumesToBatch } from "@/lib/resume-batches";
 
-// GET single assessment by ID
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
+
+    await assignLegacyResumesToBatch(id);
 
     const assessment = await prisma.assessment.findUnique({
       where: { id },
@@ -48,7 +50,11 @@ export async function GET(
                 name: true,
               },
             },
+            resumeBatch: true,
           },
+          orderBy: { createdAt: "desc" },
+        },
+        resumeBatches: {
           orderBy: { createdAt: "desc" },
         },
         echelons: {
@@ -85,7 +91,6 @@ export async function GET(
   }
 }
 
-// PUT update assessment (Admin only)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -122,7 +127,6 @@ export async function PUT(
   }
 }
 
-// DELETE assessment (Admin only)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

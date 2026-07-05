@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import DashboardWrapper from "@/components/layout/DashboardWrapper";
+import { FoldersView, BatchListView } from "@/components/shared/ResumeFolderViews";
 import { FileText, Image as ImageIcon, LogOut, Download, File, X, BarChart3, CheckCircle2, Clock, FolderOpen, Layers, User, ChevronRight, ArrowLeft, Search, ArrowUpDown, ArrowUp, ArrowDown, ClipboardList } from "lucide-react";
 
 interface KlienDashboardProps {
@@ -716,156 +717,104 @@ function ResumeFolderView({
   const { t } = useLanguage();
   const [currentView, setCurrentView] = useState<"folders" | "umum" | "eselon" | "individu">("folders");
   const [selectedEchelonId, setSelectedEchelonId] = useState<string | null>(null);
+  const [selectedBatchId, setSelectedBatchId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // asc = oldest first, desc = newest first
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [page, setPage] = useState(1);
+  const perPage = 12;
 
-  // Sort resumes by createdAt based on sortOrder
   const sortedResumes = [...resumes].sort((a, b) => {
     const timeA = new Date(a.createdAt).getTime();
     const timeB = new Date(b.createdAt).getTime();
     return sortOrder === "asc" ? timeA - timeB : timeB - timeA;
   });
 
-  // Group resumes by category
   const umumResumes = sortedResumes.filter((r) => r.category === "UMUM" || !r.category);
   const eselonResumes = sortedResumes.filter((r) => r.category === "ESELON");
   const individuResumes = sortedResumes.filter((r) => r.category === "INDIVIDU");
 
-  // Group eselon resumes by echelonId
   const eselonGrouped = echelons.map((echelon) => ({
     ...echelon,
     resumes: eselonResumes.filter((r) => r.echelonId === echelon.id),
   }));
 
-  // Get selected echelon data
+  const batches = useMemo(() => {
+    const map = new Map<string, { id: string; name: string; createdAt: string }>();
+    resumes.forEach((r) => {
+      if (r.resumeBatch && !map.has(r.resumeBatch.id)) {
+        map.set(r.resumeBatch.id, r.resumeBatch);
+      }
+    });
+    return Array.from(map.values()).sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [resumes]);
+
+  const getBatchUmum = (batchId: string) => umumResumes.filter((r) => r.resumeBatch?.id === batchId);
+  const getBatchEselonGrouped = (batchId: string) =>
+    echelons.map((echelon) => ({
+      ...echelon,
+      resumes: eselonResumes.filter(
+        (r) => r.echelonId === echelon.id && r.resumeBatch?.id === batchId
+      ),
+    }));
+  const getBatchIndividu = (batchId: string) => individuResumes.filter((r) => r.resumeBatch?.id === batchId);
+
   const selectedEchelon = selectedEchelonId
     ? eselonGrouped.find((e) => e.id === selectedEchelonId)
     : null;
 
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, selectedBatchId]);
+
   const goBack = () => {
     if (selectedEchelonId) {
       setSelectedEchelonId(null);
+    } else if (selectedBatchId) {
+      setSelectedBatchId(null);
+      setPage(1);
+      setSearchQuery("");
     } else {
       setCurrentView("folders");
     }
   };
 
-  // Main folder view
   if (currentView === "folders") {
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Hasil Keseluruhan Folder */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow"
-          >
-            <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                  <FolderOpen className="w-7 h-7" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold">Hasil Keseluruhan</h3>
-                  <p className="text-blue-100 text-sm">Resume hasil assessment secara umum dan per eselon</p>
-                </div>
-              </div>
-            </div>
-            <div className="p-4 space-y-2">
-              {/* Umum Sub-folder */}
-              <button
-                onClick={() => setCurrentView("umum")}
-                className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50 rounded-lg transition-colors group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                    <FileText className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-medium text-slate-900">Secara Umum</p>
-                    <p className="text-sm text-slate-500">{umumResumes.length} file</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-blue-600" />
-              </button>
-
-              {/* Per Eselon Sub-folder - Only show if echelons exist */}
-              {echelons.length > 0 && (
-                <button
-                  onClick={() => setCurrentView("eselon")}
-                  className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-purple-50 rounded-lg transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                      <Layers className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium text-slate-900">Per Eselon</p>
-                      <p className="text-sm text-slate-500">{eselonResumes.length} file dalam {echelons.length} eselon</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-purple-600" />
-                </button>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Hasil Per Individu Folder */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-            onClick={() => setCurrentView("individu")}
-          >
-            <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-6 text-white">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
-                  <User className="w-7 h-7" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold">Hasil Per Individu</h3>
-                  <p className="text-green-100 text-sm">Resume hasil per kandidat</p>
-                </div>
-              </div>
-            </div>
-            <div className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-900">{individuResumes.length} Resume</p>
-                    <p className="text-sm text-slate-500">Resume per kandidat</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-slate-400" />
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="bg-slate-50 rounded-xl p-4">
-          <p className="text-sm text-slate-600">
-            Total: <span className="font-semibold text-slate-900">{resumes.length}</span> resume tersedia
-          </p>
-        </div>
-      </div>
-    );
+    return <FoldersView
+      umumResumes={umumResumes}
+      eselonResumes={eselonResumes}
+      individuResumes={individuResumes}
+      echelons={echelons}
+      resumes={resumes}
+      setCurrentView={setCurrentView}
+    />;
   }
 
-  // Umum View
   if (currentView === "umum") {
+    if (!selectedBatchId) {
+      return (
+        <BatchListView
+          batches={batches}
+          resumes={umumResumes}
+          title="Hasil Keseluruhan - Umum"
+          iconColor="blue"
+          onSelect={setSelectedBatchId}
+          goBackToFolders={() => {
+            setSelectedBatchId(null);
+            setCurrentView("folders");
+          }}
+        />
+      );
+    }
+
+    const batchUmum = getBatchUmum(selectedBatchId);
+    const batch = batches.find((b) => b.id === selectedBatchId);
+
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <button
-            onClick={goBack}
-            className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors"
-          >
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors">
             <ArrowLeft className="w-5 h-5" />
             Kembali
           </button>
@@ -873,18 +822,21 @@ function ResumeFolderView({
             <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
               <FileText className="w-4 h-4 text-blue-600" />
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Umum</h2>
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Umum</h2>
+              <p className="text-xs text-slate-500">{batch?.name}</p>
+            </div>
           </div>
         </div>
 
-        {umumResumes.length === 0 ? (
+        {batchUmum.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
             <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Belum ada resume umum yang tersedia</p>
+            <p className="text-slate-500">Belum ada resume umum di batch ini</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {umumResumes.map((file) => (
+            {batchUmum.map((file) => (
               <ResumeFileCard key={file.id} file={file} color="blue" />
             ))}
           </div>
@@ -893,15 +845,85 @@ function ResumeFolderView({
     );
   }
 
-  // Eselon View
-  if (currentView === "eselon" && !selectedEchelonId) {
+  if (currentView === "eselon") {
+    if (!selectedBatchId) {
+      return (
+        <BatchListView
+          batches={batches}
+          resumes={eselonResumes}
+          title="Hasil Keseluruhan - Per Eselon"
+          iconColor="purple"
+          onSelect={setSelectedBatchId}
+          goBackToFolders={() => {
+            setSelectedBatchId(null);
+            setCurrentView("folders");
+          }}
+        />
+      );
+    }
+
+    if (!selectedEchelonId) {
+      const batch = batches.find((b) => b.id === selectedBatchId);
+      const batchEselonGrouped = getBatchEselonGrouped(selectedBatchId);
+
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+              Kembali
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Layers className="w-4 h-4 text-purple-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Per Eselon</h2>
+                <p className="text-xs text-slate-500">{batch?.name}</p>
+              </div>
+            </div>
+          </div>
+
+          {echelons.length === 0 ? (
+            <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+              <Layers className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-500">Belum ada kategori eselon</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {batchEselonGrouped.map((echelon) => (
+                <motion.button
+                  key={echelon.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  onClick={() => setSelectedEchelonId(echelon.id)}
+                  className="bg-white rounded-xl border border-slate-200 p-6 text-left hover:shadow-lg hover:border-purple-300 transition-all group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                      <Layers className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-slate-900">{echelon.name}</p>
+                      <p className="text-sm text-slate-500">{echelon.resumes.length} file</p>
+                    </div>
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const selectedEchelonObj = selectedEchelonId
+      ? getBatchEselonGrouped(selectedBatchId).find((e) => e.id === selectedEchelonId)
+      : null;
+
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <button
-            onClick={goBack}
-            className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors"
-          >
+          <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors">
             <ArrowLeft className="w-5 h-5" />
             Kembali
           </button>
@@ -909,70 +931,18 @@ function ResumeFolderView({
             <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
               <Layers className="w-4 h-4 text-purple-600" />
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Per Eselon</h2>
+            <h2 className="text-lg font-semibold text-slate-900">{selectedEchelonObj?.name}</h2>
           </div>
         </div>
 
-        {echelons.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <Layers className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Belum ada kategori eselon</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {eselonGrouped.map((echelon) => (
-              <motion.button
-                key={echelon.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                onClick={() => setSelectedEchelonId(echelon.id)}
-                className="bg-white rounded-xl border border-slate-200 p-6 text-left hover:shadow-lg hover:border-purple-300 transition-all group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                    <Layers className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-900">{echelon.name}</p>
-                    <p className="text-sm text-slate-500">{echelon.resumes.length} file</p>
-                  </div>
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Eselon Detail View (selected echelon)
-  if (currentView === "eselon" && selectedEchelonId && selectedEchelon) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={goBack}
-            className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Kembali
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Layers className="w-4 h-4 text-purple-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-slate-900">{selectedEchelon.name}</h2>
-          </div>
-        </div>
-
-        {selectedEchelon.resumes.length === 0 ? (
+        {!selectedEchelonObj || selectedEchelonObj.resumes.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
             <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Belum ada resume untuk {selectedEchelon.name}</p>
+            <p className="text-slate-500">Belum ada resume untuk eselon ini</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {selectedEchelon.resumes.map((file: any) => (
+            {selectedEchelonObj.resumes.map((file: any) => (
               <ResumeFileCard key={file.id} file={file} color="purple" />
             ))}
           </div>
@@ -981,14 +951,35 @@ function ResumeFolderView({
     );
   }
 
-  // Individu View
   if (currentView === "individu") {
-    // Filter resumes based on search query
+    if (!selectedBatchId) {
+      return (
+        <BatchListView
+          batches={batches}
+          resumes={individuResumes}
+          title="Hasil Per Individu"
+          iconColor="green"
+          icon={User}
+          onSelect={setSelectedBatchId}
+          goBackToFolders={() => {
+            setSelectedBatchId(null);
+            setCurrentView("folders");
+          }}
+        />
+      );
+    }
+
+    const batchIndividu = getBatchIndividu(selectedBatchId);
+    const batch = batches.find((b) => b.id === selectedBatchId);
+
     const filteredResumes = searchQuery
-      ? individuResumes.filter((file) =>
+      ? batchIndividu.filter((file) =>
           file.title.toLowerCase().includes(searchQuery.toLowerCase())
         )
-      : individuResumes;
+      : batchIndividu;
+
+    const totalPages = Math.ceil(filteredResumes.length / perPage);
+    const paginated = filteredResumes.slice((page - 1) * perPage, page * perPage);
 
     return (
       <div className="space-y-6">
@@ -998,6 +989,7 @@ function ResumeFolderView({
               onClick={() => {
                 goBack();
                 setSearchQuery("");
+                setPage(1);
               }}
               className="flex items-center gap-2 text-slate-600 hover:text-green-600 transition-colors"
             >
@@ -1008,33 +1000,27 @@ function ResumeFolderView({
               <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                 <User className="w-4 h-4 text-green-600" />
               </div>
-              <h2 className="text-lg font-semibold text-slate-900">Hasil Per Individu</h2>
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">Hasil Per Individu</h2>
+                <p className="text-xs text-slate-500">{batch?.name}</p>
+              </div>
             </div>
           </div>
 
-          {/* Search Bar and Sort */}
-          {individuResumes.length > 0 && (
+          {batchIndividu.length > 0 && (
             <div className="flex items-center gap-3 w-full md:w-auto">
-              {/* Sort Toggle */}
               <button
                 onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
                 className="flex items-center gap-2 px-3 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors text-sm text-slate-600"
                 title={sortOrder === "asc" ? "Urutkan: Terlama ke Terbaru" : "Urutkan: Terbaru ke Terlama"}
               >
                 {sortOrder === "asc" ? (
-                  <>
-                    <ArrowUp className="w-4 h-4" />
-                    <span className="hidden sm:inline">Terlama</span>
-                  </>
+                  <><ArrowUp className="w-4 h-4" /><span className="hidden sm:inline">Terlama</span></>
                 ) : (
-                  <>
-                    <ArrowDown className="w-4 h-4" />
-                    <span className="hidden sm:inline">Terbaru</span>
-                  </>
+                  <><ArrowDown className="w-4 h-4" /><span className="hidden sm:inline">Terbaru</span></>
                 )}
               </button>
 
-              {/* Search */}
               <div className="relative flex-1 md:w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
@@ -1045,10 +1031,7 @@ function ResumeFolderView({
                   className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                 />
                 {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  >
+                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                     <X className="w-4 h-4" />
                   </button>
                 )}
@@ -1057,34 +1040,54 @@ function ResumeFolderView({
           )}
         </div>
 
-        {individuResumes.length === 0 ? (
+        {batchIndividu.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
             <User className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Belum ada resume per individu yang tersedia</p>
+            <p className="text-slate-500">Belum ada resume per individu di batch ini</p>
           </div>
         ) : filteredResumes.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
             <Search className="w-16 h-16 text-slate-300 mx-auto mb-4" />
             <p className="text-slate-500">Tidak ditemukan kandidat dengan nama "{searchQuery}"</p>
-            <button
-              onClick={() => setSearchQuery("")}
-              className="mt-3 text-green-600 hover:text-green-700 text-sm font-medium"
-            >
+            <button onClick={() => setSearchQuery("")} className="mt-3 text-green-600 hover:text-green-700 text-sm font-medium">
               Reset pencarian
             </button>
           </div>
         ) : (
           <>
-            {searchQuery && (
+            {(searchQuery || filteredResumes.length !== batchIndividu.length) && (
               <p className="text-sm text-slate-500">
-                Menampilkan {filteredResumes.length} dari {individuResumes.length} kandidat
+                Menampilkan {filteredResumes.length} dari {batchIndividu.length} kandidat
               </p>
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredResumes.map((file) => (
+              {paginated.map((file) => (
                 <ResumeFileCard key={file.id} file={file} color="green" />
               ))}
             </div>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 mt-6">
+                <Button
+                  variant="outline"
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  size="sm"
+                >
+                  Sebelumnya
+                </Button>
+                <span className="text-sm text-slate-600">
+                  {page} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  size="sm"
+                >
+                  Selanjutnya
+                </Button>
+              </div>
+            )}
           </>
         )}
       </div>
