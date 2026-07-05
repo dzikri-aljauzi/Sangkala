@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { writeFile } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
+import { existsSync } from "fs";
 import { join } from "path";
 import { prisma } from "@/lib/prisma";
 
@@ -107,7 +108,11 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     // Save file
-    const path = join(process.cwd(), "public", "uploads", uploadDir, fileName);
+    const dirPath = join(process.cwd(), "public", "uploads", uploadDir);
+    if (!existsSync(dirPath)) {
+      await mkdir(dirPath, { recursive: true });
+    }
+    const path = join(dirPath, fileName);
     await writeFile(path, buffer);
 
     const filePath = `/uploads/${uploadDir}/${fileName}`;
@@ -147,9 +152,10 @@ export async function POST(request: NextRequest) {
     // For logos, just return the path
     return NextResponse.json({ filePath }, { status: 201 });
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("Error uploading file:", error);
     return NextResponse.json(
-      { error: "Failed to upload file" },
+      { error: "Failed to upload file", details: errorMessage },
       { status: 500 }
     );
   }

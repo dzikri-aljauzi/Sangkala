@@ -633,14 +633,7 @@ function UserManagement({
               return (
                 <tr key={user.id} className={`hover:bg-slate-50 ${!isActive ? 'opacity-60' : ''}`}>
                   <td className="px-6 py-4 text-sm text-slate-900">
-                    <div className="flex items-center gap-2">
-                      {user.name}
-                      {!isActive && (
-                        <span className="inline-flex px-1.5 py-0.5 text-[10px] font-medium rounded bg-red-100 text-red-600">
-                          Nonaktif
-                        </span>
-                      )}
-                    </div>
+                    {user.name}
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">
                     {user.email}
@@ -662,22 +655,27 @@ function UserManagement({
                     <button
                       onClick={() => handleToggleActive(user.id, isActive)}
                       disabled={togglingUserId === user.id}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                        isActive
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                          : 'bg-red-100 text-red-600 hover:bg-red-200'
-                      } ${togglingUserId === user.id ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
-                      title={isActive ? 'Klik untuk nonaktifkan' : 'Klik untuk aktifkan'}
+                      role="switch"
+                      aria-checked={isActive}
+                      className={`
+                        relative inline-flex h-6 w-11 shrink-0 items-center rounded-full
+                        transition-colors duration-200 ease-in-out
+                        ${isActive ? "bg-green-500" : "bg-red-500"}
+                        ${togglingUserId === user.id ? "opacity-50 cursor-wait" : "cursor-pointer"}
+                      `}
+                      title={isActive ? "Nonaktifkan user tanpa menghapus data" : "Aktifkan kembali user"}
                     >
-                      {isActive ? (
-                        <><ToggleRight className="w-4 h-4" /> Aktif</>
-                      ) : (
-                        <><ToggleLeft className="w-4 h-4" /> Nonaktif</>
-                      )}
+                      <span
+                        className={`
+                          inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0
+                          transition-transform duration-200 ease-in-out
+                          ${isActive ? "translate-x-[22px]" : "translate-x-[2px]"}
+                        `}
+                      />
                     </button>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-3">
+                    <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setEditingUser(user)}
                         className="text-slate-400 hover:text-blue-600 transition-colors"
@@ -688,7 +686,7 @@ function UserManagement({
                       <button
                         onClick={async () => {
                           if (
-                            confirm("Apakah Anda yakin ingin menghapus user ini?")
+                            confirm("Hapus permanen user ini?\n\nGunakan Nonaktifkan jika hanya ingin mencabut akses. Delete permanen dapat menghapus data assessment yang diunggah user karena relasi cascade.\n\nLanjut hapus permanen?")
                           ) {
                             await fetch(`/api/users/${user.id}`, {
                               method: "DELETE",
@@ -696,7 +694,8 @@ function UserManagement({
                             onRefresh();
                           }
                         }}
-                        className="text-slate-400 hover:text-red-600 transition-colors"
+                        className="text-slate-300 hover:text-red-600 transition-colors"
+                        title="Hapus permanen user"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -736,13 +735,24 @@ function UserManagement({
 }
 
 // Document List Component
+interface UploadedDocument {
+  id: string;
+  title: string;
+  fileName: string;
+  filePath: string;
+  createdAt: string | Date;
+  uploadedBy?: {
+    name: string;
+  } | null;
+}
+
 function DocumentList({
   documents,
   onRefresh,
   canDelete,
   type,
 }: {
-  documents: any[];
+  documents: UploadedDocument[];
   onRefresh: () => void;
   canDelete: boolean;
   type: "documents" | "resumes" | "documentations";
@@ -860,11 +870,12 @@ function DocumentList({
               </div>
             )}
             
-            <div className={`flex items-start justify-between mb-3 ${canDelete ? "ml-8" : ""}`}>
+            <div className={`relative z-10 flex items-start justify-between mb-3 ${canDelete ? "ml-8" : ""}`}>
               <FileText className={`w-8 h-8 ${selectedDocs.includes(doc.id) ? "text-blue-600" : "text-blue-500"}`} />
               {canDelete && (
                 <button
-                  onClick={async () => {
+                  onClick={async (e) => {
+                    e.stopPropagation();
                     if (confirm("Hapus file ini?")) {
                       await fetch(`/api/${type}/${doc.id}`, {
                         method: "DELETE",
@@ -881,7 +892,7 @@ function DocumentList({
               )}
             </div>
             
-            <div className={canDelete ? "ml-8" : ""}>
+            <div className={`relative z-10 ${canDelete ? "ml-8" : ""}`}>
               <h3 className="font-medium text-slate-900 mb-1 line-clamp-1" title={doc.title}>{doc.title}</h3>
               <p className="text-xs text-slate-600 mb-2 truncate" title={doc.fileName}>{doc.fileName}</p>
               {doc.uploadedBy && (
@@ -906,9 +917,6 @@ function DocumentList({
                 onClick={() => handleToggleSelect(doc.id)}
               />
             )}
-            <div className="relative z-10 pointer-events-none">
-              {/* This ensures links and buttons are clickable above the overlay */}
-            </div>
           </div>
         ))}
       </div>
@@ -1906,7 +1914,13 @@ function EditUserModal({
   onClose,
   onSuccess,
 }: {
-  user: any;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    isActive?: boolean;
+  };
   assessmentId: string;
   onClose: () => void;
   onSuccess: () => void;
@@ -1926,11 +1940,19 @@ function EditUserModal({
     setError("");
 
     try {
-      const body: any = {
+      const body: {
+        name: string;
+        email: string;
+        role: string;
+        assessmentId: string;
+        isActive: boolean;
+        password?: string;
+      } = {
         name: formData.name,
         email: formData.email,
         role: user.role,
         assessmentId,
+        isActive: user.isActive !== false,
       };
 
       // Only include password if changed
