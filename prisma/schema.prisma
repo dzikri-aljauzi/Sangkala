@@ -93,6 +93,7 @@ model Assessment {
   users          User[]
   documents      Document[]
   resumes        Resume[]
+  resumeBatches  ResumeBatch[]
   documentations Documentation[]
   progresses     Progress[]
   echelons       Echelon[]
@@ -120,25 +121,43 @@ model Document {
 }
 
 model Resume {
-  id           String   @id @default(cuid())
-  title        String
-  fileName     String
-  filePath     String
-  category     String   @default("UMUM") // UMUM, ESELON, INDIVIDU
-  echelonId    String?  // Hanya diisi jika category = ESELON
-  assessmentId String
-  uploadedById String
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  title         String
+  fileName      String
+  filePath      String
+  category      String   @default("UMUM") // UMUM, ESELON, INDIVIDU
+  echelonId     String?  // Hanya diisi jika category = ESELON
+  assessmentId  String
+  uploadedById  String
+  resumeBatchId String?
+  createdAt     DateTime @default(now())
 
   // Relations
-  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  uploadedBy User       @relation("UploadedResumes", fields: [uploadedById], references: [id], onDelete: Cascade)
-  echelon    Echelon?   @relation(fields: [echelonId], references: [id], onDelete: SetNull)
+  assessment  Assessment  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  uploadedBy  User        @relation("UploadedResumes", fields: [uploadedById], references: [id], onDelete: Cascade)
+  echelon     Echelon?    @relation(fields: [echelonId], references: [id], onDelete: SetNull)
+  resumeBatch ResumeBatch? @relation(fields: [resumeBatchId], references: [id], onDelete: SetNull)
 
   @@index([assessmentId])
   @@index([uploadedById])
   @@index([echelonId])
+  @@index([resumeBatchId])
   @@map("resumes")
+}
+
+model ResumeBatch {
+  id           String   @id @default(cuid())
+  name         String
+  assessmentId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  resumes    Resume[]
+
+  @@index([assessmentId])
+  @@unique([assessmentId, name])
+  @@map("resume_batches")
 }
 
 // Echelon untuk klasifikasi resume per eselon

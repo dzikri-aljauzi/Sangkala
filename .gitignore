@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+NUL
 
 # debug
 npm-debug.log*
@@ -48,3 +49,7 @@ next-env.d.ts
 
 # local docs
 /docs
+
+# local file
+/public/uploads/logos/
+/public/uploads/**/*.pdf

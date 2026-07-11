@@ -108,7 +108,7 @@ export default function Navbar() {
       )}
     >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
+        <div className="flex items-center justify-between h-16 sm:h-20 lg:h-20">
           {/* Logo */}
           <Link href="/" className="relative z-50 flex items-center gap-2 sm:gap-3">
             <Image
@@ -116,24 +116,24 @@ export default function Navbar() {
               alt="Leadership Nasional Asia"
               width={60}
               height={60}
-              className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-contain"
+              className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-contain"
             />
             <div className="hidden md:block">
-              <span className="font-bold text-base lg:text-lg text-slate-800">
+              <span className="font-bold text-sm lg:text-base text-slate-800">
                 Leadership Nasional Asia
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1" ref={dropdownRef}>
+          <div className="hidden lg:flex items-center gap-0.5" ref={dropdownRef}>
             {/* Main Links */}
             {mainNavLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                  "px-2 py-1.5 text-xs 2xl:text-sm font-medium rounded-lg transition-all duration-200",
                   pathname === link.href
                     ? "text-blue-600 bg-blue-50"
                     : "text-slate-600 hover:text-blue-600 hover:bg-slate-50"
@@ -148,7 +148,7 @@ export default function Navbar() {
               <button
                 onClick={() => toggleDropdown("program")}
                 className={cn(
-                  "flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                  "flex items-center gap-1 px-2 py-1.5 text-xs 2xl:text-sm font-medium rounded-lg transition-all duration-200",
                   isDropdownActive(programDropdown.items)
                     ? "text-blue-600 bg-blue-50"
                     : "text-slate-600 hover:text-blue-600 hover:bg-slate-50"
@@ -196,7 +196,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+                  "px-2 py-1.5 text-xs 2xl:text-sm font-medium rounded-lg transition-all duration-200",
                   pathname === link.href
                     ? "text-blue-600 bg-blue-50"
                     : "text-slate-600 hover:text-blue-600 hover:bg-slate-50"
