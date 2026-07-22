@@ -95,7 +95,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold sm:leading-tight mb-4 sm:mb-6 text-slate-800"
+              className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold sm:leading-tight mb-4 sm:mb-6 text-slate-800"
             >
               {t("hero.headline")}
             </motion.h1>

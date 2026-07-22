@@ -27,23 +27,14 @@ export default function AdminLoginPage() {
       const result = await signIn("credentials", {
         email,
         password,
+        loginRole: "ADMIN",
         redirect: false,
       });
 
       if (result?.error) {
-        setError(t("assessmentCenter.loginError"));
+        setError("Email atau password salah, atau akun ini bukan admin.");
       } else {
-        // Get session to check role
-        const response = await fetch("/api/auth/session");
-        const session = await response.json();
-
-        if (session?.user?.role === "ADMIN") {
-          // Redirect to assessment list or first assessment dashboard
-          router.push("/assessment-center");
-        } else {
-          setError("Akun ini bukan admin. Silakan login melalui assessment yang sesuai.");
-          await signIn("signout", { redirect: false });
-        }
+        router.push("/assessment-center/admin/dashboard");
       }
     } catch (error) {
       setError(t("assessmentCenter.loginError"));
@@ -107,7 +98,7 @@ export default function AdminLoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="admin@lna.com"
+                    placeholder="example@example.com"
                   />
                 </div>
               </div>
@@ -149,9 +140,6 @@ export default function AdminLoginPage() {
 
             {/* Footer */}
             <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-              <p className="text-xs text-slate-500 mb-3">
-                Default credentials: admin@lna.com / admin123
-              </p>
               <Link
                 href="/assessment-center"
                 className="text-sm text-blue-600 hover:text-blue-800 transition-colors"

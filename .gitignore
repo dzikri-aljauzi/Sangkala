@@ -31,6 +31,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# database lokal
+/prisma/dev.db
+
 # env files (can opt-in for committing if needed)
 .env*
 
@@ -41,8 +44,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# local file
+# generated certificate pdfs
+/public/uploads/certificates/*
+
+# local docs
 /docs
-/prisma/dev.db
+
+# local file
 /public/uploads/logos/
 /public/uploads/**/*.pdf
