@@ -250,7 +250,7 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
       </div>
 
       {/* Content */}
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {activeTab === "overview" && (
           <div>
             {/* Stats Cards */}
@@ -283,14 +283,14 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
 
             {/* All Assessments Section */}
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                 <h2 className="text-lg font-bold text-slate-900">
                   Semua Assessment
                 </h2>
                 <Button
                   variant="primary"
                   onClick={() => setShowCreateAssessmentModal(true)}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 w-full sm:w-auto justify-center"
                 >
                   <FolderPlus className="w-4 h-4" />
                   Buat Assessment Baru
@@ -615,30 +615,30 @@ function UserManagement({
         <Button
           variant="primary"
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-full sm:w-auto justify-center"
         >
           <Plus className="w-4 h-4" />
           {t("assessmentCenter.createUser")}
         </Button>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
         <table className="w-full">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
                 {t("assessmentCenter.userName")}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
                 Email
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
                 Role
               </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-center text-xs font-medium text-slate-600 uppercase">
                 Status
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase">
                 Actions
               </th>
             </tr>
@@ -648,13 +648,13 @@ function UserManagement({
               const isActive = user.isActive !== false;
               return (
                 <tr key={user.id} className={`hover:bg-slate-50 ${!isActive ? 'opacity-60' : ''}`}>
-                  <td className="px-6 py-4 text-sm text-slate-900">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-900">
                     {user.name}
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-600">
                     {user.email}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 sm:px-6 py-4">
                     <span
                       className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                         user.role === "ASESOR"
@@ -667,7 +667,7 @@ function UserManagement({
                       {user.role === "STAFF_KLIEN" ? "STAFF KLIEN" : user.role}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-4 sm:px-6 py-4 text-center">
                     <button
                       onClick={() => handleToggleActive(user.id, isActive)}
                       disabled={togglingUserId === user.id}
@@ -690,7 +690,7 @@ function UserManagement({
                       />
                     </button>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 sm:px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setEditingUser(user)}
@@ -1052,7 +1052,7 @@ function CreateUserModal({
         animate={{ opacity: 1, scale: 1 }}
         className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
       >
-        <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between rounded-t-xl">
+        <div className="sticky top-0 bg-white border-b border-slate-200 px-4 sm:px-6 py-4 flex items-center justify-between rounded-t-xl">
           <h2 className="text-xl font-bold text-slate-900">
             {t("assessmentCenter.createUser")}
           </h2>
@@ -1550,7 +1550,7 @@ function UploadModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-100 shrink-0">
           <h2 className="text-xl font-bold text-slate-800">
             {type === "resume" ? t("assessmentCenter.uploadResume") : t("assessmentCenter.uploadDocumentation")}
           </h2>
@@ -1703,7 +1703,7 @@ function UploadModal({
             </div>
           </div>
 
-          <div className="flex items-center justify-end px-6 py-4 space-x-3 border-t bg-slate-50/50 border-slate-100 rounded-b-2xl shrink-0">
+          <div className="flex items-center justify-end px-4 sm:px-6 py-4 space-x-3 border-t bg-slate-50/50 border-slate-100 rounded-b-2xl shrink-0">
             <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-medium transition-colors border rounded-lg text-slate-700 border-slate-300 bg-white hover:bg-slate-50">
               {t("assessmentCenter.cancel")}
             </button>
@@ -2497,23 +2497,23 @@ function ProgressManagement({
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
           <table className="w-full">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase w-12">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase w-12">
                   #
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
                   Nama Kegiatan
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase w-48">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase w-48">
                   Progress
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
                   Deskripsi
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase w-24">
+                <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase w-24">
                   Aksi
                 </th>
               </tr>
@@ -2521,15 +2521,15 @@ function ProgressManagement({
             <tbody className="divide-y divide-slate-200">
               {progresses.map((progress, index) => (
                 <tr key={progress.id} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 text-sm text-slate-500">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-500">
                     {index + 1}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 sm:px-6 py-4">
                     <p className="text-sm font-medium text-slate-900">
                       {progress.activityName}
                     </p>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex-1 bg-slate-200 rounded-full h-2">
                         <div
@@ -2548,10 +2548,10 @@ function ProgressManagement({
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-600">
                     {progress.description || "-"}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 sm:px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setEditingProgress(progress)}
@@ -2578,7 +2578,7 @@ function ProgressManagement({
 
       {/* Attendance Section */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-orange-50 to-amber-50">
+        <div className="px-4 sm:px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-orange-50 to-amber-50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
               <ClipboardList className="w-5 h-5 text-orange-600" />
@@ -2931,17 +2931,17 @@ function EchelonManagement({
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
           <table className="w-full">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase w-16">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase w-16">
                   #
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
                   Nama Eselon
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase w-24">
+                <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase w-24">
                   Aksi
                 </th>
               </tr>
@@ -2949,10 +2949,10 @@ function EchelonManagement({
             <tbody className="divide-y divide-slate-200">
               {echelons.map((echelon, index) => (
                 <tr key={echelon.id} className="hover:bg-slate-50">
-                  <td className="px-6 py-4 text-sm text-slate-500">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-500">
                     {index + 1}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
                         <Layers className="w-4 h-4 text-purple-600" />
@@ -2962,7 +2962,7 @@ function EchelonManagement({
                       </p>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 sm:px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setEditingEchelon(echelon)}
