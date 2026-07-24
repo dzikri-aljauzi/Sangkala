@@ -130,6 +130,19 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
                 )}
               </div>
 
+              {certificate.qrCodeData && (
+                <div className="flex justify-center mb-3">
+                  <a
+                    href={certificate.qrCodeData}
+                    download={`qrcode-${certificate.certCode}.png`}
+                    className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all"
+                  >
+                    <Download className="w-4 h-4" />
+                    Unduh QR Code
+                  </a>
+                </div>
+              )}
+
               <p className="text-[11px] text-slate-400 text-center leading-relaxed">
                 Pindai QR code di atas untuk membuka portal verifikasi publik dan memeriksa{" "}
                 <Link

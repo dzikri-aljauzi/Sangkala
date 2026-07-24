@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         source: '/uploads/logos/:path*',
         destination: '/api/public/images/uploads/logos/:path*',
       },
+      {
+        source: '/uploads/certificates/:path*',
+        destination: '/api/public/images/uploads/certificates/:path*',
+      },
     ];
   },
 };
