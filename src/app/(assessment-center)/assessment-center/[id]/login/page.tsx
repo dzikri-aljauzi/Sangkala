@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, AlertCircle, UserCheck, Building2, Users } from "lucide-react";
+import { Mail, Lock, AlertCircle, UserCheck, Building2, Users, Shield } from "lucide-react";
 
 interface Assessment {
   id: string;
@@ -16,9 +16,16 @@ interface Assessment {
   clientLogo: string | null;
 }
 
-type LoginRole = "ASESOR" | "KLIEN" | "STAFF_KLIEN";
+type LoginRole = "ASESOR" | "KLIEN" | "STAFF_KLIEN" | "ADMIN";
 
 const roleTabs: { role: LoginRole; label: string; icon: any; color: string; description: string }[] = [
+  {
+    role: "ADMIN",
+    label: "Admin",
+    icon: Shield,
+    color: "from-purple-500 to-violet-600",
+    description: "Login sebagai administrator sistem",
+  },
   {
     role: "ASESOR",
     label: "Asesor",
@@ -161,7 +168,7 @@ export default function AssessmentLoginPage({
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3 text-center">
               Login Sebagai
             </p>
-            <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl">
+            <div className="grid grid-cols-4 gap-1.5 p-1 bg-slate-100 rounded-xl">
               {roleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = selectedRole === tab.role;
@@ -208,75 +215,89 @@ export default function AssessmentLoginPage({
                   {currentTab.description}
                 </p>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* Error Message */}
-                  {error && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-3"
+                {selectedRole === "ADMIN" ? (
+                  <div className="space-y-5">
+                    <Button
+                      onClick={() => router.push(`/assessment-center/admin-login`)}
+                      variant="primary"
+                      size="lg"
+                      className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700"
                     >
-                      <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-red-800">{error}</p>
-                    </motion.div>
-                  )}
-
-                  {/* Email Field */}
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-slate-700 mb-2"
-                    >
-                      {t("assessmentCenter.email")}
-                    </label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        placeholder="example@example.com"
-                      />
-                    </div>
+                      <Shield className="w-4 h-4 mr-2" />
+                      Buka Halaman Admin Login
+                    </Button>
                   </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    {/* Error Message */}
+                    {error && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-3"
+                      >
+                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-red-800">{error}</p>
+                      </motion.div>
+                    )}
 
-                  {/* Password Field */}
-                  <div>
-                    <label
-                      htmlFor="password"
-                      className="block text-sm font-medium text-slate-700 mb-2"
-                    >
-                      {t("assessmentCenter.password")}
-                    </label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        placeholder="••••••••"
-                      />
+                    {/* Email Field */}
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-slate-700 mb-2"
+                      >
+                        {t("assessmentCenter.email")}
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <input
+                          id="email"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          placeholder="example@example.com"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="lg"
-                    className="w-full"
-                    isLoading={loading}
-                    disabled={loading}
-                  >
-                    {t("assessmentCenter.loginButton")}
-                  </Button>
-                </form>
+                    {/* Password Field */}
+                    <div>
+                      <label
+                        htmlFor="password"
+                        className="block text-sm font-medium text-slate-700 mb-2"
+                      >
+                        {t("assessmentCenter.password")}
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <input
+                          id="password"
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          placeholder="••••••••"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      size="lg"
+                      className="w-full"
+                      isLoading={loading}
+                      disabled={loading}
+                    >
+                      {t("assessmentCenter.loginButton")}
+                    </Button>
+                  </form>
+                )}
               </motion.div>
             </AnimatePresence>
 

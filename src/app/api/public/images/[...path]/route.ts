@@ -20,7 +20,7 @@ export async function GET(
     }
 
     // Only allow access to uploads/articles and uploads/logos folders for security
-    if (!filePath.startsWith("uploads/articles/") && !filePath.startsWith("uploads/logos/")) {
+    if (!filePath.startsWith("uploads/articles/") && !filePath.startsWith("uploads/logos/") && !filePath.startsWith("uploads/certificates/")) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
@@ -38,6 +38,7 @@ export async function GET(
     // Determine content type based on extension
     const ext = filePath.split(".").pop()?.toLowerCase();
     const contentTypes: Record<string, string> = {
+      pdf: "application/pdf",
       jpg: "image/jpeg",
       jpeg: "image/jpeg",
       png: "image/png",

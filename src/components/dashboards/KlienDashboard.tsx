@@ -158,7 +158,7 @@ export default function KlienDashboard({ assessmentId }: KlienDashboardProps) {
       </div>
 
       {/* Content */}
-      <div className="p-8">
+      <div className="p-4 sm:p-6 lg:p-8">
         {activeTab === "overview" && (
           <div>
             {/* Welcome Message */}
