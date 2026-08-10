@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { sendAdminNotification } from "@/lib/email";
 
 type Params = {
   id: string;
@@ -92,6 +93,17 @@ export async function POST(
             ? institution.trim()
             : null,
       },
+    });
+
+    // Send email notification to admin (non-blocking)
+    sendAdminNotification({
+      trainingTitle: training.title,
+      name: registrant.name,
+      email: registrant.email,
+      phone: registrant.phone,
+      institution: registrant.institution,
+    }).catch((err) => {
+      console.error("Non-blocking email notification error:", err);
     });
 
     return NextResponse.json(registrant, { status: 201 });
