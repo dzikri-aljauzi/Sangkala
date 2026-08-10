@@ -11,12 +11,22 @@ import {
   ArrowRight,
   Image as ImageIcon,
   Tag,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Section } from "@/components/ui/section";
 import { Card } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Training {
   id: string;
@@ -42,6 +52,18 @@ export default function DetailPelatihanPage() {
   const [training, setTraining] = useState<Training | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  // Registration Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    institution: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -72,6 +94,43 @@ export default function DetailPelatihanPage() {
       month: "long",
       year: "numeric",
     });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const res = await fetch(`/api/trainings/${id}/registrants`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        setSubmitSuccess(true);
+        setFormData({ name: "", email: "", phone: "", institution: "" });
+      } else {
+        const data: { error?: string } = await res.json();
+        setSubmitError(data.error || t("registrationModal.errorMsg"));
+      }
+    } catch (err) {
+      console.error("Registration submit error:", err);
+      setSubmitError(t("registrationModal.errorMsg"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const resetModalState = () => {
+    setSubmitSuccess(false);
+    setSubmitError(null);
+  };
 
   if (loading) {
     return (
@@ -207,16 +266,18 @@ export default function DetailPelatihanPage() {
 
             {/* CTA */}
             <div className="p-4 mt-auto">
-              <Link
-                href={`/contact?training=${encodeURIComponent(training.title)}`}
-                className={cn(
-                  buttonVariants({ variant: "primary", size: "lg" }),
-                  "w-full"
-                )}
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full"
+                onClick={() => {
+                  resetModalState();
+                  setIsModalOpen(true);
+                }}
               >
                 {t("trainingDetail.register")}
                 <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Link>
+              </Button>
             </div>
           </Card>
         </div>
@@ -231,6 +292,169 @@ export default function DetailPelatihanPage() {
           </p>
         </div>
       </div>
+
+      {/* Registration Dialog Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-lg overflow-hidden">
+          {submitSuccess ? (
+            <div className="py-8 px-2 text-center space-y-5">
+              <div className="w-14 h-14 bg-green-600 text-white rounded-xl flex items-center justify-center mx-auto">
+                <CheckCircle className="w-7 h-7" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-xl font-bold text-slate-900">
+                  {t("registrationModal.successTitle")}
+                </h3>
+                <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+                  {t("registrationModal.successDesc")}
+                </p>
+              </div>
+              <div className="pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsModalOpen(false)}
+                  className="w-full sm:w-auto px-8"
+                >
+                  {t("registrationModal.closeBtn")}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <DialogHeader className="pt-2 pr-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-600">
+                  {t("registrationModal.eyebrow")}
+                </p>
+                <DialogTitle className="text-xl font-bold text-slate-900 mt-1">
+                  {t("registrationModal.title")}
+                </DialogTitle>
+              </DialogHeader>
+
+              {/* Program strip — signature carried into the form */}
+              <div className="flex items-stretch rounded-lg border border-slate-200 overflow-hidden">
+                <div className="flex flex-col items-center justify-center w-16 bg-primary text-white py-3 shrink-0">
+                  <span className="text-lg font-bold leading-none">{day}</span>
+                  <span className="text-[9px] uppercase tracking-widest mt-1">
+                    {month}
+                  </span>
+                  <span className="text-[9px] mt-0.5 opacity-80">{year}</span>
+                </div>
+                <div className="px-3.5 py-3 min-w-0">
+                  <p className="text-[11px] uppercase tracking-widest text-slate-400 font-medium">
+                    {t("trainingDetail.scheduleLabel")}
+                  </p>
+                  <p className="text-sm font-semibold text-slate-800 mt-0.5 line-clamp-1">
+                    {training.title}
+                  </p>
+                  <p className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
+                    <MapPin className="w-3 h-3 shrink-0" />
+                    <span className="line-clamp-1">{training.location}</span>
+                  </p>
+                </div>
+              </div>
+
+              <form onSubmit={handleRegisterSubmit} className="space-y-4">
+                {submitError && (
+                  <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{submitError}</span>
+                  </div>
+                )}
+
+                {/* Nama Lengkap */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg-name" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                    {t("registrationModal.nameLabel")} <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="reg-name"
+                    name="name"
+                    type="text"
+                    required
+                    placeholder={t("registrationModal.namePlaceholder")}
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="h-11 rounded-lg"
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg-email" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                    {t("registrationModal.emailLabel")} <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="reg-email"
+                    name="email"
+                    type="email"
+                    required
+                    placeholder={t("registrationModal.emailPlaceholder")}
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="h-11 rounded-lg"
+                  />
+                </div>
+
+                {/* Phone / WA */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg-phone" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                    {t("registrationModal.phoneLabel")} <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="reg-phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    placeholder={t("registrationModal.phonePlaceholder")}
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="h-11 rounded-lg"
+                  />
+                </div>
+
+                {/* Institution (Optional) */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="reg-institution" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                    {t("registrationModal.institutionLabel")}
+                  </Label>
+                  <Input
+                    id="reg-institution"
+                    name="institution"
+                    type="text"
+                    placeholder={t("registrationModal.institutionPlaceholder")}
+                    value={formData.institution}
+                    onChange={handleInputChange}
+                    className="h-11 rounded-lg"
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <div className="border-t border-slate-100 pt-4">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    disabled={submitting}
+                    className="w-full"
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        {t("registrationModal.submittingBtn")}
+                      </>
+                    ) : (
+                      <>
+                        {t("registrationModal.submitBtn")}
+                        <ArrowRight className="w-4 h-4 ml-1.5" />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </Section>
   );
 }

@@ -366,43 +366,47 @@ export default function AdminPelatihanDetailPage() {
           {registrants.length === 0 ? (
             <div className="text-center py-12 text-slate-400 text-sm">Belum ada pendaftar.</div>
           ) : (
-            <Table>
+            <Table className="text-base">
               <TableHeader>
-                <TableRow>
-                  <TableHead>Nama</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>No. HP</TableHead>
-                  <TableHead>Instansi</TableHead>
-                  <TableHead>Tanggal Daftar</TableHead>
+                <TableRow className="bg-slate-50 hover:bg-slate-50">
+                  <TableHead className="w-16 px-4 text-center text-slate-500 text-sm">No</TableHead>
+                  <TableHead className="px-4 text-slate-500 text-sm">Nama</TableHead>
+                  <TableHead className="px-4 text-slate-500 text-sm">Email</TableHead>
+                  <TableHead className="px-4 text-slate-500 text-sm">No. HP</TableHead>
+                  <TableHead className="px-4 text-slate-500 text-sm">Instansi</TableHead>
+                  <TableHead className="px-4 text-slate-500 text-sm">Tanggal Daftar</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {registrants.map((r) => (
+                {registrants.map((r, index) => (
                   <TableRow key={r.id}>
-                    <TableCell className="font-medium text-slate-800">{r.name}</TableCell>
-                    <TableCell className="text-slate-600">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Mail className="w-3.5 h-3.5 text-slate-400" />
+                    <TableCell className="px-4 py-4 text-slate-400 text-center">
+                      {String(index + 1).padStart(2, "0")}
+                    </TableCell>
+                    <TableCell className="px-4 py-4 font-medium text-slate-800">{r.name}</TableCell>
+                    <TableCell className="px-4 py-4 text-slate-600">
+                      <span className="inline-flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-slate-400 shrink-0" />
                         {r.email}
                       </span>
                     </TableCell>
-                    <TableCell className="text-slate-600">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 text-slate-400" />
+                    <TableCell className="px-4 py-4 text-slate-600">
+                      <span className="inline-flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-slate-400 shrink-0" />
                         {r.phone}
                       </span>
                     </TableCell>
-                    <TableCell className="text-slate-600">
+                    <TableCell className="px-4 py-4 text-slate-600">
                       {r.institution ? (
-                        <span className="inline-flex items-center gap-1.5">
-                          <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="inline-flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
                           {r.institution}
                         </span>
                       ) : (
                         "-"
                       )}
                     </TableCell>
-                    <TableCell className="text-slate-500">
+                    <TableCell className="px-4 py-4 text-slate-500">
                       {new Date(r.createdAt).toLocaleDateString("id-ID")}
                     </TableCell>
                   </TableRow>

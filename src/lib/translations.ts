@@ -414,6 +414,26 @@ export const translations = {
     notFound: { id: "Pelatihan tidak ditemukan.", en: "Training not found." },
     noImage: { id: "Tidak ada gambar", en: "No image" },
   },
+
+  // Registration Modal
+  registrationModal: {
+    eyebrow: { id: "Pendaftaran Peserta", en: "Participant Registration" },
+    title: { id: "Form Pendaftaran Pelatihan", en: "Training Registration Form" },
+    nameLabel: { id: "Nama Lengkap", en: "Full Name" },
+    namePlaceholder: { id: "Masukkan nama lengkap Anda", en: "Enter your full name" },
+    emailLabel: { id: "Alamat Email", en: "Email Address" },
+    emailPlaceholder: { id: "contoh@email.com", en: "example@email.com" },
+    phoneLabel: { id: "Nomor WhatsApp / HP", en: "WhatsApp / Phone Number" },
+    phonePlaceholder: { id: "08123456789", en: "08123456789" },
+    institutionLabel: { id: "Instansi / Perusahaan (Opsional)", en: "Institution / Company (Optional)" },
+    institutionPlaceholder: { id: "Nama instansi atau perusahaan", en: "Institution or company name" },
+    submitBtn: { id: "Kirim Pendaftaran", en: "Submit Registration" },
+    submittingBtn: { id: "Mengirim...", en: "Submitting..." },
+    successTitle: { id: "Pendaftaran Berhasil!", en: "Registration Successful!" },
+    successDesc: { id: "Terima kasih telah mendaftar. Tim kami akan menghubungi Anda segera.", en: "Thank you for registering. Our team will contact you soon." },
+    errorMsg: { id: "Gagal mengirim pendaftaran. Silakan coba lagi.", en: "Failed to submit registration. Please try again." },
+    closeBtn: { id: "Tutup", en: "Close" },
+  },
 };
 
 export function t(key: string, lang: Language): string {

@@ -40,3 +40,66 @@ export async function GET(
     );
   }
 }
+
+// POST pendaftaran peserta baru — publik
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<Params> }
+) {
+  try {
+    const { id } = await params;
+
+    const training = await prisma.training.findUnique({ where: { id } });
+    if (!training || !training.isActive) {
+      return NextResponse.json(
+        { error: "Training not found or inactive" },
+        { status: 404 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, email, phone, institution } = body;
+
+    if (!name || typeof name !== "string" || !name.trim()) {
+      return NextResponse.json(
+        { error: "Name is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!email || typeof email !== "string" || !email.trim()) {
+      return NextResponse.json(
+        { error: "Email is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!phone || typeof phone !== "string" || !phone.trim()) {
+      return NextResponse.json(
+        { error: "Phone number is required" },
+        { status: 400 }
+      );
+    }
+
+    const registrant = await prisma.trainingRegistrant.create({
+      data: {
+        trainingId: id,
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        institution:
+          typeof institution === "string" && institution.trim()
+            ? institution.trim()
+            : null,
+      },
+    });
+
+    return NextResponse.json(registrant, { status: 201 });
+  } catch (error) {
+    console.error("Error creating registrant:", error);
+    return NextResponse.json(
+      { error: "Failed to register for training" },
+      { status: 500 }
+    );
+  }
+}
