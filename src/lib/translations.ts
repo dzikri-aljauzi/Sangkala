@@ -8,12 +8,13 @@ export const translations = {
     services: { id: "Layanan", en: "Services" },
     industries: { id: "Industri", en: "Industries" },
     programs: { id: "Program", en: "Programs" },
+    infoPelatihan: { id: "Info Pelatihan", en: "Training Info" },
     methodology: { id: "Metodologi", en: "Methodology" },
     insights: { id: "Insight", en: "Insights" },
     assessmentCenter: { id: "Risk Leadership Assessment Center", en: "Risk Leadership Assessment Center" },
     newsArticle: { id: "News & Article", en: "News & Article" },
     contact: { id: "Kontak", en: "Contact" },
-    cta: { id: "Konsultasi Gratis", en: "Free Consultation" },
+    cta: { id: "Daftar Sekarang", en: "Register Now" },
   },
 
   // Hero Section

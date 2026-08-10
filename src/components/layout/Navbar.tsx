@@ -24,6 +24,7 @@ const programDropdown = {
   items: [
     { href: "/programs", key: "nav.programs", label: { id: "Program Kami", en: "Our Programs" } },
     { href: "/assessment-center", key: "nav.assessmentCenter", label: { id: "Assessment Center", en: "Assessment Center" } },
+    { href: "/info-pelatihan", key: "nav.infoPelatihan", label: { id: "Info Pelatihan", en: "Training Info" } },
   ],
 };
 
@@ -43,6 +44,7 @@ const allMobileLinks = [
   { href: "/industries", key: "nav.industries" },
   { href: "/programs", key: "nav.programs" },
   { href: "/assessment-center", key: "nav.assessmentCenter" },
+  { href: "/info-pelatihan", key: "nav.infoPelatihan" },
   { href: "/methodology", key: "nav.methodology" },
   { href: "/insights", key: "nav.insights" },
   { href: "/news-article", key: "nav.newsArticle" },
