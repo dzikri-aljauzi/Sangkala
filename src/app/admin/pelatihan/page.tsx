@@ -8,7 +8,6 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Plus,
-  X,
   Save,
   Image as ImageIcon,
   MapPin,
@@ -19,10 +18,24 @@ import {
   Shield,
   LogOut,
 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Button } from "@/components/ui/button";
 import {
   TRAINING_DATE_FILTERS,
   TrainingDateFilter,
   getTrainingDateRange,
+  isTrainingDateFilter,
 } from "@/lib/training-filters";
 
 interface Training {
@@ -106,11 +119,11 @@ export default function AdminPelatihanPage() {
         const data = await res.json();
         setFormData((prev) => ({ ...prev, imagePath: data.filePath }));
       } else {
-        alert("Gagal upload gambar");
+        toast.error("Gagal upload gambar");
       }
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Gagal upload gambar");
+      toast.error("Gagal upload gambar");
     } finally {
       setUploading(false);
     }
@@ -133,11 +146,11 @@ export default function AdminPelatihanPage() {
         fetchTrainings();
       } else {
         const error = await res.json();
-        alert(error.error || "Gagal menyimpan pelatihan");
+        toast.error(error.error || "Gagal menyimpan pelatihan");
       }
     } catch (error) {
       console.error("Error saving training:", error);
-      alert("Gagal menyimpan pelatihan");
+      toast.error("Gagal menyimpan pelatihan");
     } finally {
       setSaving(false);
     }
@@ -224,55 +237,56 @@ export default function AdminPelatihanPage() {
               <p className="text-slate-500 mt-1">Kelola daftar pelatihan yang tampil di /info-pelatihan</p>
             </div>
           </div>
-          <button
+          <Button
             onClick={() => {
               setFormData(emptyForm);
               setShowModal(true);
             }}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
           >
             <Plus className="w-4 h-4" />
             Tambah Pelatihan
-          </button>
+          </Button>
         </motion.div>
 
         {/* Search + Filter */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
           <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+            <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari pelatihan..."
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="pl-10 h-10 rounded-xl"
             />
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => setDateFilter("")}
-              className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${
-                dateFilter === ""
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-              }`}
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            spacing={2}
+            value={dateFilter || "semua"}
+            onValueChange={(v) => {
+              if (!v) return;
+              setDateFilter(v !== "semua" && isTrainingDateFilter(v) ? v : "");
+            }}
+            className="flex-wrap justify-start gap-2"
+          >
+            <ToggleGroupItem
+              value="semua"
+              className="rounded-full border-slate-200 px-3 text-xs font-medium data-[state=on]:bg-blue-600 data-[state=on]:text-white data-[state=on]:border-blue-600"
             >
               Semua
-            </button>
+            </ToggleGroupItem>
             {TRAINING_DATE_FILTERS.map((f) => (
-              <button
+              <ToggleGroupItem
                 key={f.value}
-                onClick={() => setDateFilter(f.value)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${
-                  dateFilter === f.value
-                    ? "bg-blue-600 border-blue-600 text-white"
-                    : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                }`}
+                value={f.value}
+                className="rounded-full border-slate-200 px-3 text-xs font-medium data-[state=on]:bg-blue-600 data-[state=on]:text-white data-[state=on]:border-blue-600"
               >
                 {f.label}
-              </button>
+              </ToggleGroupItem>
             ))}
-          </div>
+          </ToggleGroup>
         </div>
 
         {/* Cards */}
@@ -329,102 +343,87 @@ export default function AdminPelatihanPage() {
       </div>
 
       {/* Create Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100 sticky top-0 bg-white">
-              <h2 className="font-semibold text-slate-900">Tambah Pelatihan</h2>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
-              </button>
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="sm:max-w-lg rounded-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Tambah Pelatihan</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="title">Judul Pelatihan</Label>
+              <Input
+                id="title"
+                required
+                value={formData.title}
+                onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+              />
             </div>
-            <form onSubmit={handleSubmit} className="p-5 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Judul Pelatihan</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Tempat</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.location}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Tanggal Pelaksanaan</label>
-                <input
-                  type="date"
-                  required
-                  value={formData.startDate}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, startDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Harga (opsional)</label>
-                <input
-                  type="text"
-                  placeholder='Contoh: "Gratis" atau "Rp 2.500.000"'
-                  value={formData.price}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, price: e.target.value }))}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Deskripsi</label>
-                <textarea
-                  required
-                  rows={4}
-                  value={formData.description}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Gambar (opsional)</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 file:text-sm file:font-medium hover:file:bg-blue-100"
-                />
-                {uploading && <p className="text-xs text-slate-400 mt-1">Mengunggah...</p>}
-                {formData.imagePath && (
-                  <div className="relative w-full h-32 mt-2 rounded-lg overflow-hidden bg-slate-100">
-                    <Image src={getImageUrl(formData.imagePath) || ""} alt="Preview" fill className="object-cover" />
-                  </div>
-                )}
-              </div>
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving || uploading}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
-                >
-                  <Save className="w-4 h-4" />
-                  {saving ? "Menyimpan..." : "Simpan"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+            <div className="space-y-1.5">
+              <Label htmlFor="location">Tempat</Label>
+              <Input
+                id="location"
+                required
+                value={formData.location}
+                onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="startDate">Tanggal Pelaksanaan</Label>
+              <Input
+                id="startDate"
+                type="date"
+                required
+                value={formData.startDate}
+                onChange={(e) => setFormData((prev) => ({ ...prev, startDate: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="price">Harga (opsional)</Label>
+              <Input
+                id="price"
+                placeholder='Contoh: "Gratis" atau "Rp 2.500.000"'
+                value={formData.price}
+                onChange={(e) => setFormData((prev) => ({ ...prev, price: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="description">Deskripsi</Label>
+              <Textarea
+                id="description"
+                required
+                rows={4}
+                value={formData.description}
+                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="image">Gambar (opsional)</Label>
+              <input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 file:text-sm file:font-medium hover:file:bg-blue-100"
+              />
+              {uploading && <p className="text-xs text-slate-400 mt-1">Mengunggah...</p>}
+              {formData.imagePath && (
+                <div className="relative w-full h-32 mt-2 rounded-lg overflow-hidden bg-slate-100">
+                  <Image src={getImageUrl(formData.imagePath) || ""} alt="Preview" fill className="object-cover" />
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+                Batal
+              </Button>
+              <Button type="submit" disabled={saving || uploading}>
+                <Save className="w-4 h-4" />
+                {saving ? "Menyimpan..." : "Simpan"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

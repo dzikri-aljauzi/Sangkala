@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import SessionProvider from "@/components/providers/SessionProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -66,6 +67,7 @@ export default function RootLayout({
         <SessionProvider>
           <LanguageProvider>{children}</LanguageProvider>
         </SessionProvider>
+        <Toaster />
       </body>
     </html>
   );
