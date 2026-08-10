@@ -400,6 +400,20 @@ export const translations = {
     copyright: { id: "Hak Cipta", en: "Copyright" },
     rights: { id: "Seluruh hak dilindungi.", en: "All rights reserved." },
   },
+
+  // Training Detail
+  trainingDetail: {
+    back: { id: "Kembali ke Info Pelatihan", en: "Back to Training Info" },
+    program: { id: "Program Pelatihan", en: "Training Program" },
+    scheduleLabel: { id: "Jadwal Pelaksanaan", en: "Execution Schedule" },
+    locationLabel: { id: "Tempat", en: "Location" },
+    priceLabel: { id: "Biaya", en: "Fee" },
+    contactUs: { id: "Hubungi Kami", en: "Contact Us" },
+    register: { id: "Daftar Sekarang", en: "Register Now" },
+    about: { id: "Tentang Program", en: "About Program" },
+    notFound: { id: "Pelatihan tidak ditemukan.", en: "Training not found." },
+    noImage: { id: "Tidak ada gambar", en: "No image" },
+  },
 };
 
 export function t(key: string, lang: Language): string {

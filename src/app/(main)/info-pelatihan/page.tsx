@@ -150,7 +150,7 @@ export default function InfoPelatihanPage() {
               transition={{ delay: index * 0.05 }}
             >
               <Card hover className="h-full overflow-hidden border border-slate-200 flex flex-col">
-                <div className="relative h-44 bg-slate-100 flex items-center justify-center">
+                <Link href={`/info-pelatihan/${training.id}`} className="relative h-44 bg-slate-100 flex items-center justify-center block">
                   {training.imagePath ? (
                     <Image
                       src={getImageUrl(training.imagePath) ?? ""}
@@ -167,11 +167,13 @@ export default function InfoPelatihanPage() {
                       {training.price}
                     </Badge>
                   )}
-                </div>
+                </Link>
                 <CardContent className="p-5 flex flex-col flex-1">
-                  <h3 className="font-semibold text-slate-900 line-clamp-2 mb-3">
-                    {training.title}
-                  </h3>
+                  <Link href={`/info-pelatihan/${training.id}`}>
+                    <h3 className="font-semibold text-slate-900 line-clamp-2 mb-3 hover:text-blue-600 transition-colors">
+                      {training.title}
+                    </h3>
+                  </Link>
                   <div className="space-y-1.5 mb-4">
                     <div className="flex items-center gap-2 text-xs text-slate-500">
                       <MapPin className="w-3.5 h-3.5 shrink-0" />
@@ -187,7 +189,7 @@ export default function InfoPelatihanPage() {
                   </p>
                   <div className="mt-auto">
                     <Link
-                      href="/contact"
+                      href={`/info-pelatihan/${training.id}`}
                       className={cn(
                         buttonVariants({ variant: "primary", size: "sm" }),
                         "w-full"
