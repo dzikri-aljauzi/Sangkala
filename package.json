@@ -9,6 +9,7 @@
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed-trainings": "tsx prisma/seed-trainings.ts",
     "db:studio": "prisma studio"
   },
   "prisma": {
@@ -51,6 +52,7 @@
     "@types/three": "^0.182.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "shadcn": "^4.16.2",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

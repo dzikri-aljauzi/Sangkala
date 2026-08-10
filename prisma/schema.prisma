@@ -74,6 +74,7 @@ model User {
   accounts          Account[]
   sessions          Session[]
   certificates      Certificate[]   @relation("CreatedCertificates")
+  trainings         Training[]      @relation("CreatedTrainings")
 
   @@index([assessmentId])
   @@map("users")
@@ -308,5 +309,45 @@ model CertificateParticipant {
 
   @@index([certificateId])
   @@map("certificate_participants")
+}
+
+// ===== Info Pelatihan Models =====
+
+model Training {
+  id          String   @id @default(cuid())
+  title       String
+  location    String
+  startDate   DateTime
+  price       String?  // teks bebas, contoh: "Gratis", "Rp 2.500.000"
+  description String
+  imagePath   String?
+  isActive    Boolean  @default(true) // nonaktifkan tanpa hapus data pendaftar
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relasi
+  createdBy   User                  @relation("CreatedTrainings", fields: [createdById], references: [id])
+  registrants TrainingRegistrant[]
+
+  @@index([createdById])
+  @@index([startDate])
+  @@map("trainings")
+}
+
+model TrainingRegistrant {
+  id          String   @id @default(cuid())
+  trainingId  String
+  name        String
+  email       String
+  phone       String
+  institution String?
+  createdAt   DateTime @default(now())
+
+  // Relasi
+  training Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  @@index([trainingId])
+  @@map("training_registrants")
 }
 
