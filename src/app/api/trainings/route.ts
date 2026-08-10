@@ -25,7 +25,11 @@ export async function GET(request: NextRequest) {
       whereClause.isActive = true;
     }
     if (search) {
-      whereClause.title = { contains: search };
+      whereClause.OR = [
+        { title: { contains: search } },
+        { location: { contains: search } },
+        { description: { contains: search } },
+      ];
     }
     if (isTrainingDateFilter(filter)) {
       const { start, end } = getTrainingDateRange(filter);
