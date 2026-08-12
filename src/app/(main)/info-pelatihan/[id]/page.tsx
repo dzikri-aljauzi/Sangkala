@@ -27,6 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import GoogleTranslateWidget from "@/components/google-translate/GoogleTranslateWidget";
 
 interface Training {
   id: string;
@@ -170,7 +171,7 @@ export default function DetailPelatihanPage() {
         {/* Back link */}
         <Link
           href="/info-pelatihan"
-          className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded transition-colors"
+          className="notranslate inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-1.5" />
           {t("trainingDetail.back")}
@@ -178,13 +179,13 @@ export default function DetailPelatihanPage() {
 
         {/* Centered title */}
         <div className="mt-6 mb-8 sm:mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 mb-3">
+          <p className="notranslate text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 mb-3">
             {t("trainingDetail.program")}
           </p>
           <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-slate-900 leading-tight max-w-3xl mx-auto">
             {training.title}
           </h1>
-          <div className="mt-5 flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm text-slate-500">
+          <div className="notranslate mt-5 flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm text-slate-500">
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-slate-400" />
               {training.location}
@@ -219,7 +220,7 @@ export default function DetailPelatihanPage() {
           </div>
 
           {/* Info sheet */}
-          <Card className="md:col-span-1 border border-slate-200 flex flex-col bg-white overflow-hidden">
+          <Card className="notranslate md:col-span-1 border border-slate-200 flex flex-col bg-white overflow-hidden">
             <div className="flex items-stretch border-b border-slate-100">
               <div className="flex flex-col items-center justify-center w-24 bg-primary text-white py-4 shrink-0">
                 <span className="text-2xl font-bold leading-none">{day}</span>
@@ -284,7 +285,7 @@ export default function DetailPelatihanPage() {
 
         {/* Description */}
         <div className="mt-6 bg-white rounded-xl border border-slate-200 p-6 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-600 mb-3">
+          <p className="notranslate text-xs font-semibold uppercase tracking-[0.18em] text-cyan-600 mb-3">
             {t("trainingDetail.about")}
           </p>
           <p className="text-slate-700 whitespace-pre-line leading-relaxed max-w-3xl">
@@ -295,7 +296,7 @@ export default function DetailPelatihanPage() {
 
       {/* Registration Dialog Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-lg overflow-hidden">
+        <DialogContent className="notranslate sm:max-w-lg overflow-hidden">
           {submitSuccess ? (
             <div className="py-8 px-2 text-center space-y-5">
               <div className="w-14 h-14 bg-green-600 text-white rounded-xl flex items-center justify-center mx-auto">
@@ -455,6 +456,8 @@ export default function DetailPelatihanPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      <GoogleTranslateWidget />
     </Section>
   );
 }

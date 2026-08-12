@@ -24,6 +24,7 @@ import {
   TrainingDateFilter,
   isTrainingDateFilter,
 } from "@/lib/training-filters";
+import GoogleTranslateWidget from "@/components/google-translate/GoogleTranslateWidget";
 
 interface Training {
   id: string;
@@ -91,15 +92,17 @@ export default function InfoPelatihanPage() {
 
   return (
     <Section variant="gradient" padding="xl" className="pt-32 sm:pt-36">
-      <SectionHeader
-        subtitle="Training"
-        title={t("nav.infoPelatihan")}
-        description="Jadwal pelatihan dan program pengembangan"
-        centered
-      />
+      <div className="notranslate">
+        <SectionHeader
+          subtitle="Training"
+          title={t("nav.infoPelatihan")}
+          description="Jadwal pelatihan dan program pengembangan"
+          centered
+        />
+      </div>
 
       {/* Search + Filter */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-10 max-w-4xl mx-auto">
+      <div className="notranslate flex flex-col sm:flex-row sm:items-center gap-3 mb-10 max-w-4xl mx-auto">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
           <Input
@@ -132,11 +135,11 @@ export default function InfoPelatihanPage() {
 
       {/* Loading */}
       {loading ? (
-        <div className="flex justify-center py-20">
+        <div className="notranslate flex justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
         </div>
       ) : trainings.length === 0 ? (
-        <div className="text-center py-16 text-slate-400 bg-white rounded-xl border border-slate-200">
+        <div className="notranslate text-center py-16 text-slate-400 bg-white rounded-xl border border-slate-200">
           Tidak ada pelatihan yang cocok dengan pencarian/filter saat ini.
         </div>
       ) : (
@@ -163,7 +166,7 @@ export default function InfoPelatihanPage() {
                     <ImageIcon className="w-10 h-10 text-slate-300" />
                   )}
                   {training.price && (
-                    <Badge className="absolute top-3 right-3 bg-white/90 text-blue-700 border border-blue-100 backdrop-blur">
+                    <Badge className="notranslate absolute top-3 right-3 bg-white/90 text-blue-700 border border-blue-100 backdrop-blur">
                       {training.price}
                     </Badge>
                   )}
@@ -174,7 +177,7 @@ export default function InfoPelatihanPage() {
                       {training.title}
                     </h3>
                   </Link>
-                  <div className="space-y-1.5 mb-4">
+                  <div className="notranslate space-y-1.5 mb-4">
                     <div className="flex items-center gap-2 text-xs text-slate-500">
                       <MapPin className="w-3.5 h-3.5 shrink-0" />
                       <span className="line-clamp-1">{training.location}</span>
@@ -187,7 +190,7 @@ export default function InfoPelatihanPage() {
                   <p className="text-sm text-slate-500 line-clamp-3 mb-5">
                     {training.description}
                   </p>
-                  <div className="mt-auto">
+                  <div className="notranslate mt-auto">
                     <Link
                       href={`/info-pelatihan/${training.id}`}
                       className={cn(
@@ -205,6 +208,8 @@ export default function InfoPelatihanPage() {
           ))}
         </div>
       )}
+
+      <GoogleTranslateWidget />
     </Section>
   );
 }
