@@ -8,12 +8,13 @@ export const translations = {
     services: { id: "Layanan", en: "Services" },
     industries: { id: "Industri", en: "Industries" },
     programs: { id: "Program", en: "Programs" },
+    infoPelatihan: { id: "Info Pelatihan", en: "Training Info" },
     methodology: { id: "Metodologi", en: "Methodology" },
     insights: { id: "Insight", en: "Insights" },
     assessmentCenter: { id: "Risk Leadership Assessment Center", en: "Risk Leadership Assessment Center" },
     newsArticle: { id: "News & Article", en: "News & Article" },
     contact: { id: "Kontak", en: "Contact" },
-    cta: { id: "Konsultasi Gratis", en: "Free Consultation" },
+    cta: { id: "Daftar Sekarang", en: "Register Now" },
   },
 
   // Hero Section
@@ -398,6 +399,40 @@ export const translations = {
     cta: { id: "Siap membangun kinerja berkelanjutan? Hubungi kami hari ini.", en: "Ready to build sustainable performance? Contact us today." },
     copyright: { id: "Hak Cipta", en: "Copyright" },
     rights: { id: "Seluruh hak dilindungi.", en: "All rights reserved." },
+  },
+
+  // Training Detail
+  trainingDetail: {
+    back: { id: "Kembali ke Info Pelatihan", en: "Back to Training Info" },
+    program: { id: "Program Pelatihan", en: "Training Program" },
+    scheduleLabel: { id: "Jadwal Pelaksanaan", en: "Execution Schedule" },
+    locationLabel: { id: "Tempat", en: "Location" },
+    priceLabel: { id: "Biaya", en: "Fee" },
+    contactUs: { id: "Hubungi Kami", en: "Contact Us" },
+    register: { id: "Daftar Sekarang", en: "Register Now" },
+    about: { id: "Tentang Program", en: "About Program" },
+    notFound: { id: "Pelatihan tidak ditemukan.", en: "Training not found." },
+    noImage: { id: "Tidak ada gambar", en: "No image" },
+  },
+
+  // Registration Modal
+  registrationModal: {
+    eyebrow: { id: "Pendaftaran Peserta", en: "Participant Registration" },
+    title: { id: "Form Pendaftaran Pelatihan", en: "Training Registration Form" },
+    nameLabel: { id: "Nama Lengkap", en: "Full Name" },
+    namePlaceholder: { id: "Masukkan nama lengkap Anda", en: "Enter your full name" },
+    emailLabel: { id: "Alamat Email", en: "Email Address" },
+    emailPlaceholder: { id: "contoh@email.com", en: "example@email.com" },
+    phoneLabel: { id: "Nomor WhatsApp / HP", en: "WhatsApp / Phone Number" },
+    phonePlaceholder: { id: "08123456789", en: "08123456789" },
+    institutionLabel: { id: "Instansi / Perusahaan (Opsional)", en: "Institution / Company (Optional)" },
+    institutionPlaceholder: { id: "Nama instansi atau perusahaan", en: "Institution or company name" },
+    submitBtn: { id: "Kirim Pendaftaran", en: "Submit Registration" },
+    submittingBtn: { id: "Mengirim...", en: "Submitting..." },
+    successTitle: { id: "Pendaftaran Berhasil!", en: "Registration Successful!" },
+    successDesc: { id: "Terima kasih telah mendaftar. Tim kami akan menghubungi Anda segera.", en: "Thank you for registering. Our team will contact you soon." },
+    errorMsg: { id: "Gagal mengirim pendaftaran. Silakan coba lagi.", en: "Failed to submit registration. Please try again." },
+    closeBtn: { id: "Tutup", en: "Close" },
   },
 };
 

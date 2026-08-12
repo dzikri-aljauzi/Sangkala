@@ -16,6 +16,7 @@ import {
   ChevronRight,
   LayoutDashboard,
   Award,
+  GraduationCap,
 } from "lucide-react";
 
 interface Assessment {
@@ -123,13 +124,22 @@ export default function AdminGlobalDashboardPage() {
             <h1 className="text-2xl font-bold text-slate-900">Semua Assessment</h1>
             <p className="text-slate-500 mt-1">Kelola seluruh assessment dari satu tempat</p>
           </div>
-          <Link
-            href="/assessment-center/admin/dashboard/certificates"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
-          >
-            <Award className="w-4 h-4" />
-            Kelola Sertifikat
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link
+              href="/assessment-center/admin/dashboard/certificates"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
+            >
+              <Award className="w-4 h-4" />
+              Kelola Sertifikat
+            </Link>
+            <Link
+              href="/admin/pelatihan"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
+            >
+              <GraduationCap className="w-4 h-4" />
+              Kelola Pelatihan
+            </Link>
+          </div>
         </motion.div>
 
         {/* Stats Row */}

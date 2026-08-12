@@ -19,8 +19,9 @@ export async function GET(
       return NextResponse.json({ error: "Invalid path" }, { status: 400 });
     }
 
-    // Only allow access to uploads/articles and uploads/logos folders for security
-    if (!filePath.startsWith("uploads/articles/") && !filePath.startsWith("uploads/logos/") && !filePath.startsWith("uploads/certificates/")) {
+    // Only allow access to whitelisted uploads folders for security
+    const allowedPrefixes = ["uploads/articles/", "uploads/logos/", "uploads/certificates/", "uploads/trainings/"];
+    if (!allowedPrefixes.some((prefix) => filePath.startsWith(prefix))) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
