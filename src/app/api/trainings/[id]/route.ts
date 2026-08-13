@@ -33,7 +33,13 @@ export async function GET(
       }
     }
 
-    return NextResponse.json(training);
+    // Registrant REJECTED tidak menghitung kuota — dihitung terpisah dari _count.registrants
+    // (yang total semua status) supaya halaman publik bisa tampilkan sisa kuota yang akurat.
+    const activeRegistrantsCount = await prisma.trainingRegistrant.count({
+      where: { trainingId: id, paymentStatus: { not: "REJECTED" } },
+    });
+
+    return NextResponse.json({ ...training, activeRegistrantsCount });
   } catch (error) {
     console.error("Error fetching training:", error);
     return NextResponse.json(
@@ -57,7 +63,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { title, location, startDate, price, description, imagePath, isActive } = body;
+    const { title, location, startDate, price, description, imagePath, isActive, requiresPayment, capacity } = body;
 
     if (!title || !location || !startDate || !description) {
       return NextResponse.json(
@@ -81,6 +87,9 @@ export async function PUT(
         description,
         imagePath: imagePath || null,
         isActive: typeof isActive === "boolean" ? isActive : existing.isActive,
+        requiresPayment: typeof requiresPayment === "boolean" ? requiresPayment : existing.requiresPayment,
+        // capacity tidak dikirim (undefined) → biarkan nilai lama; dikirim null → hapus batas kuota; angka → set kuota
+        capacity: capacity === undefined ? existing.capacity : (typeof capacity === "number" ? capacity : null),
       },
     });
 

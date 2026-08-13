@@ -14,6 +14,7 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  Landmark,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Section } from "@/components/ui/section";
@@ -37,6 +38,16 @@ interface Training {
   price: string | null;
   description: string;
   imagePath: string | null;
+  requiresPayment: boolean;
+  capacity: number | null;
+  activeRegistrantsCount: number;
+}
+
+interface PaymentSettings {
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+  notes: string | null;
 }
 
 const getImageUrl = (path: string | null): string | null => {
@@ -66,6 +77,11 @@ export default function DetailPelatihanPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  // Payment state
+  const [paymentSettings, setPaymentSettings] = useState<PaymentSettings | null>(null);
+  const [paymentProofPath, setPaymentProofPath] = useState("");
+  const [uploadingProof, setUploadingProof] = useState(false);
+
   useEffect(() => {
     if (!id) return;
     async function fetchDetail() {
@@ -87,6 +103,21 @@ export default function DetailPelatihanPage() {
     fetchDetail();
   }, [id]);
 
+  useEffect(() => {
+    if (!training?.requiresPayment || paymentSettings) return;
+    async function fetchPaymentSettings() {
+      try {
+        const res = await fetch("/api/payment-settings");
+        if (res.ok) {
+          setPaymentSettings(await res.json());
+        }
+      } catch (err) {
+        console.error("Error loading payment settings:", err);
+      }
+    }
+    fetchPaymentSettings();
+  }, [training?.requiresPayment, paymentSettings]);
+
   const locale = language === "en" ? "en-US" : "id-ID";
 
   const formatDate = (dateStr: string): string =>
@@ -101,21 +132,56 @@ export default function DetailPelatihanPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleProofUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingProof(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload/payment-proof", {
+        method: "POST",
+        body: formDataUpload,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPaymentProofPath(data.filePath);
+      } else {
+        const data: { error?: string } = await res.json();
+        setSubmitError(data.error || t("registrationModal.errorMsg"));
+      }
+    } catch (err) {
+      console.error("Error uploading payment proof:", err);
+      setSubmitError(t("registrationModal.errorMsg"));
+    } finally {
+      setUploadingProof(false);
+    }
+  };
+
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
     setSubmitError(null);
+
+    if (training?.requiresPayment && !paymentProofPath) {
+      setSubmitError(t("registrationModal.proofRequiredError"));
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
       const res = await fetch(`/api/trainings/${id}/registrants`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, paymentProofPath }),
       });
 
       if (res.ok) {
         setSubmitSuccess(true);
         setFormData({ name: "", email: "", phone: "", institution: "" });
+        setPaymentProofPath("");
       } else {
         const data: { error?: string } = await res.json();
         setSubmitError(data.error || t("registrationModal.errorMsg"));
@@ -131,6 +197,7 @@ export default function DetailPelatihanPage() {
   const resetModalState = () => {
     setSubmitSuccess(false);
     setSubmitError(null);
+    setPaymentProofPath("");
   };
 
   if (loading) {
@@ -164,6 +231,9 @@ export default function DetailPelatihanPage() {
   const day = date.toLocaleDateString(locale, { day: "2-digit" });
   const month = date.toLocaleDateString(locale, { month: "short" });
   const year = date.getFullYear();
+
+  const slotsLeft = training.capacity !== null ? training.capacity - training.activeRegistrantsCount : null;
+  const isFull = slotsLeft !== null && slotsLeft <= 0;
 
   return (
     <Section variant="gradient" padding="xl" className="pt-32 sm:pt-36">
@@ -266,18 +336,26 @@ export default function DetailPelatihanPage() {
             </div>
 
             {/* CTA */}
-            <div className="p-4 mt-auto">
+            <div className="p-4 mt-auto space-y-2">
+              {slotsLeft !== null && (
+                <p className={`text-xs text-center font-medium ${isFull ? "text-red-600" : "text-slate-500"}`}>
+                  {isFull
+                    ? t("trainingDetail.quotaFull")
+                    : `${t("trainingDetail.quotaLeft")}: ${slotsLeft}`}
+                </p>
+              )}
               <Button
                 variant="primary"
                 size="lg"
                 className="w-full"
+                disabled={isFull}
                 onClick={() => {
                   resetModalState();
                   setIsModalOpen(true);
                 }}
               >
-                {t("trainingDetail.register")}
-                <ArrowRight className="w-4 h-4 ml-1.5" />
+                {isFull ? t("trainingDetail.quotaFull") : t("trainingDetail.register")}
+                {!isFull && <ArrowRight className="w-4 h-4 ml-1.5" />}
               </Button>
             </div>
           </Card>
@@ -296,7 +374,7 @@ export default function DetailPelatihanPage() {
 
       {/* Registration Dialog Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="notranslate sm:max-w-lg overflow-hidden">
+        <DialogContent className="notranslate sm:max-w-lg max-h-[90vh] overflow-y-auto">
           {submitSuccess ? (
             <div className="py-8 px-2 text-center space-y-5">
               <div className="w-14 h-14 bg-green-600 text-white rounded-xl flex items-center justify-center mx-auto">
@@ -307,7 +385,9 @@ export default function DetailPelatihanPage() {
                   {t("registrationModal.successTitle")}
                 </h3>
                 <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-                  {t("registrationModal.successDesc")}
+                  {training.requiresPayment
+                    ? t("registrationModal.successDescPending")
+                    : t("registrationModal.successDesc")}
                 </p>
               </div>
               <div className="pt-2">
@@ -429,13 +509,60 @@ export default function DetailPelatihanPage() {
                   />
                 </div>
 
+                {/* Payment info + proof upload (training berbayar) */}
+                {training.requiresPayment && (
+                  <div className="space-y-3 border-t border-slate-100 pt-4">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                      <Landmark className="w-3.5 h-3.5 text-slate-400" />
+                      {t("registrationModal.paymentTitle")}
+                    </div>
+                    {paymentSettings && (
+                      <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 text-sm space-y-1">
+                        <p className="flex justify-between">
+                          <span className="text-slate-500">{t("registrationModal.bankNameLabel")}</span>
+                          <span className="font-medium text-slate-800">{paymentSettings.bankName}</span>
+                        </p>
+                        <p className="flex justify-between">
+                          <span className="text-slate-500">{t("registrationModal.accountNumberLabel")}</span>
+                          <span className="font-medium text-slate-800">{paymentSettings.accountNumber}</span>
+                        </p>
+                        <p className="flex justify-between">
+                          <span className="text-slate-500">{t("registrationModal.accountHolderLabel")}</span>
+                          <span className="font-medium text-slate-800">{paymentSettings.accountHolder}</span>
+                        </p>
+                        {paymentSettings.notes && (
+                          <p className="text-xs text-slate-500 pt-1">{paymentSettings.notes}</p>
+                        )}
+                      </div>
+                    )}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="reg-proof" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                        {t("registrationModal.proofLabel")} <span className="text-red-500">*</span>
+                      </Label>
+                      <input
+                        id="reg-proof"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
+                        onChange={handleProofUpload}
+                        className="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 file:text-sm file:font-medium hover:file:bg-blue-100"
+                      />
+                      {uploadingProof && (
+                        <p className="text-xs text-slate-400">{t("registrationModal.proofUploading")}</p>
+                      )}
+                      {paymentProofPath && !uploadingProof && (
+                        <p className="text-xs text-green-600">✓ {paymentProofPath.split("/").pop()}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Submit Button */}
                 <div className="border-t border-slate-100 pt-4">
                   <Button
                     type="submit"
                     variant="primary"
                     size="lg"
-                    disabled={submitting}
+                    disabled={submitting || uploadingProof}
                     className="w-full"
                   >
                     {submitting ? (
