@@ -20,6 +20,12 @@ import {
   Power,
   Shield,
   LogOut,
+  Eye,
+  Check,
+  X,
+  AlertTriangle,
+  Download,
+  RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -33,7 +39,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableHeader,
@@ -52,8 +58,12 @@ interface Training {
   description: string;
   imagePath: string | null;
   isActive: boolean;
+  requiresPayment: boolean;
+  capacity: number | null;
   createdAt: string;
 }
+
+type PaymentStatus = "NOT_REQUIRED" | "PENDING" | "APPROVED" | "REJECTED";
 
 interface Registrant {
   id: string;
@@ -62,6 +72,9 @@ interface Registrant {
   phone: string;
   institution: string | null;
   createdAt: string;
+  paymentProofPath: string | null;
+  paymentStatus: PaymentStatus;
+  rejectionReason: string | null;
 }
 
 const getImageUrl = (path: string | null) => {
@@ -70,6 +83,10 @@ const getImageUrl = (path: string | null) => {
   if (path.startsWith("/uploads/")) return `/api/public/images${path}`;
   return path;
 };
+
+// Deteksi kemungkinan admin lupa centang "berbayar" — harga diisi tapi checkbox belum dicentang
+const isPriceRequiresPaymentMismatch = (price: string, requiresPayment: boolean) =>
+  !requiresPayment && price.trim() !== "" && price.trim().toLowerCase() !== "gratis";
 
 export default function AdminPelatihanDetailPage() {
   const { data: session, status } = useSession();
@@ -88,10 +105,19 @@ export default function AdminPelatihanDetailPage() {
     price: "",
     description: "",
     imagePath: "",
+    requiresPayment: false,
+    capacity: "",
   });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [togglingActive, setTogglingActive] = useState(false);
+  const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [rejectTarget, setRejectTarget] = useState<Registrant | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectSubmitting, setRejectSubmitting] = useState(false);
+  const [showProofDialog, setShowProofDialog] = useState(false);
+  const [proofTarget, setProofTarget] = useState<Registrant | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -136,6 +162,8 @@ export default function AdminPelatihanDetailPage() {
       price: training.price || "",
       description: training.description,
       imagePath: training.imagePath || "",
+      requiresPayment: training.requiresPayment,
+      capacity: training.capacity !== null ? String(training.capacity) : "",
     });
     setShowEditModal(true);
   };
@@ -176,7 +204,11 @@ export default function AdminPelatihanDetailPage() {
       const res = await fetch(`/api/trainings/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, isActive: training.isActive }),
+        body: JSON.stringify({
+          ...formData,
+          isActive: training.isActive,
+          capacity: formData.capacity.trim() ? Number(formData.capacity.trim()) : null,
+        }),
       });
 
       if (res.ok) {
@@ -209,6 +241,8 @@ export default function AdminPelatihanDetailPage() {
           description: training.description,
           imagePath: training.imagePath,
           isActive: !training.isActive,
+          requiresPayment: training.requiresPayment,
+          capacity: training.capacity,
         }),
       });
       if (res.ok) {
@@ -224,6 +258,119 @@ export default function AdminPelatihanDetailPage() {
     }
   };
 
+  const handleApprove = async (registrantId: string) => {
+    setReviewingId(registrantId);
+    try {
+      const res = await fetch(`/api/trainings/${id}/registrants/${registrantId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "approve" }),
+      });
+      if (res.ok) {
+        toast.success("Bukti pembayaran disetujui");
+        fetchData();
+      } else {
+        const error = await res.json();
+        toast.error(error.error || "Gagal menyetujui bukti pembayaran");
+      }
+    } catch (error) {
+      console.error("Error approving payment:", error);
+      toast.error("Gagal menyetujui bukti pembayaran");
+    } finally {
+      setReviewingId(null);
+    }
+  };
+
+  const openRejectDialog = (registrant: Registrant) => {
+    setRejectTarget(registrant);
+    setRejectReason("");
+    setShowRejectDialog(true);
+  };
+
+  const handleRejectSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rejectTarget || !rejectReason.trim()) return;
+    setRejectSubmitting(true);
+
+    try {
+      const res = await fetch(`/api/trainings/${id}/registrants/${rejectTarget.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reject", rejectionReason: rejectReason.trim() }),
+      });
+      if (res.ok) {
+        toast.success("Bukti pembayaran ditolak");
+        setShowRejectDialog(false);
+        fetchData();
+      } else {
+        const error = await res.json();
+        toast.error(error.error || "Gagal menolak bukti pembayaran");
+      }
+    } catch (error) {
+      console.error("Error rejecting payment:", error);
+      toast.error("Gagal menolak bukti pembayaran");
+    } finally {
+      setRejectSubmitting(false);
+    }
+  };
+
+  const openProofDialog = (registrant: Registrant) => {
+    setProofTarget(registrant);
+    setShowProofDialog(true);
+  };
+
+  const handleReset = async (registrantId: string) => {
+    setReviewingId(registrantId);
+    try {
+      const res = await fetch(`/api/trainings/${id}/registrants/${registrantId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset" }),
+      });
+      if (res.ok) {
+        toast.success("Status pembayaran dikembalikan ke Menunggu");
+        fetchData();
+      } else {
+        const error = await res.json();
+        toast.error(error.error || "Gagal membatalkan keputusan");
+      }
+    } catch (error) {
+      console.error("Error resetting payment status:", error);
+      toast.error("Gagal membatalkan keputusan");
+    } finally {
+      setReviewingId(null);
+    }
+  };
+
+  const exportToCSV = () => {
+    const headers = ["Nama", "Email", "No. HP", "Instansi", "Tanggal Daftar", "Status Pembayaran", "Alasan Ditolak"];
+    const statusLabel: Record<PaymentStatus, string> = {
+      NOT_REQUIRED: "-",
+      PENDING: "Menunggu",
+      APPROVED: "Disetujui",
+      REJECTED: "Ditolak",
+    };
+    const rows = registrants.map((r) => [
+      r.name,
+      r.email,
+      r.phone,
+      r.institution || "-",
+      new Date(r.createdAt).toLocaleDateString("id-ID"),
+      statusLabel[r.paymentStatus],
+      r.rejectionReason || "-",
+    ]);
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `pendaftar-${training?.title || "pelatihan"}-${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("id-ID", {
       weekday: "long",
@@ -231,6 +378,19 @@ export default function AdminPelatihanDetailPage() {
       month: "long",
       year: "numeric",
     });
+
+  const renderPaymentBadge = (status: PaymentStatus) => {
+    if (status === "PENDING") {
+      return <Badge className="bg-amber-100 text-amber-700 border-transparent">Menunggu</Badge>;
+    }
+    if (status === "APPROVED") {
+      return <Badge className="bg-green-100 text-green-700 border-transparent">Disetujui</Badge>;
+    }
+    if (status === "REJECTED") {
+      return <Badge variant="destructive">Ditolak</Badge>;
+    }
+    return <span className="text-slate-400">-</span>;
+  };
 
   if (status === "loading" || (status === "authenticated" && loading)) {
     return (
@@ -314,6 +474,11 @@ export default function AdminPelatihanDetailPage() {
                 Nonaktif
               </Badge>
             )}
+            {training.requiresPayment && (
+              <Badge className="absolute top-3 left-3 bg-blue-600 text-white border-transparent">
+                Berbayar
+              </Badge>
+            )}
           </div>
           <div className="p-6">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
@@ -341,7 +506,8 @@ export default function AdminPelatihanDetailPage() {
               </div>
               <div className="flex items-center gap-2 text-slate-600">
                 <Users className="w-4 h-4 text-blue-500 shrink-0" />
-                {registrants.length} pendaftar
+                {registrants.filter((r) => r.paymentStatus !== "REJECTED").length}
+                {training.capacity !== null ? ` / ${training.capacity}` : ""} pendaftar
               </div>
             </div>
 
@@ -360,8 +526,14 @@ export default function AdminPelatihanDetailPage() {
           transition={{ delay: 0.1 }}
           className="bg-white rounded-xl border border-slate-200 overflow-hidden"
         >
-          <div className="p-5 border-b border-slate-100">
+          <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-3">
             <h2 className="font-semibold text-slate-900">Data Pendaftar ({registrants.length})</h2>
+            {registrants.length > 0 && (
+              <Button variant="outline" size="sm" onClick={exportToCSV}>
+                <Download className="w-3.5 h-3.5" />
+                Export CSV
+              </Button>
+            )}
           </div>
           {registrants.length === 0 ? (
             <div className="text-center py-12 text-slate-400 text-sm">Belum ada pendaftar.</div>
@@ -375,6 +547,9 @@ export default function AdminPelatihanDetailPage() {
                   <TableHead className="px-4 text-slate-500 text-sm">No. HP</TableHead>
                   <TableHead className="px-4 text-slate-500 text-sm">Instansi</TableHead>
                   <TableHead className="px-4 text-slate-500 text-sm">Tanggal Daftar</TableHead>
+                  <TableHead className="px-4 text-slate-500 text-sm">Status Pembayaran</TableHead>
+                  <TableHead className="px-4 text-slate-500 text-sm">Bukti</TableHead>
+                  <TableHead className="px-4 text-slate-500 text-sm">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -408,6 +583,53 @@ export default function AdminPelatihanDetailPage() {
                     </TableCell>
                     <TableCell className="px-4 py-4 text-slate-500">
                       {new Date(r.createdAt).toLocaleDateString("id-ID")}
+                    </TableCell>
+                    <TableCell className="px-4 py-4">
+                      {renderPaymentBadge(r.paymentStatus)}
+                    </TableCell>
+                    <TableCell className="px-4 py-4">
+                      {r.paymentProofPath ? (
+                        <Button variant="outline" size="sm" onClick={() => openProofDialog(r)}>
+                          <Eye className="w-3.5 h-3.5" />
+                          Lihat Bukti
+                        </Button>
+                      ) : (
+                        <span className="text-slate-400">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="px-4 py-4">
+                      {r.paymentStatus === "PENDING" && (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleApprove(r.id)}
+                            disabled={reviewingId === r.id}
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            Setujui
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openRejectDialog(r)}
+                            disabled={reviewingId === r.id}
+                          >
+                            <X className="w-3.5 h-3.5" />
+                            Tolak
+                          </Button>
+                        </div>
+                      )}
+                      {(r.paymentStatus === "APPROVED" || r.paymentStatus === "REJECTED") && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleReset(r.id)}
+                          disabled={reviewingId === r.id}
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          Batalkan
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -461,6 +683,35 @@ export default function AdminPelatihanDetailPage() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, price: e.target.value }))}
               />
             </div>
+            <div className="flex items-center gap-2">
+              <input
+                id="edit-requiresPayment"
+                type="checkbox"
+                checked={formData.requiresPayment}
+                onChange={(e) => setFormData((prev) => ({ ...prev, requiresPayment: e.target.checked }))}
+                className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <Label htmlFor="edit-requiresPayment" className="cursor-pointer">
+                Training ini berbayar (wajib upload bukti transfer saat daftar)
+              </Label>
+            </div>
+            {isPriceRequiresPaymentMismatch(formData.price, formData.requiresPayment) && (
+              <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-700 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>Kamu mengisi harga tapi belum centang &quot;Training ini berbayar&quot; — peserta tidak akan diminta upload bukti pembayaran.</span>
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-capacity">Kuota Peserta (opsional)</Label>
+              <Input
+                id="edit-capacity"
+                type="number"
+                min={1}
+                placeholder="Kosongkan kalau tidak terbatas"
+                value={formData.capacity}
+                onChange={(e) => setFormData((prev) => ({ ...prev, capacity: e.target.value }))}
+              />
+            </div>
             <div className="space-y-1.5">
               <Label htmlFor="edit-description">Deskripsi</Label>
               <Textarea
@@ -497,6 +748,78 @@ export default function AdminPelatihanDetailPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reject Reason Dialog */}
+      <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Tolak Bukti Pembayaran</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleRejectSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="rejectReason">Alasan Penolakan</Label>
+              <Textarea
+                id="rejectReason"
+                required
+                rows={3}
+                placeholder="Contoh: Nominal transfer tidak sesuai / bukti kurang jelas"
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowRejectDialog(false)}>
+                Batal
+              </Button>
+              <Button type="submit" disabled={rejectSubmitting || !rejectReason.trim()}>
+                {rejectSubmitting ? "Menolak..." : "Tolak Pendaftaran"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Proof Viewing Dialog */}
+      <Dialog open={showProofDialog} onOpenChange={setShowProofDialog}>
+        <DialogContent className="sm:max-w-lg rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Bukti Pembayaran — {proofTarget?.name}</DialogTitle>
+          </DialogHeader>
+          {training.price && (
+            <p className="text-sm text-slate-600 bg-slate-50 rounded-lg p-3">
+              Nominal seharusnya: <span className="font-semibold text-slate-900">{training.price}</span>
+            </p>
+          )}
+          {proofTarget?.paymentProofPath && (
+            proofTarget.paymentProofPath.toLowerCase().endsWith(".pdf") ? (
+              <div className="text-center py-8">
+                <a
+                  href={getImageUrl(proofTarget.paymentProofPath) || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  Buka PDF di tab baru
+                </a>
+              </div>
+            ) : (
+              <div className="relative w-full h-96 rounded-lg overflow-hidden bg-slate-100">
+                <Image
+                  src={getImageUrl(proofTarget.paymentProofPath) || ""}
+                  alt="Bukti pembayaran"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            )
+          )}
+          {proofTarget?.paymentStatus === "REJECTED" && proofTarget.rejectionReason && (
+            <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3">
+              Alasan ditolak: {proofTarget.rejectionReason}
+            </p>
+          )}
         </DialogContent>
       </Dialog>
     </div>

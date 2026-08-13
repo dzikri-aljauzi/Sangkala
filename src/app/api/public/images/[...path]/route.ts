@@ -20,7 +20,7 @@ export async function GET(
     }
 
     // Only allow access to whitelisted uploads folders for security
-    const allowedPrefixes = ["uploads/articles/", "uploads/logos/", "uploads/certificates/", "uploads/trainings/"];
+    const allowedPrefixes = ["uploads/articles/", "uploads/logos/", "uploads/certificates/", "uploads/trainings/", "uploads/payment-proofs/"];
     if (!allowedPrefixes.some((prefix) => filePath.startsWith(prefix))) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }

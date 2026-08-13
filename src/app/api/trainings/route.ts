@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, location, startDate, price, description, imagePath } = body;
+    const { title, location, startDate, price, description, imagePath, requiresPayment, capacity } = body;
 
     if (!title || !location || !startDate || !description) {
       return NextResponse.json(
@@ -81,6 +81,8 @@ export async function POST(request: NextRequest) {
         price: price || null,
         description,
         imagePath: imagePath || null,
+        requiresPayment: typeof requiresPayment === "boolean" ? requiresPayment : false,
+        capacity: typeof capacity === "number" ? capacity : null,
         createdById: session.user.id,
       },
     });

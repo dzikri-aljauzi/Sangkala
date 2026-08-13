@@ -21,6 +21,7 @@ Dokumentasi ini dibuat khusus untuk developer baru yang akan handle project ini.
 | 9 | [09-deployment.md](./09-deployment.md) | Deployment & production |
 | 10 | [10-troubleshooting.md](./10-troubleshooting.md) | Common issues dan solusinya |
 | 11 | [11-shadcn-mcp.md](./11-shadcn-mcp.md) | Panduan pakai shadcn MCP + aturan main komponen UI project ini |
+| 12 | [12-fitur-pembayaran-pelatihan.md](./12-fitur-pembayaran-pelatihan.md) | Fitur pembayaran manual (upload bukti transfer + persetujuan admin) |
 
 ---
 

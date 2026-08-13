@@ -50,6 +50,9 @@ next-env.d.ts
 # uploaded training images
 /public/uploads/trainings/*
 
+# uploaded payment proofs
+/public/uploads/payment-proofs/*
+
 # local docs
 /docs
 

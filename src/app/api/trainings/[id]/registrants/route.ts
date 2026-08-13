@@ -59,7 +59,7 @@ export async function POST(
     }
 
     const body = await request.json();
-    const { name, email, phone, institution } = body;
+    const { name, email, phone, institution, paymentProofPath } = body;
 
     if (!name || typeof name !== "string" || !name.trim()) {
       return NextResponse.json(
@@ -82,6 +82,28 @@ export async function POST(
       );
     }
 
+    if (
+      training.requiresPayment &&
+      (typeof paymentProofPath !== "string" || !paymentProofPath.trim())
+    ) {
+      return NextResponse.json(
+        { error: "Bukti pembayaran wajib diunggah" },
+        { status: 400 }
+      );
+    }
+
+    if (typeof training.capacity === "number") {
+      const activeCount = await prisma.trainingRegistrant.count({
+        where: { trainingId: id, paymentStatus: { not: "REJECTED" } },
+      });
+      if (activeCount >= training.capacity) {
+        return NextResponse.json(
+          { error: "Kuota pendaftar sudah penuh" },
+          { status: 400 }
+        );
+      }
+    }
+
     const registrant = await prisma.trainingRegistrant.create({
       data: {
         trainingId: id,
@@ -92,6 +114,8 @@ export async function POST(
           typeof institution === "string" && institution.trim()
             ? institution.trim()
             : null,
+        paymentProofPath: training.requiresPayment ? paymentProofPath.trim() : null,
+        paymentStatus: training.requiresPayment ? "PENDING" : "NOT_REQUIRED",
       },
     });
 

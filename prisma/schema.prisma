@@ -75,6 +75,8 @@ model User {
   sessions          Session[]
   certificates      Certificate[]   @relation("CreatedCertificates")
   trainings         Training[]      @relation("CreatedTrainings")
+  reviewedRegistrants    TrainingRegistrant[] @relation("ReviewedRegistrants")
+  updatedPaymentSettings PaymentSetting[]     @relation("UpdatedPaymentSettings")
 
   @@index([assessmentId])
   @@map("users")
@@ -314,17 +316,19 @@ model CertificateParticipant {
 // ===== Info Pelatihan Models =====
 
 model Training {
-  id          String   @id @default(cuid())
-  title       String
-  location    String
-  startDate   DateTime
-  price       String?  // teks bebas, contoh: "Gratis", "Rp 2.500.000"
-  description String
-  imagePath   String?
-  isActive    Boolean  @default(true) // nonaktifkan tanpa hapus data pendaftar
-  createdById String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(cuid())
+  title           String
+  location        String
+  startDate       DateTime
+  price           String?  // teks bebas, contoh: "Gratis", "Rp 2.500.000"
+  description     String
+  imagePath       String?
+  isActive        Boolean  @default(true) // nonaktifkan tanpa hapus data pendaftar
+  requiresPayment Boolean  @default(false) // wajib upload bukti bayar saat daftar
+  capacity        Int?     // kuota peserta, null = tidak terbatas. Registrant REJECTED tidak menghitung kuota.
+  createdById     String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   // Relasi
   createdBy   User                  @relation("CreatedTrainings", fields: [createdById], references: [id])
@@ -344,10 +348,35 @@ model TrainingRegistrant {
   institution String?
   createdAt   DateTime @default(now())
 
+  // Pembayaran — paymentStatus merekam kondisi SAAT ORANG INI DAFTAR, bukan
+  // fungsi live dari Training.requiresPayment sekarang. Kalau admin toggle
+  // requiresPayment training setelah ada registrant, row lama TIDAK diubah.
+  paymentProofPath String?   // "/uploads/payment-proofs/xxx.jpg"
+  paymentStatus    String    @default("NOT_REQUIRED") // NOT_REQUIRED | PENDING | APPROVED | REJECTED
+  rejectionReason  String?
+  reviewedAt       DateTime?
+  reviewedById     String?
+
   // Relasi
-  training Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  training   Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  reviewedBy User?    @relation("ReviewedRegistrants", fields: [reviewedById], references: [id], onDelete: SetNull)
 
   @@index([trainingId])
+  @@index([reviewedById])
   @@map("training_registrants")
+}
+
+// Info rekening perusahaan untuk pembayaran manual — singleton (selalu 1 row, id tetap "singleton")
+model PaymentSetting {
+  id            String   @id @default("singleton")
+  bankName      String   @default("")
+  accountNumber String   @default("")
+  accountHolder String   @default("")
+  notes         String?
+  updatedAt     DateTime @updatedAt
+  updatedById   String?
+  updatedBy     User?    @relation("UpdatedPaymentSettings", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@map("payment_settings")
 }
 

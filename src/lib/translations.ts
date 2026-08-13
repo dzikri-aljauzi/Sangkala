@@ -413,6 +413,8 @@ export const translations = {
     about: { id: "Tentang Program", en: "About Program" },
     notFound: { id: "Pelatihan tidak ditemukan.", en: "Training not found." },
     noImage: { id: "Tidak ada gambar", en: "No image" },
+    quotaLeft: { id: "Sisa kuota", en: "Slots remaining" },
+    quotaFull: { id: "Kuota Penuh", en: "Fully Booked" },
   },
 
   // Registration Modal
@@ -431,8 +433,16 @@ export const translations = {
     submittingBtn: { id: "Mengirim...", en: "Submitting..." },
     successTitle: { id: "Pendaftaran Berhasil!", en: "Registration Successful!" },
     successDesc: { id: "Terima kasih telah mendaftar. Tim kami akan menghubungi Anda segera.", en: "Thank you for registering. Our team will contact you soon." },
+    successDescPending: { id: "Terima kasih telah mendaftar. Bukti pembayaran Anda sedang kami verifikasi, mohon tunggu konfirmasi selanjutnya.", en: "Thank you for registering. Your payment proof is being verified, please wait for further confirmation." },
     errorMsg: { id: "Gagal mengirim pendaftaran. Silakan coba lagi.", en: "Failed to submit registration. Please try again." },
     closeBtn: { id: "Tutup", en: "Close" },
+    paymentTitle: { id: "Informasi Pembayaran", en: "Payment Information" },
+    bankNameLabel: { id: "Bank", en: "Bank" },
+    accountNumberLabel: { id: "Nomor Rekening", en: "Account Number" },
+    accountHolderLabel: { id: "Atas Nama", en: "Account Holder" },
+    proofLabel: { id: "Unggah Bukti Transfer", en: "Upload Payment Proof" },
+    proofUploading: { id: "Mengunggah bukti transfer...", en: "Uploading payment proof..." },
+    proofRequiredError: { id: "Bukti pembayaran wajib diunggah", en: "Payment proof is required" },
   },
 };
 

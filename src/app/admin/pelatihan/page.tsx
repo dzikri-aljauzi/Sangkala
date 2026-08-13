@@ -17,6 +17,7 @@ import {
   ArrowLeft,
   Shield,
   LogOut,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -29,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +49,8 @@ interface Training {
   description: string;
   imagePath: string | null;
   isActive: boolean;
+  requiresPayment: boolean;
+  capacity: number | null;
   createdAt: string;
   _count: { registrants: number };
 }
@@ -58,6 +62,10 @@ const getImageUrl = (path: string | null) => {
   return path;
 };
 
+// Deteksi kemungkinan admin lupa centang "berbayar" — harga diisi tapi checkbox belum dicentang
+const isPriceRequiresPaymentMismatch = (price: string, requiresPayment: boolean) =>
+  !requiresPayment && price.trim() !== "" && price.trim().toLowerCase() !== "gratis";
+
 const emptyForm = {
   title: "",
   location: "",
@@ -65,6 +73,8 @@ const emptyForm = {
   price: "",
   description: "",
   imagePath: "",
+  requiresPayment: false,
+  capacity: "",
 };
 
 export default function AdminPelatihanPage() {
@@ -137,7 +147,10 @@ export default function AdminPelatihanPage() {
       const res = await fetch("/api/trainings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          capacity: formData.capacity.trim() ? Number(formData.capacity.trim()) : null,
+        }),
       });
 
       if (res.ok) {
@@ -237,15 +250,20 @@ export default function AdminPelatihanPage() {
               <p className="text-slate-500 mt-1">Kelola daftar pelatihan yang tampil di /info-pelatihan</p>
             </div>
           </div>
-          <Button
-            onClick={() => {
-              setFormData(emptyForm);
-              setShowModal(true);
-            }}
-          >
-            <Plus className="w-4 h-4" />
-            Tambah Pelatihan
-          </Button>
+          <div className="flex items-center gap-3">
+            <Link href="/admin/pelatihan/pengaturan-pembayaran">
+              <Button variant="outline">Pengaturan Rekening</Button>
+            </Link>
+            <Button
+              onClick={() => {
+                setFormData(emptyForm);
+                setShowModal(true);
+              }}
+            >
+              <Plus className="w-4 h-4" />
+              Tambah Pelatihan
+            </Button>
+          </div>
         </motion.div>
 
         {/* Search + Filter */}
@@ -320,6 +338,11 @@ export default function AdminPelatihanPage() {
                       Nonaktif
                     </span>
                   )}
+                  {training.requiresPayment && (
+                    <Badge className="absolute top-2 left-2 bg-blue-600 text-white border-transparent">
+                      Berbayar
+                    </Badge>
+                  )}
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold text-slate-900 line-clamp-2 mb-2">{training.title}</h3>
@@ -333,7 +356,8 @@ export default function AdminPelatihanPage() {
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500">
                     <Users className="w-3.5 h-3.5 shrink-0" />
-                    {training._count.registrants} pendaftar
+                    {training._count.registrants}
+                    {training.capacity !== null ? ` / ${training.capacity}` : ""} pendaftar
                   </div>
                 </div>
               </Link>
@@ -384,6 +408,35 @@ export default function AdminPelatihanPage() {
                 placeholder='Contoh: "Gratis" atau "Rp 2.500.000"'
                 value={formData.price}
                 onChange={(e) => setFormData((prev) => ({ ...prev, price: e.target.value }))}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                id="requiresPayment"
+                type="checkbox"
+                checked={formData.requiresPayment}
+                onChange={(e) => setFormData((prev) => ({ ...prev, requiresPayment: e.target.checked }))}
+                className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <Label htmlFor="requiresPayment" className="cursor-pointer">
+                Training ini berbayar (wajib upload bukti transfer saat daftar)
+              </Label>
+            </div>
+            {isPriceRequiresPaymentMismatch(formData.price, formData.requiresPayment) && (
+              <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-700 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>Kamu mengisi harga tapi belum centang &quot;Training ini berbayar&quot; — peserta tidak akan diminta upload bukti pembayaran.</span>
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label htmlFor="capacity">Kuota Peserta (opsional)</Label>
+              <Input
+                id="capacity"
+                type="number"
+                min={1}
+                placeholder="Kosongkan kalau tidak terbatas"
+                value={formData.capacity}
+                onChange={(e) => setFormData((prev) => ({ ...prev, capacity: e.target.value }))}
               />
             </div>
             <div className="space-y-1.5">
