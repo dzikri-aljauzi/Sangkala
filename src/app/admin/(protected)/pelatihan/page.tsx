@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -15,8 +13,6 @@ import {
   Users,
   Search,
   ArrowLeft,
-  Shield,
-  LogOut,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -68,8 +64,6 @@ const emptyForm = {
 };
 
 export default function AdminPelatihanPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -80,14 +74,8 @@ export default function AdminPelatihanPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (status === "loading") return;
-    if (!session || session.user.role !== "ADMIN") {
-      router.push("/");
-      return;
-    }
     fetchTrainings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, status, router]);
+  }, []);
 
   const fetchTrainings = async () => {
     try {
@@ -176,48 +164,16 @@ export default function AdminPelatihanPage() {
       year: "numeric",
     });
 
-  if (status === "loading" || (status === "authenticated" && loading)) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="flex items-center justify-center py-24">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
   }
 
-  if (!session) return null;
-
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-linear-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
-                <Shield className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-900">Admin Dashboard</p>
-                <p className="text-xs text-slate-500">Leadership Nasional Asia</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-slate-700">{session.user?.name}</p>
-                <p className="text-xs text-slate-500">{session.user?.email}</p>
-              </div>
-              <button
-                onClick={() => signOut({ callbackUrl: "/admin/login" })}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Logout</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Title + Actions */}
         <motion.div
@@ -424,6 +380,6 @@ export default function AdminPelatihanPage() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
