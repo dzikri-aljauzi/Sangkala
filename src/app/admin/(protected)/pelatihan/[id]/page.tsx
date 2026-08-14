@@ -40,17 +40,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 
-interface Training {
-  id: string;
-  title: string;
-  location: string;
-  startDate: string;
-  price: string | null;
-  description: string;
-  imagePath: string | null;
-  isActive: boolean;
-  createdAt: string;
-}
+import type { Training } from "@/types/training";
 
 interface Registrant {
   id: string;

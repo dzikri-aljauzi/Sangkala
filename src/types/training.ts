@@ -1,0 +1,19 @@
+// Sebelumnya interface ini didefinisikan ulang beda-beda di 4 file
+// (info-pelatihan/page.tsx, info-pelatihan/[id]/page.tsx,
+// admin/pelatihan/page.tsx, admin/pelatihan/[id]/page.tsx) — satu sumber
+// kebenaran di sini, dipakai bareng oleh halaman publik & admin.
+export interface Training {
+  id: string;
+  title: string;
+  location: string;
+  startDate: string;
+  price: string | null;
+  description: string;
+  imagePath: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface TrainingWithCount extends Training {
+  _count: { registrants: number };
+}

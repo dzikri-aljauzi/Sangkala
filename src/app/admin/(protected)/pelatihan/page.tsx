@@ -34,18 +34,7 @@ import {
   isTrainingDateFilter,
 } from "@/lib/training-filters";
 
-interface Training {
-  id: string;
-  title: string;
-  location: string;
-  startDate: string;
-  price: string | null;
-  description: string;
-  imagePath: string | null;
-  isActive: boolean;
-  createdAt: string;
-  _count: { registrants: number };
-}
+import type { TrainingWithCount as Training } from "@/types/training";
 
 const getImageUrl = (path: string | null) => {
   if (!path) return null;

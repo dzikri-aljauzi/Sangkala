@@ -28,16 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import GoogleTranslateWidget from "@/components/google-translate/GoogleTranslateWidget";
-
-interface Training {
-  id: string;
-  title: string;
-  location: string;
-  startDate: string;
-  price: string | null;
-  description: string;
-  imagePath: string | null;
-}
+import type { Training } from "@/types/training";
 
 const getImageUrl = (path: string | null): string | null => {
   if (!path) return null;
