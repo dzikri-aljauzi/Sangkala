@@ -42,11 +42,11 @@ export default function AdminGlobalDashboardPage() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/assessment-center/admin-login");
+      router.push("/admin/login");
       return;
     }
     if (status === "authenticated" && session?.user?.role !== "ADMIN") {
-      router.push("/assessment-center/admin-login");
+      router.push("/admin/login");
       return;
     }
     if (status === "authenticated") {
@@ -102,7 +102,7 @@ export default function AdminGlobalDashboardPage() {
                 <p className="text-xs text-slate-500">{session.user?.email}</p>
               </div>
               <button
-                onClick={() => signOut({ callbackUrl: "/assessment-center/admin-login" })}
+                onClick={() => signOut({ callbackUrl: "/admin/login" })}
                 className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
                 <LogOut className="w-4 h-4" />
@@ -126,7 +126,7 @@ export default function AdminGlobalDashboardPage() {
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
-              href="/assessment-center/admin/dashboard/certificates"
+              href="/admin/sertifikat"
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
             >
               <Award className="w-4 h-4" />

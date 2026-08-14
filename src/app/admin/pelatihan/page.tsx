@@ -207,7 +207,7 @@ export default function AdminPelatihanPage() {
                 <p className="text-xs text-slate-500">{session.user?.email}</p>
               </div>
               <button
-                onClick={() => signOut({ callbackUrl: "/assessment-center/admin-login" })}
+                onClick={() => signOut({ callbackUrl: "/admin/login" })}
                 className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
                 <LogOut className="w-4 h-4" />
@@ -227,7 +227,7 @@ export default function AdminPelatihanPage() {
         >
           <div className="flex items-center gap-4">
             <Link
-              href="/assessment-center/admin/dashboard"
+              href="/admin"
               className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
             >
               <ArrowLeft className="w-5 h-5" />

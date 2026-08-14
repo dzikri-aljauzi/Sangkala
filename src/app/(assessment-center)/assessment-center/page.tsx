@@ -105,7 +105,7 @@ export default function AssessmentCenterPage() {
               <p className="text-sm text-slate-700 mb-4">
                 Belum ada assessment yang dibuat. Login sebagai admin untuk membuat assessment baru.
               </p>
-              <Link href="/assessment-center/admin-login">
+              <Link href="/admin/login">
                 <Button variant="primary" className="w-full">
                   Login sebagai Admin
                 </Button>

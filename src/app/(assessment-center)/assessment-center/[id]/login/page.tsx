@@ -218,7 +218,7 @@ export default function AssessmentLoginPage({
                 {selectedRole === "ADMIN" ? (
                   <div className="space-y-5">
                     <Button
-                      onClick={() => router.push(`/assessment-center/admin-login`)}
+                      onClick={() => router.push(`/admin/login`)}
                       variant="primary"
                       size="lg"
                       className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700"
