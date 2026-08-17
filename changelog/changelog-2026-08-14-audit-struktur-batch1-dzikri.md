@@ -7,7 +7,7 @@
 ---
 
 ## Ringkasan
-Audit menyeluruh struktur codebase dengan scope ketat "clean code" (bagaimana kode ditulis) dan "clean structure" (di mana kode hidup) — dipicu oleh temuan "Kelola Pelatihan" dan "Kelola Sertifikat" yang tampil setara di hub admin tapi hidup di cabang routing berbeda total. Hasil audit dicatat di `docs/12-audit-struktur-codebase.md` (25 item dalam scope). 6 item prioritas tinggi dikerjakan di sesi ini, masing-masing sebagai commit terpisah; sisanya (termasuk pecah `AdminDashboard.tsx` 3126 baris) sengaja ditunda jadi task terpisah.
+Audit menyeluruh struktur codebase dengan scope ketat "clean code" (bagaimana kode ditulis) dan "clean structure" (di mana kode hidup) — dipicu oleh temuan "Kelola Pelatihan" dan "Kelola Sertifikat" yang tampil setara di hub admin tapi hidup di cabang routing berbeda total. Hasil audit dicatat di `audit/12-audit-struktur-codebase.md` (25 item dalam scope). 6 item prioritas tinggi dikerjakan di sesi ini, masing-masing sebagai commit terpisah; sisanya (termasuk pecah `AdminDashboard.tsx` 3126 baris) sengaja ditunda jadi task terpisah.
 
 ---
 
@@ -60,4 +60,4 @@ Komponen 270 baris yang di-copy-paste identik (beda 2 komentar doang) di `KlienD
 ## Dampak
 - **Breaking changes**: URL admin sertifikat & login berubah (`/assessment-center/admin-login` → `/admin/login`, dst) — bookmark lama admin perlu diupdate manual. `/admin/pelatihan` dan `/admin/manage` **tidak berubah** URL-nya.
 - **Dependency baru**: tidak ada.
-- **Item audit yang masih terbuka**: 19 item lain di `docs/12-audit-struktur-codebase.md` (termasuk split `AdminDashboard.tsx`, migrasi styling ke semantic token, dan beberapa item kosmetik) — belum dikerjakan, menunggu prioritas berikutnya.
+- **Item audit yang masih terbuka**: 19 item lain di `audit/12-audit-struktur-codebase.md` (termasuk split `AdminDashboard.tsx`, migrasi styling ke semantic token, dan beberapa item kosmetik) — belum dikerjakan, menunggu prioritas berikutnya.
