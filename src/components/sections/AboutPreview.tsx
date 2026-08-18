@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Section, SectionHeader } from "@/components/ui/section";
+import { Section } from "@/components/ui/section";
 import { Users, Cog, Cpu, ArrowRight } from "lucide-react";
 
 const pillars = [
@@ -73,7 +73,7 @@ export default function AboutPreview() {
             >
               <div className="flex items-start gap-3 sm:gap-4">
                 <div
-                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${pillar.color} flex items-center justify-center flex-shrink-0`}
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${pillar.color} flex items-center justify-center shrink-0`}
                 >
                   <pillar.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                 </div>
@@ -98,7 +98,7 @@ export default function AboutPreview() {
         className="mt-12 sm:mt-16 text-center"
       >
         <blockquote className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-blue-600 italic px-4">
-          "{t("about.differentiator")}"
+          &quot;{t("about.differentiator")}&quot;
         </blockquote>
       </motion.div>
     </Section>

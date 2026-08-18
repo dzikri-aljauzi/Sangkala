@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import AppHeader from "@/components/layout/AppHeader";
 import {
   FileText,
   Users,
@@ -64,80 +65,52 @@ export default function AdminGlobalDashboardPage() {
   }
 
   return (
-    <>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Title */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-        >
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Semua Assessment</h1>
-            <p className="text-slate-500 mt-1">Kelola seluruh assessment dari satu tempat</p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/admin/sertifikat"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
-            >
-              <Award className="w-4 h-4" />
-              Kelola Sertifikat
-            </Link>
-            <Link
-              href="/admin/pelatihan"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
-            >
-              <GraduationCap className="w-4 h-4" />
-              Kelola Pelatihan
-            </Link>
-          </div>
-        </motion.div>
+    <div>
+      <AppHeader
+        title="Semua Assessment"
+        subtitle="Kelola seluruh assessment dari satu tempat"
+      />
 
+      <div className="mt-8">
         {/* Stats Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8"
-        >
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {[
-            { label: "Total Assessment", value: assessments.length, icon: LayoutDashboard, color: "text-blue-600 bg-blue-50" },
-            { label: "Total Pengguna", value: totalUsers, icon: Users, color: "text-emerald-600 bg-emerald-50" },
-            { label: "Total Dokumen", value: totalDocuments, icon: FileText, color: "text-orange-600 bg-orange-50" },
+            { label: "Total Assessment", value: assessments.length, icon: LayoutDashboard, color: "text-primary bg-primary/10" },
+            { label: "Total Pengguna", value: totalUsers, icon: Users, color: "text-ok bg-ok/10" },
+            { label: "Total Dokumen", value: totalDocuments, icon: FileText, color: "text-ink-muted bg-hairline/60" },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-5 flex items-center gap-4">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.color}`}>
+            <div key={stat.label} className="flex items-center gap-4 rounded-lg border border-hairline bg-white p-5">
+              <div className={`w-10 h-10 rounded-md flex items-center justify-center ${stat.color}`}>
                 <stat.icon className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
-                <p className="text-xs text-slate-500">{stat.label}</p>
+                <p className="text-2xl font-bold text-ink">{stat.value}</p>
+                <p className="text-xs text-ink-muted">{stat.label}</p>
               </div>
             </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Assessment Cards */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-xl border border-slate-200 p-6 animate-pulse">
-                <div className="h-14 w-14 bg-slate-200 rounded-lg mb-4" />
-                <div className="h-5 bg-slate-200 rounded mb-2" />
-                <div className="h-4 bg-slate-200 rounded w-2/3 mb-4" />
-                <div className="h-8 bg-slate-200 rounded" />
+              <div key={i} className="animate-pulse rounded-lg border border-hairline bg-white p-6">
+                <div className="h-14 w-14 rounded-md bg-hairline mb-4" />
+                <div className="h-5 rounded bg-hairline mb-2" />
+                <div className="h-4 rounded bg-hairline w-2/3 mb-4" />
+                <div className="h-8 rounded bg-hairline" />
               </div>
             ))}
           </div>
         ) : assessments.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 py-16 text-center">
-            <LayoutDashboard className="w-14 h-14 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 text-lg font-medium">Belum ada assessment</p>
-            <p className="text-slate-400 text-sm mt-1">Assessment yang dibuat akan muncul di sini</p>
+          <div className="rounded-lg border border-hairline bg-white py-16 text-center">
+            <LayoutDashboard className="mx-auto mb-4 h-14 w-14 text-hairline" />
+            <p className="text-lg font-medium text-ink">Belum ada assessment</p>
+            <p className="mt-1 text-sm text-ink-muted">Assessment yang dibuat akan muncul di sini</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 mt-5 md:grid-cols-2 lg:grid-cols-3">
             {assessments.map((assessment, index) => (
               <motion.div
                 key={assessment.id}
@@ -146,14 +119,14 @@ export default function AdminGlobalDashboardPage() {
                 transition={{ delay: index * 0.05 + 0.15 }}
               >
                 <Link
-                  href={`/assessment-center/${assessment.id}/dashboard`}
-                  className="group block bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                  href={`/assessment-center/${assessment.id}/overview`}
+                  className="group block overflow-hidden rounded-lg border border-hairline bg-white transition-all duration-300 hover:border-primary/40 hover:shadow-lg"
                 >
                   <div className="p-6">
                     {/* Logo */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`flex items-center justify-center h-14 w-14 rounded-xl ${
-                        assessment.clientLogo ? "bg-white border border-slate-200" : "bg-gradient-to-br from-blue-500 to-cyan-500"
+                    <div className="mb-4 flex items-start justify-between">
+                      <div className={`flex h-14 w-14 items-center justify-center rounded-md ${
+                        assessment.clientLogo ? "border border-hairline bg-white" : "bg-primary"
                       }`}>
                         {assessment.clientLogo ? (
                           <Image
@@ -161,7 +134,7 @@ export default function AdminGlobalDashboardPage() {
                             alt={assessment.clientName}
                             width={56}
                             height={56}
-                            className="object-contain p-1 rounded-xl"
+                            className="rounded-md p-1 object-contain"
                           />
                         ) : (
                           <span className="text-xl font-bold text-white">
@@ -169,17 +142,17 @@ export default function AdminGlobalDashboardPage() {
                           </span>
                         )}
                       </div>
-                      <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+                      <ChevronRight className="h-5 w-5 text-ink-muted transition-all group-hover:translate-x-1 group-hover:text-primary" />
                     </div>
 
                     {/* Info */}
-                    <h3 className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors mb-1 line-clamp-1">
+                    <h3 className="mb-1 line-clamp-1 font-semibold text-ink transition-colors group-hover:text-primary">
                       {assessment.name}
                     </h3>
-                    <p className="text-sm text-slate-500 mb-4">{assessment.clientName}</p>
+                    <p className="mb-4 text-sm text-ink-muted">{assessment.clientName}</p>
 
                     {/* Stats */}
-                    <div className="grid grid-cols-4 gap-2 pt-4 border-t border-slate-100">
+                    <div className="grid grid-cols-4 gap-2 border-t border-hairline pt-4">
                       {[
                         { icon: Users, value: assessment._count.users, label: "User" },
                         { icon: FileText, value: assessment._count.documents, label: "Dok" },
@@ -187,18 +160,18 @@ export default function AdminGlobalDashboardPage() {
                         { icon: Camera, value: assessment._count.documentations, label: "Foto" },
                       ].map((stat) => (
                         <div key={stat.label} className="text-center">
-                          <stat.icon className="w-3.5 h-3.5 text-slate-400 mx-auto mb-0.5" />
-                          <p className="text-sm font-semibold text-slate-700">{stat.value}</p>
-                          <p className="text-[10px] text-slate-400">{stat.label}</p>
+                          <stat.icon className="mx-auto mb-0.5 h-3.5 w-3.5 text-ink-muted" />
+                          <p className="text-sm font-semibold text-ink">{stat.value}</p>
+                          <p className="text-[10px] text-ink-muted">{stat.label}</p>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {/* Footer bar */}
-                  <div className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 group-hover:from-blue-600 group-hover:to-cyan-600 transition-all">
-                    <p className="text-white text-sm font-medium text-center">
-                      Kelola Assessment →
+                  <div className="bg-primary px-6 py-3 transition-colors group-hover:bg-primary/90">
+                    <p className="text-center text-sm font-medium text-white">
+                      Buka Workspace →
                     </p>
                   </div>
                 </Link>
@@ -207,6 +180,6 @@ export default function AdminGlobalDashboardPage() {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
