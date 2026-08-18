@@ -1,16 +1,13 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
   FileText,
   Upload,
   LogOut,
-  Settings,
-  Home,
   ChevronLeft,
   Menu,
   ChevronDown,
@@ -20,7 +17,7 @@ import {
   Newspaper,
   ExternalLink,
 } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 interface DashboardSidebarProps {
   assessmentName?: string;
@@ -40,7 +37,6 @@ export default function DashboardSidebar({
 }: DashboardSidebarProps) {
   const { data: session } = useSession();
   const router = useRouter();
-  const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [showSwitcher, setShowSwitcher] = useState(false);
   const [assessments, setAssessments] = useState<AssessmentItem[]>([]);
@@ -53,11 +49,34 @@ export default function DashboardSidebar({
 
   const role = session?.user?.role;
 
+  const fetchAssessments = useCallback(async () => {
+    try {
+      const res = await fetch("/api/assessments");
+      if (res.ok) {
+        const data = await res.json();
+        setAssessments(data);
+      }
+    } catch (error) {
+      console.error("Error fetching assessments:", error);
+    }
+  }, []);
+
   // Fetch all assessments for admin switcher
   useEffect(() => {
+    let isMounted = true;
     if (role === "ADMIN") {
-      fetchAssessments();
+      fetch("/api/assessments")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (isMounted && data) {
+            setAssessments(data);
+          }
+        })
+        .catch((error) => console.error("Error fetching assessments:", error));
     }
+    return () => {
+      isMounted = false;
+    };
   }, [role]);
 
   // Close switcher on click outside
@@ -71,21 +90,9 @@ export default function DashboardSidebar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const fetchAssessments = async () => {
-    try {
-      const res = await fetch("/api/assessments");
-      if (res.ok) {
-        const data = await res.json();
-        setAssessments(data);
-      }
-    } catch (error) {
-      console.error("Error fetching assessments:", error);
-    }
-  };
-
   const switchAssessment = (targetId: string) => {
     setShowSwitcher(false);
-    router.push(`/assessment-center/${targetId}/dashboard`);
+    router.push(`/assessment-center/${targetId}/overview`);
   };
 
   // Define menu items based on role
@@ -199,7 +206,7 @@ export default function DashboardSidebar({
     <div
       className={`${
         collapsed ? "w-20" : "w-64"
-      } min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white flex flex-col transition-all duration-300`}
+      } min-h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex flex-col transition-all duration-300`}
     >
       {/* Header */}
       <div className="p-6 border-b border-slate-700">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import DashboardWrapper from "@/components/layout/DashboardWrapper";
 import { FoldersView, BatchListView } from "@/components/shared/ResumeFolderViews";
+import type { LucideIcon } from "lucide-react";
 import {
   Users,
   FileText,
   Upload,
   Trash2,
   Plus,
-  LogOut,
   Edit,
   X,
   Filter,
@@ -22,15 +22,11 @@ import {
   Image as ImageIcon,
   UserPlus,
   BarChart3,
-  GripVertical,
   Layers,
   FolderOpen,
   User,
   Download,
   ClipboardList,
-  ToggleLeft,
-  ToggleRight,
-  ChevronRight,
   ArrowLeft,
   Search,
   ArrowUp,
@@ -40,7 +36,18 @@ import {
 
 interface AdminDashboardProps {
   assessmentId: string;
+  embedded?: boolean;
+  initialTab?: AdminTab;
 }
+
+type AdminTab =
+  | "overview"
+  | "users"
+  | "documents"
+  | "resumes"
+  | "documentations"
+  | "progress"
+  | "echelons";
 
 interface ResumeBatch {
   id: string;
@@ -50,17 +57,59 @@ interface ResumeBatch {
   updatedAt: string;
 }
 
+export interface DocumentItem {
+  id: string;
+  title: string;
+  fileName: string;
+  filePath: string;
+  fileSize?: number;
+  uploadedById?: string;
+  uploadedBy?: { name: string; email?: string } | null;
+  createdAt: string;
+}
+
+export interface ResumeItem {
+  id: string;
+  title: string;
+  fileName: string;
+  filePath: string;
+  category?: string;
+  echelonId?: string | null;
+  batchId?: string | null;
+  resumeBatch?: ResumeBatch | null;
+  uploadedById?: string;
+  uploadedBy?: { name: string } | null;
+  createdAt: string;
+}
+
+export interface DocumentationItem {
+  id: string;
+  title: string;
+  fileName: string;
+  filePath: string;
+  uploadedById?: string;
+  createdAt: string;
+}
+
+export interface UserItem {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  isActive?: boolean;
+}
+
 interface Assessment {
   id: string;
   name: string;
   description: string | null;
   clientName: string;
   clientLogo: string | null;
-  documents: any[];
-  resumes: any[];
+  documents: DocumentItem[];
+  resumes: ResumeItem[];
   resumeBatches: ResumeBatch[];
-  documentations: any[];
-  users: any[];
+  documentations: DocumentationItem[];
+  users: UserItem[];
   echelons: Echelon[];
 }
 
@@ -111,15 +160,17 @@ interface Attendance {
   };
 }
 
-export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
+export default function AdminDashboard({
+  assessmentId,
+  embedded,
+  initialTab,
+}: AdminDashboardProps) {
   const { data: session } = useSession();
   const { t } = useLanguage();
   const router = useRouter();
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [allAssessments, setAllAssessments] = useState<AllAssessment[]>([]);
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "users" | "documents" | "resumes" | "documentations" | "progress" | "echelons"
-  >("overview");
+  const [activeTab, setActiveTab] = useState<AdminTab>(initialTab ?? "overview");
   const [progresses, setProgresses] = useState<Progress[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -142,6 +193,11 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
       fetchProgresses();
     }
   }, [assessmentId]);
+
+  // Sync tab with URL when navigating between views
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
 
   const fetchProgresses = async () => {
     try {
@@ -218,14 +274,7 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
           (doc) => doc.uploadedById === selectedAsesor
         );
 
-  return (
-    <DashboardWrapper
-      assessmentName={`${assessment.name} - ${assessment.clientName}`}
-      assessmentId={assessmentId}
-      activeTab={activeTab}
-      onTabChange={(tab) => setActiveTab(tab as any)}
-    >
-      {/* Header */}
+  const header = (
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div className="px-8 py-6">
           <h1 className="text-2xl font-bold text-slate-900">
@@ -248,9 +297,10 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
           </p>
         </div>
       </div>
+  );
 
-      {/* Content */}
-      <div className="p-4 sm:p-6 lg:p-8">
+  const content = (
+      <div className={embedded ? "" : "p-4 sm:p-6 lg:p-8"}>
         {activeTab === "overview" && (
           <div>
             {/* Stats Cards */}
@@ -372,7 +422,7 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
 
                     {a.id !== assessmentId ? (
                       <button
-                        onClick={() => router.push(`/assessment-center/${a.id}/dashboard`)}
+                        onClick={() => router.push(`/assessment-center/${a.id}/overview`)}
                         className="w-full py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
                       >
                         Buka Dashboard →
@@ -487,8 +537,11 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
             onRefresh={fetchAssessment}
           />
         )}
-      </div>
+    </div>
+  );
 
+  const modals = (
+    <>
       {/* Upload Modal */}
       {showUploadModal && (
         <UploadModal
@@ -527,6 +580,28 @@ export default function AdminDashboard({ assessmentId }: AdminDashboardProps) {
           }}
         />
       )}
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <>
+        {content}
+        {modals}
+      </>
+    );
+  }
+
+  return (
+    <DashboardWrapper
+      assessmentName={`${assessment.name} - ${assessment.clientName}`}
+      assessmentId={assessmentId}
+      activeTab={activeTab}
+      onTabChange={(tab) => setActiveTab(tab as AdminTab)}
+    >
+      {header}
+      {content}
+      {modals}
     </DashboardWrapper>
   );
 }
@@ -540,10 +615,10 @@ function StatsCard({
 }: {
   title: string;
   value: number;
-  icon: any;
+  icon: LucideIcon;
   color: string;
 }) {
-  const colors: any = {
+  const colors: Record<string, string> = {
     blue: "from-blue-500 to-cyan-500",
     green: "from-green-500 to-emerald-500",
     purple: "from-purple-500 to-pink-500",
@@ -576,12 +651,12 @@ function UserManagement({
   onRefresh,
 }: {
   assessmentId: string;
-  users: any[];
+  users: UserItem[];
   onRefresh: () => void;
 }) {
   const { t } = useLanguage();
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingUser, setEditingUser] = useState<any | null>(null);
+  const [editingUser, setEditingUser] = useState<UserItem | null>(null);
   const [togglingUserId, setTogglingUserId] = useState<string | null>(null);
 
   const handleToggleActive = async (userId: string, currentIsActive: boolean) => {
@@ -963,7 +1038,13 @@ function CreateUserModal({
   });
 
   // Batch users form (for KLIEN)
-  const [klienMembers, setKlienMembers] = useState([
+  interface KlienMember {
+    name: string;
+    email: string;
+    password: string;
+  }
+
+  const [klienMembers, setKlienMembers] = useState<KlienMember[]>([
     { name: "", email: "", password: "" },
   ]);
 
@@ -977,9 +1058,9 @@ function CreateUserModal({
     }
   };
 
-  const updateKlienMember = (index: number, field: string, value: string) => {
+  const updateKlienMember = (index: number, field: keyof KlienMember, value: string) => {
     const updated = [...klienMembers];
-    (updated[index] as any)[field] = value;
+    updated[index][field] = value;
     setKlienMembers(updated);
   };
 
@@ -1634,7 +1715,7 @@ function UploadModal({
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">Belum ada eselon. Tambahkan eselon di menu "Kelola Eselon" terlebih dahulu.</p>
+                      <p className="text-sm text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">Belum ada eselon. Tambahkan eselon di menu &quot;Kelola Eselon&quot; terlebih dahulu.</p>
                     )}
                   </div>
                 )}
@@ -1731,7 +1812,7 @@ function ResumeBatchAdminView({
   echelons,
   onRefresh,
 }: {
-  resumes: any[];
+  resumes: ResumeItem[];
   echelons: Echelon[];
   onRefresh: () => void;
 }) {
@@ -1795,7 +1876,7 @@ function ResumeBatchAdminView({
     onRefresh();
   };
 
-  const renderCard = (doc: any) => (
+  const renderCard = (doc: ResumeItem) => (
     <div key={doc.id} className={`bg-white rounded-lg border ${selectedDocs.includes(doc.id) ? "border-blue-400 ring-1 ring-blue-400" : "border-slate-200"} p-4 hover:shadow-md transition-all relative group w-full`}>
       <div className="absolute top-4 left-4 z-10">
         <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" checked={selectedDocs.includes(doc.id)} onChange={() => handleToggleSelect(doc.id)} />
@@ -1841,7 +1922,7 @@ function ResumeBatchAdminView({
     }
     const batchUmum = getBatchUmum(selectedBatchId);
     const batch = batches.find((b) => b.id === selectedBatchId);
-    const ids = batchUmum.map((d: any) => d.id);
+    const ids = batchUmum.map((d: ResumeItem) => d.id);
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
@@ -1852,7 +1933,7 @@ function ResumeBatchAdminView({
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Belum ada resume umum di batch ini</p></div>
         ) : (
           <AdminFileGrid ids={ids} selectedDocs={selectedDocs} handleSelectAll={handleSelectAll} handleBulkDelete={handleBulkDelete} isDeleting={isDeleting}>
-            {batchUmum.map((doc: any) => renderCard(doc))}
+            {batchUmum.map((doc: ResumeItem) => renderCard(doc))}
           </AdminFileGrid>
         )}
       </div>
@@ -1883,7 +1964,7 @@ function ResumeBatchAdminView({
       );
     }
     const selectedEchelonObj = getBatchEselonGrouped(selectedBatchId).find((eg) => eg.id === selectedEchelonId);
-    const ids = selectedEchelonObj ? selectedEchelonObj.resumes.map((d: any) => d.id) : [];
+    const ids = selectedEchelonObj ? selectedEchelonObj.resumes.map((d: ResumeItem) => d.id) : [];
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
@@ -1894,7 +1975,7 @@ function ResumeBatchAdminView({
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Belum ada resume untuk eselon ini</p></div>
         ) : (
           <AdminFileGrid ids={ids} selectedDocs={selectedDocs} handleSelectAll={handleSelectAll} handleBulkDelete={handleBulkDelete} isDeleting={isDeleting}>
-            {selectedEchelonObj.resumes.map((doc: any) => renderCard(doc))}
+            {selectedEchelonObj.resumes.map((doc: ResumeItem) => renderCard(doc))}
           </AdminFileGrid>
         )}
       </div>
@@ -1910,7 +1991,7 @@ function ResumeBatchAdminView({
     const filtered = searchQuery ? batchIndividu.filter((f) => f.title.toLowerCase().includes(searchQuery.toLowerCase())) : batchIndividu;
     const totalPages = Math.ceil(filtered.length / perPage);
     const paginated = filtered.slice((page - 1) * perPage, page * perPage);
-    const ids = paginated.map((d: any) => d.id);
+    const ids = paginated.map((d: ResumeItem) => d.id);
 
     return (
       <div className="space-y-6">
@@ -1935,12 +2016,12 @@ function ResumeBatchAdminView({
         {batchIndividu.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><User className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Belum ada resume per individu di batch ini</p></div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><Search className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Tidak ditemukan kandidat dengan nama "{searchQuery}"</p><button onClick={() => setSearchQuery("")} className="mt-3 text-green-600 hover:text-green-700 text-sm font-medium">Reset pencarian</button></div>
+          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><Search className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Tidak ditemukan kandidat dengan nama &quot;{searchQuery}&quot;</p><button onClick={() => setSearchQuery("")} className="mt-3 text-green-600 hover:text-green-700 text-sm font-medium">Reset pencarian</button></div>
         ) : (
           <>
             {(searchQuery || filtered.length !== batchIndividu.length) && <p className="text-sm text-slate-500">Menampilkan {filtered.length} dari {batchIndividu.length} kandidat</p>}
             <AdminFileGrid ids={ids} selectedDocs={selectedDocs} handleSelectAll={handleSelectAll} handleBulkDelete={handleBulkDelete} isDeleting={isDeleting}>
-              {paginated.map((doc: any) => renderCard(doc))}
+              {paginated.map((doc: ResumeItem) => renderCard(doc))}
             </AdminFileGrid>
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-3 mt-6">
@@ -2493,7 +2574,7 @@ function ProgressManagement({
           <BarChart3 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-500">Belum ada progress kegiatan</p>
           <p className="text-sm text-slate-400 mt-1">
-            Klik tombol "Tambah Kegiatan" untuk menambahkan
+            Klik tombol &quot;Tambah Kegiatan&quot; untuk menambahkan
           </p>
         </div>
       ) : (
@@ -2927,7 +3008,7 @@ function EchelonManagement({
           <Layers className="w-16 h-16 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-500">Belum ada kategori eselon</p>
           <p className="text-sm text-slate-400 mt-1">
-            Klik tombol "Tambah Eselon" untuk menambahkan
+            Klik tombol &quot;Tambah Eselon&quot; untuk menambahkan
           </p>
         </div>
       ) : (

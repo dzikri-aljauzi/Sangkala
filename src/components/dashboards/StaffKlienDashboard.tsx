@@ -10,6 +10,8 @@ import { BarChart3, CheckCircle2, Clock } from "lucide-react";
 
 interface StaffKlienDashboardProps {
   assessmentId: string;
+  embedded?: boolean;
+  initialTab?: "overview" | "progress";
 }
 
 interface Assessment {
@@ -19,14 +21,18 @@ interface Assessment {
   clientLogo: string | null;
 }
 
-export default function StaffKlienDashboard({ assessmentId }: StaffKlienDashboardProps) {
+export default function StaffKlienDashboard({ assessmentId, embedded, initialTab }: StaffKlienDashboardProps) {
   const { data: session } = useSession();
   const { t } = useLanguage();
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [progresses, setProgresses] = useState<Progress[]>([]);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"overview" | "progress">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "progress">(initialTab ?? "overview");
+
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
 
   useEffect(() => {
     if (assessmentId) {
@@ -89,14 +95,7 @@ export default function StaffKlienDashboard({ assessmentId }: StaffKlienDashboar
   const completedCount = progresses.filter(p => p.percentage === 100).length;
   const inProgressCount = progresses.filter(p => p.percentage > 0 && p.percentage < 100).length;
 
-  return (
-    <DashboardWrapper
-      assessmentName={`${assessment.name} - ${assessment.clientName}`}
-      assessmentId={assessmentId}
-      activeTab={activeTab}
-      onTabChange={(tab) => setActiveTab(tab as any)}
-    >
-      {/* Header */}
+  const header = (
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div className="px-8 py-6">
           <div className="flex items-center gap-4">
@@ -122,9 +121,10 @@ export default function StaffKlienDashboard({ assessmentId }: StaffKlienDashboar
           </div>
         </div>
       </div>
+  );
 
-      {/* Content */}
-      <div className="p-4 sm:p-6 lg:p-8">
+  const content = (
+      <div className={embedded ? "" : "p-4 sm:p-6 lg:p-8"}>
         {activeTab === "overview" && (
           <div>
             {/* Welcome Message */}
@@ -250,7 +250,20 @@ export default function StaffKlienDashboard({ assessmentId }: StaffKlienDashboar
         {activeTab === "progress" && (
           <ProgressView progresses={progresses} attendances={attendances} />
         )}
-      </div>
+    </div>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <DashboardWrapper
+      assessmentName={`${assessment.name} - ${assessment.clientName}`}
+      assessmentId={assessmentId}
+      activeTab={activeTab}
+      onTabChange={(tab) => setActiveTab(tab as any)}
+    >
+      {header}
+      {content}
     </DashboardWrapper>
   );
 }
