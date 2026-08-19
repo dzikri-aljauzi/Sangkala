@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { FileText, FolderOpen, Layers, User, ChevronRight, ArrowLeft } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface Echelon {
   id: string;
@@ -15,6 +16,16 @@ interface Batch {
   createdAt: string;
 }
 
+export interface ResumeItem {
+  id: string;
+  title?: string;
+  fileName?: string;
+  filePath?: string;
+  category?: string;
+  echelonId?: string | null;
+  resumeBatch?: { id: string } | null;
+}
+
 export function FoldersView({
   umumResumes,
   eselonResumes,
@@ -24,11 +35,11 @@ export function FoldersView({
   setCurrentView,
   extraSlot,
 }: {
-  umumResumes: any[];
-  eselonResumes: any[];
-  individuResumes: any[];
+  umumResumes: ResumeItem[];
+  eselonResumes: ResumeItem[];
+  individuResumes: ResumeItem[];
   echelons: Echelon[];
-  resumes: any[];
+  resumes: ResumeItem[];
   setCurrentView: (v: "umum" | "eselon" | "individu") => void;
   extraSlot?: React.ReactNode;
 }) {
@@ -143,10 +154,10 @@ export function BatchListView({
   onSelect,
 }: {
   batches: Batch[];
-  resumes: any[];
+  resumes: ResumeItem[];
   title: string;
   iconColor: "blue" | "purple" | "green";
-  icon?: any;
+  icon?: LucideIcon;
   goBackToFolders: () => void;
   onSelect: (id: string) => void;
 }) {

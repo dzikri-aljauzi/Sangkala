@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { getTrainingDateRange, isTrainingDateFilter } from "@/lib/training-filters";
@@ -57,11 +58,8 @@ export async function GET(request: NextRequest) {
 // POST create pelatihan baru — admin only
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { session, error } = await requireAdmin();
+    if (error) return error;
 
     const body = await request.json();
     const { title, location, startDate, price, description, imagePath, requiresPayment, capacity } = body;

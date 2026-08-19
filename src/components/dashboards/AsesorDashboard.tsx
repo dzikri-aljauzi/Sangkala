@@ -11,6 +11,8 @@ import { FileText, Upload, LogOut, X, Trash2, Download } from "lucide-react";
 
 interface AsesorDashboardProps {
   assessmentId: string;
+  embedded?: boolean;
+  initialTab?: "overview" | "upload" | "history";
 }
 
 interface Assessment {
@@ -22,6 +24,8 @@ interface Assessment {
 
 export default function AsesorDashboard({
   assessmentId,
+  embedded,
+  initialTab,
 }: AsesorDashboardProps) {
   const { data: session } = useSession();
   const { t } = useLanguage();
@@ -30,7 +34,11 @@ export default function AsesorDashboard({
   const [myDocuments, setMyDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "upload" | "history">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "upload" | "history">(initialTab ?? "overview");
+
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
 
   useEffect(() => {
     if (assessmentId && session?.user?.id) {
@@ -70,14 +78,7 @@ export default function AsesorDashboard({
     );
   }
 
-  return (
-    <DashboardWrapper
-      assessmentName={`${assessment.name} - ${assessment.clientName}`}
-      assessmentId={assessmentId}
-      activeTab={activeTab}
-      onTabChange={(tab) => setActiveTab(tab as any)}
-    >
-      {/* Header */}
+  const header = (
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div className="px-8 py-6">
           <h1 className="text-2xl font-bold text-slate-900">
@@ -92,9 +93,10 @@ export default function AsesorDashboard({
           </p>
         </div>
       </div>
+  );
 
-      {/* Content */}
-      <div className="p-4 sm:p-6 lg:p-8">
+  const content = (
+      <div className={embedded ? "" : "p-4 sm:p-6 lg:p-8"}>
         {activeTab === "overview" && (
           <div>
             {/* Stats */}
@@ -323,8 +325,11 @@ export default function AsesorDashboard({
             )}
           </div>
         )}
-      </div>
+    </div>
+  );
 
+  const modals = (
+    <>
       {/* Upload Modal */}
       {showUploadModal && (
         <UploadModal
@@ -336,6 +341,28 @@ export default function AsesorDashboard({
           }}
         />
       )}
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <>
+        {content}
+        {modals}
+      </>
+    );
+  }
+
+  return (
+    <DashboardWrapper
+      assessmentName={`${assessment.name} - ${assessment.clientName}`}
+      assessmentId={assessmentId}
+      activeTab={activeTab}
+      onTabChange={(tab) => setActiveTab(tab as any)}
+    >
+      {header}
+      {content}
+      {modals}
     </DashboardWrapper>
   );
 }

@@ -103,7 +103,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/assessment-center/admin-login",
+    signIn: "/admin/login",
   },
   session: {
     strategy: "jwt",

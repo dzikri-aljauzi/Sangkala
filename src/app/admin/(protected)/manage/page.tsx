@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -76,7 +75,6 @@ const getImageUrl = (path: string | null) => {
 };
 
 export default function AdminInsightsPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
@@ -107,13 +105,8 @@ export default function AdminInsightsPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (status === "loading") return;
-    if (!session || session.user.role !== "ADMIN") {
-      router.push("/");
-      return;
-    }
     fetchArticles();
-  }, [session, status, router]);
+  }, []);
 
   const fetchArticles = async () => {
     try {
@@ -321,22 +314,18 @@ export default function AdminInsightsPage() {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  if (status === "loading" || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="flex items-center justify-center py-24">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
-  if (!session || session.user.role !== "ADMIN") {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <>
+      {/* Page Header */}
+      <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
@@ -868,6 +857,6 @@ export default function AdminInsightsPage() {
           </motion.div>
         </div>
       )}
-    </div>
+    </>
   );
 }

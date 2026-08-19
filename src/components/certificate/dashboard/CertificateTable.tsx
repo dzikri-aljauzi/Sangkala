@@ -222,7 +222,7 @@ export default function CertificateTable({
                           <Pencil className="w-4 h-4" />
                         </button>
                         <Link
-                          href={`/assessment-center/admin/dashboard/certificates/${cert.id}/preview`}
+                          href={`/admin/sertifikat/${cert.id}/preview`}
                           className="w-9 h-9 flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200"
                           title="Lihat Pratinjau Sertifikat"
                         >

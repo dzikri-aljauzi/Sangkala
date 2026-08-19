@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import DashboardSidebar from "./DashboardSidebar";
 
 interface DashboardWrapperProps {
@@ -15,13 +15,14 @@ export default function DashboardWrapper({
   children,
   assessmentName,
   assessmentId,
-  activeTab,
+  activeTab: _activeTab,
   onTabChange,
 }: DashboardWrapperProps) {
   useEffect(() => {
-    const handleTabChange = (event: any) => {
-      if (onTabChange) {
-        onTabChange(event.detail.tab);
+    const handleTabChange = (event: Event) => {
+      const customEvent = event as CustomEvent<{ tab: string }>;
+      if (onTabChange && customEvent.detail?.tab) {
+        onTabChange(customEvent.detail.tab);
       }
     };
 

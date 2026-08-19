@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
+import { getContentType, isPathTraversalSafe } from "@/lib/file-serving";
 
 export async function GET(
   request: NextRequest,
@@ -27,7 +28,7 @@ export async function GET(
     const filePath = resolvedParams.path.join("/");
 
     // Security: prevent directory traversal
-    if (filePath.includes("..")) {
+    if (!isPathTraversalSafe(filePath)) {
       return NextResponse.json({ error: "Invalid path" }, { status: 400 });
     }
 
@@ -42,20 +43,6 @@ export async function GET(
     // Read file
     const fileBuffer = await readFile(fullPath);
 
-    // Determine content type based on extension
-    const ext = filePath.split(".").pop()?.toLowerCase();
-    const contentTypes: Record<string, string> = {
-      pdf: "application/pdf",
-      doc: "application/msword",
-      docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      jpg: "image/jpeg",
-      jpeg: "image/jpeg",
-      png: "image/png",
-      svg: "image/svg+xml",
-    };
-
-    const contentType = contentTypes[ext || ""] || "application/octet-stream";
-
     // Use original filename if provided, otherwise use path filename
     const filename = originalFilename || filePath.split("/").pop() || "download";
 
@@ -63,7 +50,7 @@ export async function GET(
     return new NextResponse(fileBuffer, {
       status: 200,
       headers: {
-        "Content-Type": contentType,
+        "Content-Type": getContentType(filePath),
         "Content-Disposition": `attachment; filename="${filename}"`,
         "Cache-Control": "public, max-age=31536000",
       },

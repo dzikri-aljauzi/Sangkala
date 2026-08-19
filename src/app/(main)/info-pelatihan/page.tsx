@@ -25,17 +25,7 @@ import {
   isTrainingDateFilter,
 } from "@/lib/training-filters";
 import GoogleTranslateWidget from "@/components/google-translate/GoogleTranslateWidget";
-
-interface Training {
-  id: string;
-  title: string;
-  location: string;
-  startDate: string;
-  price: string | null;
-  description: string;
-  imagePath: string | null;
-  _count: { registrants: number };
-}
+import type { TrainingWithCount as Training } from "@/types/training";
 
 const getImageUrl = (path: string | null): string | null => {
   if (!path) return null;

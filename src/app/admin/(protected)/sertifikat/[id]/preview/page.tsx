@@ -44,7 +44,7 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
       {/* Top bar */}
       <div className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
         <Link
-          href="/assessment-center/admin/dashboard/certificates"
+          href="/admin/sertifikat"
           className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
