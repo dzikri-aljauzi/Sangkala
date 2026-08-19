@@ -106,7 +106,7 @@ export default function AssessmentLoginPage({
       if (result?.error) {
         setError(result.error);
       } else {
-        router.push(`/assessment-center/${assessmentId}/dashboard`);
+        router.push(`/assessment-center/${assessmentId}/overview`);
       }
     } catch (error) {
       setError(t("assessmentCenter.loginError"));

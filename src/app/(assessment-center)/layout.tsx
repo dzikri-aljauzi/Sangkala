@@ -11,11 +11,14 @@ export default function AssessmentCenterLayout({
 }>) {
   const pathname = usePathname();
 
-  // Check if current route is dashboard
-  const isDashboard = pathname?.includes("/dashboard");
+  // Dashboard workspace routes don't need navbar/footer (AppShell provides
+  // its own nav): legacy /dashboard + new URL-backed /[view] routes.
+  const isWorkspace =
+    pathname?.includes("/dashboard") ||
+    (!pathname?.endsWith("/login") &&
+      /\/assessment-center\/[^/]+\/[a-z-]+$/.test(pathname ?? ""));
 
-  // Dashboard routes don't need navbar/footer (they have their own sidebar)
-  if (isDashboard) {
+  if (isWorkspace) {
     return <>{children}</>;
   }
 

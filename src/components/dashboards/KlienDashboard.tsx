@@ -13,6 +13,8 @@ import { FileText, Image as ImageIcon, LogOut, Download, File, X, FolderOpen, La
 
 interface KlienDashboardProps {
   assessmentId: string;
+  embedded?: boolean;
+  initialTab?: "overview" | "resumes" | "documentations" | "progress";
 }
 
 interface Assessment {
@@ -31,7 +33,7 @@ interface Echelon {
   order: number;
 }
 
-export default function KlienDashboard({ assessmentId }: KlienDashboardProps) {
+export default function KlienDashboard({ assessmentId, embedded, initialTab }: KlienDashboardProps) {
   const { data: session } = useSession();
   const { t } = useLanguage();
   const router = useRouter();
@@ -40,8 +42,12 @@ export default function KlienDashboard({ assessmentId }: KlienDashboardProps) {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"overview" | "resumes" | "documentations" | "progress">(
-    "overview"
+    initialTab ?? "overview"
   );
+
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
 
   useEffect(() => {
     if (assessmentId) {
@@ -101,14 +107,7 @@ export default function KlienDashboard({ assessmentId }: KlienDashboardProps) {
     );
   }
 
-  return (
-    <DashboardWrapper
-      assessmentName={`${assessment.name} - ${assessment.clientName}`}
-      assessmentId={assessmentId}
-      activeTab={activeTab}
-      onTabChange={(tab) => setActiveTab(tab as any)}
-    >
-      {/* Header */}
+  const header = (
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div className="px-8 py-6">
           <div className="flex items-center gap-4">
@@ -138,9 +137,10 @@ export default function KlienDashboard({ assessmentId }: KlienDashboardProps) {
           </div>
         </div>
       </div>
+  );
 
-      {/* Content */}
-      <div className="p-4 sm:p-6 lg:p-8">
+  const content = (
+      <div className={embedded ? "" : "p-4 sm:p-6 lg:p-8"}>
         {activeTab === "overview" && (
           <div>
             {/* Welcome Message */}
@@ -222,7 +222,20 @@ export default function KlienDashboard({ assessmentId }: KlienDashboardProps) {
         {activeTab === "progress" && (
           <ProgressView progresses={progresses} attendances={attendances} />
         )}
-      </div>
+    </div>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <DashboardWrapper
+      assessmentName={`${assessment.name} - ${assessment.clientName}`}
+      assessmentId={assessmentId}
+      activeTab={activeTab}
+      onTabChange={(tab) => setActiveTab(tab as any)}
+    >
+      {header}
+      {content}
     </DashboardWrapper>
   );
 }
