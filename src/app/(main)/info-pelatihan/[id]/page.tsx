@@ -29,17 +29,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import GoogleTranslateWidget from "@/components/google-translate/GoogleTranslateWidget";
+import type { Training as BaseTraining } from "@/types/training";
 
-interface Training {
-  id: string;
-  title: string;
-  location: string;
-  startDate: string;
-  price: string | null;
-  description: string;
-  imagePath: string | null;
-  requiresPayment: boolean;
-  capacity: number | null;
+interface Training extends BaseTraining {
   activeRegistrantsCount: number;
 }
 

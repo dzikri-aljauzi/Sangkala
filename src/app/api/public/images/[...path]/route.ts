@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { existsSync } from "fs";
+import { getContentType, isPathTraversalSafe } from "@/lib/file-serving";
 
 export async function GET(
   request: NextRequest,
@@ -15,7 +16,7 @@ export async function GET(
     const filePath = resolvedParams.path.join("/");
 
     // Security: prevent directory traversal
-    if (filePath.includes("..")) {
+    if (!isPathTraversalSafe(filePath)) {
       return NextResponse.json({ error: "Invalid path" }, { status: 400 });
     }
 
@@ -36,25 +37,11 @@ export async function GET(
     // Read file
     const fileBuffer = await readFile(absolutePath);
 
-    // Determine content type based on extension
-    const ext = filePath.split(".").pop()?.toLowerCase();
-    const contentTypes: Record<string, string> = {
-      pdf: "application/pdf",
-      jpg: "image/jpeg",
-      jpeg: "image/jpeg",
-      png: "image/png",
-      gif: "image/gif",
-      webp: "image/webp",
-      svg: "image/svg+xml",
-    };
-
-    const contentType = contentTypes[ext || ""] || "application/octet-stream";
-
     // Return file with proper headers (inline for display, not download)
     return new NextResponse(fileBuffer, {
       status: 200,
       headers: {
-        "Content-Type": contentType,
+        "Content-Type": getContentType(filePath),
         "Cache-Control": "public, max-age=31536000, immutable",
       },
     });

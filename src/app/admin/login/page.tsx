@@ -22,7 +22,7 @@ export default function AdminLoginPage() {
   // Auto-redirect if admin session is still active
   useEffect(() => {
     if (status === "authenticated" && session?.user?.role === "ADMIN") {
-      router.push("/assessment-center/admin/dashboard");
+      router.push("/admin");
     }
   }, [status, session, router]);
 
@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
       if (result?.error) {
         setError("Email atau password salah, atau akun ini bukan admin.");
       } else {
-        router.push("/assessment-center/admin/dashboard");
+        router.push("/admin");
       }
     } catch (error) {
       setError(t("assessmentCenter.loginError"));
@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
               Admin Login
             </h1>
             <p className="text-blue-100 text-sm">
-              Assessment Center - LNA
+              Leadership Nasional Asia
             </p>
           </div>
 
@@ -167,10 +167,10 @@ export default function AdminLoginPage() {
             {/* Footer */}
             <div className="mt-6 pt-6 border-t border-slate-100 text-center">
               <Link
-                href="/assessment-center"
+                href="/"
                 className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
               >
-                ← Kembali ke daftar assessment
+                ← Kembali ke Beranda
               </Link>
             </div>
           </div>

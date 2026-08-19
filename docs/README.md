@@ -23,6 +23,8 @@ Dokumentasi ini dibuat khusus untuk developer baru yang akan handle project ini.
 | 11 | [11-shadcn-mcp.md](./11-shadcn-mcp.md) | Panduan pakai shadcn MCP + aturan main komponen UI project ini |
 | 12 | [12-fitur-pembayaran-pelatihan.md](./12-fitur-pembayaran-pelatihan.md) | Fitur pembayaran manual (upload bukti transfer + persetujuan admin) |
 
+Audit struktur codebase (temuan + issue board) dipindah ke folder [`/audit`](../audit/) supaya gampang direview tim — lihat `audit/12-audit-struktur-codebase.md` dan `audit/13-issue-board.md`.
+
 ---
 
 ## Quick Reference
