@@ -98,19 +98,9 @@ export default function AssessmentCenterPage() {
         ) : assessments.length === 0 ? (
           <div className="text-center py-16">
             <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 text-lg mb-6">
+            <p className="text-slate-500 text-lg">
               {t("assessmentCenter.noAssessments")}
             </p>
-            <div className="max-w-md mx-auto bg-blue-50 border border-blue-200 rounded-xl p-6">
-              <p className="text-sm text-slate-700 mb-4">
-                Belum ada assessment yang dibuat. Login sebagai admin untuk membuat assessment baru.
-              </p>
-              <Link href="/admin/login">
-                <Button variant="primary" className="w-full">
-                  Login sebagai Admin
-                </Button>
-              </Link>
-            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -10,6 +10,7 @@ import {
   MapPin,
   Linkedin,
   Instagram,
+  Lock,
 } from "lucide-react";
 
 const quickLinks = [
@@ -184,7 +185,7 @@ export default function Footer() {
             <p className="text-slate-500 text-xs sm:text-sm text-center sm:text-left">
               © {currentYear} Leadership Nasional Asia. {t("footer.rights")}
             </p>
-            <div className="flex gap-4 sm:gap-6 text-xs sm:text-sm">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-4 sm:gap-6 text-xs sm:text-sm">
               <Link
                 href="/privacy"
                 className="text-slate-500 hover:text-blue-600 transition-colors"
@@ -196,6 +197,13 @@ export default function Footer() {
                 className="text-slate-500 hover:text-blue-600 transition-colors"
               >
                 Terms of Service
+              </Link>
+              <Link
+                href="/admin/login"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/50 shadow-xs transition-all"
+              >
+                <Lock className="w-4 h-4 text-slate-400" />
+                Portal Admin
               </Link>
             </div>
           </div>
