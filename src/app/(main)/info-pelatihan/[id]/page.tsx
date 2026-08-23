@@ -29,7 +29,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import GoogleTranslateWidget from "@/components/google-translate/GoogleTranslateWidget";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah, formatTrainingDateRange } from "@/lib/utils";
 import type { Training as BaseTraining } from "@/types/training";
 
 interface Training extends BaseTraining {
@@ -230,7 +230,7 @@ export default function DetailPelatihanPage() {
 
   return (
     <Section variant="gradient" padding="xl" className="pt-32 sm:pt-36">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Back link */}
         <Link
           href="/info-pelatihan"
@@ -241,14 +241,14 @@ export default function DetailPelatihanPage() {
         </Link>
 
         {/* Centered title */}
-        <div className="mt-6 mb-8 sm:mb-10 text-center">
-          <p className="notranslate text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 mb-3">
+        <div className="text-center space-y-3 pt-2">
+          <p className="notranslate text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600">
             {t("trainingDetail.program")}
           </p>
-          <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-slate-900 leading-tight max-w-3xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 leading-tight max-w-3xl mx-auto">
             {training.title}
           </h1>
-          <div className="notranslate mt-5 flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-sm text-slate-500">
+          <div className="notranslate flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-sm text-slate-500">
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-slate-400" />
               {training.location}
@@ -256,112 +256,108 @@ export default function DetailPelatihanPage() {
             <span className="text-slate-300">•</span>
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="w-4 h-4 text-slate-400" />
-              {formatDate(training.startDate)}
+              {formatTrainingDateRange(training.startDate, training.endDate, locale)}
             </span>
           </div>
         </div>
 
-        {/* Grid: Image + Info Sheet */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Image */}
-          <div className="md:col-span-2 bg-white rounded-xl border border-slate-200 overflow-hidden relative min-h-75 sm:min-h-95 flex items-center justify-center">
-            {training.imagePath ? (
-              <Image
-                src={getImageUrl(training.imagePath) ?? ""}
-                alt={training.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 66vw"
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className="flex flex-col items-center text-slate-300 py-20">
-                <ImageIcon className="w-16 h-16 mb-2" />
-                <span className="text-sm">{t("trainingDetail.noImage")}</span>
-              </div>
-            )}
+        {/* Poster Banner (Full Width / Natural Aspect Ratio) */}
+        {training.imagePath ? (
+          <div className="rounded-2xl overflow-hidden shadow-sm border border-slate-200 w-full bg-slate-50">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={getImageUrl(training.imagePath) ?? ""}
+              alt={training.title}
+              className="w-full h-auto block"
+            />
           </div>
+        ) : (
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col items-center justify-center text-slate-300 py-24">
+            <ImageIcon className="w-16 h-16 mb-2" />
+            <span className="text-sm">{t("trainingDetail.noImage")}</span>
+          </div>
+        )}
 
-          {/* Info sheet */}
-          <Card className="notranslate md:col-span-1 border border-slate-200 flex flex-col bg-white overflow-hidden">
-            <div className="flex items-stretch border-b border-slate-100">
-              <div className="flex flex-col items-center justify-center w-24 bg-primary text-white py-4 shrink-0">
-                <span className="text-2xl font-bold leading-none">{day}</span>
-                <span className="text-[10px] uppercase tracking-widest mt-1 text-slate-100">
-                  {month}
-                </span>
-                <span className="text-[10px] mt-0.5 text-slate-100">{year}</span>
+        {/* Quick Info & Action CTA */}
+        <Card className="notranslate border border-slate-200 bg-white p-6 sm:p-8 space-y-6 shadow-sm">
+          {/* 3-Column Info Grid: Jadwal, Tempat, Biaya */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pb-6 border-b border-slate-100">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <Calendar className="w-5 h-5" />
               </div>
-              <div className="flex flex-col justify-center px-4">
-                <p className="text-[11px] uppercase tracking-widest text-slate-400 font-medium">
+              <div>
+                <p className="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">
                   {t("trainingDetail.scheduleLabel")}
                 </p>
-                <p className="text-sm font-semibold text-slate-700 mt-1">
-                  {formatDate(training.startDate)}
+                <p className="text-sm sm:text-base font-bold text-slate-800 mt-1">
+                  {formatTrainingDateRange(training.startDate, training.endDate, locale)}
                 </p>
               </div>
             </div>
 
-            {/* Fact rows */}
-            <div className="divide-y divide-slate-100">
-              <div className="px-4 py-4 flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-[11px] uppercase tracking-widest text-slate-900 font-medium">
-                    {t("trainingDetail.locationLabel")}
-                  </p>
-                  <p className="text-sm font-semibold text-slate-700 mt-0.5">
-                    {training.location}
-                  </p>
-                </div>
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <MapPin className="w-5 h-5" />
               </div>
-              <div className="px-4 py-4 flex items-start gap-3">
-                <Tag className="w-4 h-4 text-slate-400 mt-1 shrink-0" />
-                <div>
-                  <p className="text-[11px] uppercase tracking-widest text-slate-900 font-medium">
-                    {t("trainingDetail.priceLabel")}
-                  </p>
-                  <p className="text-lg font-semibold text-slate-700 mt-0.5">
-                    {training.price ? formatRupiah(training.price) : t("trainingDetail.contactUs")}
-                  </p>
-                </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">
+                  {t("trainingDetail.locationLabel")}
+                </p>
+                <p className="text-sm sm:text-base font-bold text-slate-800 mt-1">
+                  {training.location}
+                </p>
               </div>
             </div>
 
-            {/* CTA */}
-            <div className="p-4 mt-auto space-y-2">
-              {slotsLeft !== null && (
-                <p className={`text-xs text-center font-medium ${isFull ? "text-red-600" : "text-slate-500"}`}>
-                  {isFull
-                    ? t("trainingDetail.quotaFull")
-                    : `${t("trainingDetail.quotaLeft")}: ${slotsLeft}`}
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <Tag className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">
+                  {t("trainingDetail.priceLabel")}
                 </p>
-              )}
-              <Button
-                variant="primary"
-                size="lg"
-                className="w-full"
-                disabled={isFull}
-                onClick={() => {
-                  resetModalState();
-                  setIsModalOpen(true);
-                }}
-              >
-                {isFull ? t("trainingDetail.quotaFull") : t("trainingDetail.register")}
-                {!isFull && <ArrowRight className="w-4 h-4 ml-1.5" />}
-              </Button>
+                <p className="text-lg sm:text-xl font-bold text-blue-600 mt-0.5">
+                  {training.price ? formatRupiah(training.price) : t("trainingDetail.contactUs")}
+                </p>
+              </div>
             </div>
-          </Card>
-        </div>
+          </div>
+
+          {/* Sisa Kuota & Button Daftar Sekarang */}
+          <div className="space-y-3 pt-1">
+            {slotsLeft !== null && (
+              <p className={`text-xs sm:text-sm text-center font-medium ${isFull ? "text-red-600" : "text-slate-500"}`}>
+                {isFull
+                  ? t("trainingDetail.quotaFull")
+                  : `${t("trainingDetail.quotaLeft")}: ${slotsLeft}`}
+              </p>
+            )}
+            <Button
+              variant="primary"
+              size="lg"
+              className="w-full h-12 text-base font-semibold shadow-md hover:shadow-lg transition-all"
+              disabled={isFull}
+              onClick={() => {
+                resetModalState();
+                setIsModalOpen(true);
+              }}
+            >
+              {isFull ? t("trainingDetail.quotaFull") : t("trainingDetail.register")}
+              {!isFull && <ArrowRight className="w-5 h-5 ml-2" />}
+            </Button>
+          </div>
+        </Card>
 
         {/* Description */}
-        <div className="mt-6 bg-white rounded-xl border border-slate-200 p-6 sm:p-8">
-          <p className="notranslate text-xs font-semibold uppercase tracking-[0.18em] text-cyan-600 mb-3">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+          <p className="notranslate text-xs font-semibold uppercase tracking-[0.18em] text-cyan-600 mb-4">
             {t("trainingDetail.about")}
           </p>
-          <p className="text-slate-700 whitespace-pre-line leading-relaxed max-w-3xl">
+          <div className="text-slate-700 whitespace-pre-line leading-relaxed text-sm sm:text-base">
             {training.description}
-          </p>
+          </div>
         </div>
       </div>
 

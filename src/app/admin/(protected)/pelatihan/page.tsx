@@ -14,6 +14,7 @@ import {
   Search,
   ArrowLeft,
   AlertTriangle,
+  Maximize2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -35,7 +36,7 @@ import {
   getTrainingDateRange,
   isTrainingDateFilter,
 } from "@/lib/training-filters";
-import { formatRupiahInput } from "@/lib/utils";
+import { formatRupiahInput, formatTrainingDateRange } from "@/lib/utils";
 import type { TrainingWithCount as Training } from "@/types/training";
 
 const getImageUrl = (path: string | null) => {
@@ -49,6 +50,7 @@ const emptyForm = {
   title: "",
   location: "",
   startDate: "",
+  endDate: "",
   price: "",
   description: "",
   imagePath: "",
@@ -65,6 +67,7 @@ export default function AdminPelatihanPage() {
   const [formData, setFormData] = useState(emptyForm);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetchTrainings();
@@ -120,6 +123,7 @@ export default function AdminPelatihanPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          endDate: formData.endDate ? formData.endDate : null,
           requiresPayment: true,
           capacity: formData.capacity.trim() ? Number(formData.capacity.trim()) : null,
         }),
@@ -292,7 +296,7 @@ export default function AdminPelatihanPage() {
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
                     <Calendar className="w-3.5 h-3.5 shrink-0" />
-                    {formatDate(training.startDate)}
+                    {formatTrainingDateRange(training.startDate, training.endDate)}
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500">
                     <Users className="w-3.5 h-3.5 shrink-0" />
@@ -331,15 +335,27 @@ export default function AdminPelatihanPage() {
                 onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="startDate">Tanggal Pelaksanaan</Label>
-              <Input
-                id="startDate"
-                type="date"
-                required
-                value={formData.startDate}
-                onChange={(e) => setFormData((prev) => ({ ...prev, startDate: e.target.value }))}
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="startDate">Tanggal Mulai</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  required
+                  value={formData.startDate}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, startDate: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="endDate">Tanggal Selesai</Label>
+                <Input
+                  id="endDate"
+                  type="date"
+                  required
+                  value={formData.endDate}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, endDate: e.target.value }))}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="price">Harga</Label>
@@ -392,8 +408,17 @@ export default function AdminPelatihanPage() {
               />
               {uploading && <p className="text-xs text-slate-400 mt-1">Mengunggah...</p>}
               {formData.imagePath && (
-                <div className="relative w-full h-32 mt-2 rounded-lg overflow-hidden bg-slate-100">
+                <div className="relative w-full h-36 mt-2 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 group">
                   <Image src={getImageUrl(formData.imagePath) || ""} alt="Preview" fill className="object-cover" />
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => setPreviewImageUrl(getImageUrl(formData.imagePath))}
+                    className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white border-0 h-7 px-2 text-xs shadow"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </Button>
                 </div>
               )}
             </div>
@@ -407,6 +432,25 @@ export default function AdminPelatihanPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Full Preview Modal */}
+      <Dialog open={!!previewImageUrl} onOpenChange={(open) => !open && setPreviewImageUrl(null)}>
+        <DialogContent className="sm:max-w-3xl rounded-2xl max-h-[90vh] overflow-y-auto p-4">
+          <DialogHeader>
+            <DialogTitle>Preview Gambar Pelatihan</DialogTitle>
+          </DialogHeader>
+          {previewImageUrl && (
+            <div className="relative w-full flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden mt-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewImageUrl}
+                alt="Preview Full"
+                className="w-full h-auto max-h-[75vh] object-contain rounded-xl"
+              />
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>
