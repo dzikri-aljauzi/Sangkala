@@ -35,7 +35,7 @@ import {
   getTrainingDateRange,
   isTrainingDateFilter,
 } from "@/lib/training-filters";
-
+import { formatRupiahInput } from "@/lib/utils";
 import type { TrainingWithCount as Training } from "@/types/training";
 
 const getImageUrl = (path: string | null) => {
@@ -45,10 +45,6 @@ const getImageUrl = (path: string | null) => {
   return path;
 };
 
-// Deteksi kemungkinan admin lupa centang "berbayar" — harga diisi tapi checkbox belum dicentang
-const isPriceRequiresPaymentMismatch = (price: string, requiresPayment: boolean) =>
-  !requiresPayment && price.trim() !== "" && price.trim().toLowerCase() !== "gratis";
-
 const emptyForm = {
   title: "",
   location: "",
@@ -56,7 +52,7 @@ const emptyForm = {
   price: "",
   description: "",
   imagePath: "",
-  requiresPayment: false,
+  requiresPayment: true,
   capacity: "",
 };
 
@@ -124,6 +120,7 @@ export default function AdminPelatihanPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          requiresPayment: true,
           capacity: formData.capacity.trim() ? Number(formData.capacity.trim()) : null,
         }),
       });
@@ -345,32 +342,24 @@ export default function AdminPelatihanPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="price">Harga (opsional)</Label>
-              <Input
-                id="price"
-                placeholder='Contoh: "Gratis" atau "Rp 2.500.000"'
-                value={formData.price}
-                onChange={(e) => setFormData((prev) => ({ ...prev, price: e.target.value }))}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                id="requiresPayment"
-                type="checkbox"
-                checked={formData.requiresPayment}
-                onChange={(e) => setFormData((prev) => ({ ...prev, requiresPayment: e.target.checked }))}
-                className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-              />
-              <Label htmlFor="requiresPayment" className="cursor-pointer">
-                Training ini berbayar (wajib upload bukti transfer saat daftar)
-              </Label>
-            </div>
-            {isPriceRequiresPaymentMismatch(formData.price, formData.requiresPayment) && (
-              <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-700 flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Kamu mengisi harga tapi belum centang &quot;Training ini berbayar&quot; — peserta tidak akan diminta upload bukti pembayaran.</span>
+              <Label htmlFor="price">Harga</Label>
+              <div className="relative flex items-center">
+                <span className="absolute left-3 text-slate-500 text-sm font-medium select-none pointer-events-none">
+                  Rp
+                </span>
+                <Input
+                  id="price"
+                  required
+                  placeholder="Contoh: 2.500.000"
+                  value={formData.price}
+                  onChange={(e) => {
+                    const formatted = formatRupiahInput(e.target.value);
+                    setFormData((prev) => ({ ...prev, price: formatted }));
+                  }}
+                  className="pl-9"
+                />
               </div>
-            )}
+            </div>
             <div className="space-y-1.5">
               <Label htmlFor="capacity">Kuota Peserta (opsional)</Label>
               <Input

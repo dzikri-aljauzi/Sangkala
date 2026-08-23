@@ -29,6 +29,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import GoogleTranslateWidget from "@/components/google-translate/GoogleTranslateWidget";
+import { formatRupiah } from "@/lib/utils";
 import type { Training as BaseTraining } from "@/types/training";
 
 interface Training extends BaseTraining {
@@ -321,7 +322,7 @@ export default function DetailPelatihanPage() {
                     {t("trainingDetail.priceLabel")}
                   </p>
                   <p className="text-lg font-semibold text-slate-700 mt-0.5">
-                    {training.price ?? t("trainingDetail.contactUs")}
+                    {training.price ? formatRupiah(training.price) : t("trainingDetail.contactUs")}
                   </p>
                 </div>
               </div>

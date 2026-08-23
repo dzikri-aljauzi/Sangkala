@@ -46,6 +46,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 
+import { formatRupiah, formatRupiahInput } from "@/lib/utils";
 import type { Training } from "@/types/training";
 
 type PaymentStatus = "NOT_REQUIRED" | "PENDING" | "APPROVED" | "REJECTED";
@@ -69,9 +70,6 @@ const getImageUrl = (path: string | null) => {
   return path;
 };
 
-// Deteksi kemungkinan admin lupa centang "berbayar" — harga diisi tapi checkbox belum dicentang
-const isPriceRequiresPaymentMismatch = (price: string, requiresPayment: boolean) =>
-  !requiresPayment && price.trim() !== "" && price.trim().toLowerCase() !== "gratis";
 
 export default function AdminPelatihanDetailPage() {
   const router = useRouter();
@@ -138,10 +136,10 @@ export default function AdminPelatihanDetailPage() {
       title: training.title,
       location: training.location,
       startDate: training.startDate.slice(0, 10),
-      price: training.price || "",
+      price: training.price ? formatRupiahInput(training.price) : "",
       description: training.description,
       imagePath: training.imagePath || "",
-      requiresPayment: training.requiresPayment,
+      requiresPayment: true,
       capacity: training.capacity !== null ? String(training.capacity) : "",
     });
     setShowEditModal(true);
@@ -185,6 +183,7 @@ export default function AdminPelatihanDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          requiresPayment: true,
           isActive: training.isActive,
           capacity: formData.capacity.trim() ? Number(formData.capacity.trim()) : null,
         }),
@@ -461,7 +460,7 @@ export default function AdminPelatihanDetailPage() {
             </div>
 
             {training.price && (
-              <p className="text-lg font-semibold text-blue-600 mb-4">{training.price}</p>
+              <p className="text-lg font-semibold text-blue-600 mb-4">{formatRupiah(training.price)}</p>
             )}
 
             <p className="text-slate-600 leading-relaxed whitespace-pre-line">{training.description}</p>
@@ -624,32 +623,24 @@ export default function AdminPelatihanDetailPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="edit-price">Harga (opsional)</Label>
-              <Input
-                id="edit-price"
-                placeholder='Contoh: "Gratis" atau "Rp 2.500.000"'
-                value={formData.price}
-                onChange={(e) => setFormData((prev) => ({ ...prev, price: e.target.value }))}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                id="edit-requiresPayment"
-                type="checkbox"
-                checked={formData.requiresPayment}
-                onChange={(e) => setFormData((prev) => ({ ...prev, requiresPayment: e.target.checked }))}
-                className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-              />
-              <Label htmlFor="edit-requiresPayment" className="cursor-pointer">
-                Training ini berbayar (wajib upload bukti transfer saat daftar)
-              </Label>
-            </div>
-            {isPriceRequiresPaymentMismatch(formData.price, formData.requiresPayment) && (
-              <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-700 flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Kamu mengisi harga tapi belum centang &quot;Training ini berbayar&quot; — peserta tidak akan diminta upload bukti pembayaran.</span>
+              <Label htmlFor="edit-price">Harga</Label>
+              <div className="relative flex items-center">
+                <span className="absolute left-3 text-slate-500 text-sm font-medium select-none pointer-events-none">
+                  Rp
+                </span>
+                <Input
+                  id="edit-price"
+                  required
+                  placeholder="Contoh: 2.500.000"
+                  value={formData.price}
+                  onChange={(e) => {
+                    const formatted = formatRupiahInput(e.target.value);
+                    setFormData((prev) => ({ ...prev, price: formatted }));
+                  }}
+                  className="pl-9"
+                />
               </div>
-            )}
+            </div>
             <div className="space-y-1.5">
               <Label htmlFor="edit-capacity">Kuota Peserta (opsional)</Label>
               <Input
@@ -738,7 +729,7 @@ export default function AdminPelatihanDetailPage() {
           </DialogHeader>
           {training.price && (
             <p className="text-sm text-slate-600 bg-slate-50 rounded-lg p-3">
-              Nominal seharusnya: <span className="font-semibold text-slate-900">{training.price}</span>
+              Nominal seharusnya: <span className="font-semibold text-slate-900">{formatRupiah(training.price)}</span>
             </p>
           )}
           {proofTarget?.paymentProofPath && (

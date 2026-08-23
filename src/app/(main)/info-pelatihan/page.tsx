@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 import {
   TRAINING_DATE_FILTERS,
   TrainingDateFilter,
@@ -157,7 +157,7 @@ export default function InfoPelatihanPage() {
                   )}
                   {training.price && (
                     <Badge className="notranslate absolute top-3 right-3 bg-white/90 text-blue-700 border border-blue-100 backdrop-blur">
-                      {training.price}
+                      {formatRupiah(training.price)}
                     </Badge>
                   )}
                 </Link>
