@@ -47,7 +47,7 @@ export default function ValueMetrics() {
                 <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 mb-3 sm:mb-4">
                   <metric.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" />
                 </div>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-1">
+                <div className="text-lg min-[400px]:text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-1 break-words">
                   {metric.value}
                 </div>
                 <p className="text-xs sm:text-sm text-slate-500 leading-tight px-1">

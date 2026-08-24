@@ -36,8 +36,8 @@ export default function AboutPreview() {
       <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-center">
         {/* Content */}
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
@@ -65,8 +65,8 @@ export default function AboutPreview() {
           {pillars.map((pillar, index) => (
             <motion.div
               key={pillar.titleKey}
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="bg-white rounded-xl p-4 sm:p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
