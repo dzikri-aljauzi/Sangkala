@@ -15,6 +15,7 @@ import {
   AlertCircle,
   Loader2,
   Landmark,
+  Maximize2,
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Section } from "@/components/ui/section";
@@ -74,6 +75,9 @@ export default function DetailPelatihanPage() {
   const [paymentSettings, setPaymentSettings] = useState<PaymentSettings | null>(null);
   const [paymentProofPath, setPaymentProofPath] = useState("");
   const [uploadingProof, setUploadingProof] = useState(false);
+
+  // Banner preview state
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -263,13 +267,22 @@ export default function DetailPelatihanPage() {
 
         {/* Poster Banner (Full Width / Natural Aspect Ratio) */}
         {training.imagePath ? (
-          <div className="rounded-2xl overflow-hidden shadow-sm border border-slate-200 w-full bg-slate-50">
+          <div className="relative rounded-2xl overflow-hidden shadow-sm border border-slate-200 w-full bg-slate-50">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={getImageUrl(training.imagePath) ?? ""}
               alt={training.title}
               className="w-full h-auto block"
             />
+            {/* Mobile preview button */}
+            <button
+              type="button"
+              onClick={() => setPreviewImageUrl(getImageUrl(training.imagePath))}
+              className="sm:hidden absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 hover:bg-black/80 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg backdrop-blur-sm transition-colors"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+              Preview
+            </button>
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col items-center justify-center text-slate-300 py-24">
@@ -569,6 +582,25 @@ export default function DetailPelatihanPage() {
                 </div>
               </form>
             </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Banner Full Preview Dialog */}
+      <Dialog open={!!previewImageUrl} onOpenChange={(open) => !open && setPreviewImageUrl(null)}>
+        <DialogContent className="sm:max-w-3xl rounded-2xl max-h-[90vh] overflow-y-auto p-4">
+          <DialogHeader>
+            <DialogTitle>{training.title}</DialogTitle>
+          </DialogHeader>
+          {previewImageUrl && (
+            <div className="relative w-full flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden mt-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewImageUrl}
+                alt="Banner Preview"
+                className="w-full h-auto max-h-[75vh] object-contain rounded-xl"
+              />
+            </div>
           )}
         </DialogContent>
       </Dialog>
