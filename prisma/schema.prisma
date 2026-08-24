@@ -320,6 +320,7 @@ model Training {
   title           String
   location        String
   startDate       DateTime
+  endDate         DateTime?
   price           String?  // teks bebas, contoh: "Gratis", "Rp 2.500.000"
   description     String
   imagePath       String?

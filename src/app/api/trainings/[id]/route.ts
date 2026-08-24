@@ -61,11 +61,11 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { title, location, startDate, price, description, imagePath, isActive, requiresPayment, capacity } = body;
+    const { title, location, startDate, endDate, price, description, imagePath, isActive, requiresPayment, capacity } = body;
 
-    if (!title || !location || !startDate || !description) {
+    if (!title || !location || !startDate || !endDate || !description) {
       return NextResponse.json(
-        { error: "Judul, tempat, tanggal, dan deskripsi wajib diisi" },
+        { error: "Judul, tempat, tanggal mulai, tanggal selesai, dan deskripsi wajib diisi" },
         { status: 400 }
       );
     }
@@ -81,6 +81,7 @@ export async function PUT(
         title,
         location,
         startDate: new Date(startDate),
+        endDate: endDate === undefined ? existing.endDate : (endDate ? new Date(endDate) : null),
         price: price || null,
         description,
         imagePath: imagePath || null,

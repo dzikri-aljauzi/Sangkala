@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, AlertCircle, UserCheck, Building2, Users, Shield } from "lucide-react";
+import { Mail, Lock, AlertCircle, UserCheck, Building2, Users, type LucideIcon } from "lucide-react";
 
 interface Assessment {
   id: string;
@@ -16,16 +16,9 @@ interface Assessment {
   clientLogo: string | null;
 }
 
-type LoginRole = "ASESOR" | "KLIEN" | "STAFF_KLIEN" | "ADMIN";
+type LoginRole = "ASESOR" | "KLIEN" | "STAFF_KLIEN";
 
-const roleTabs: { role: LoginRole; label: string; icon: any; color: string; description: string }[] = [
-  {
-    role: "ADMIN",
-    label: "Admin",
-    icon: Shield,
-    color: "from-purple-500 to-violet-600",
-    description: "Login sebagai administrator sistem",
-  },
+const roleTabs: { role: LoginRole; label: string; icon: LucideIcon; color: string; description: string }[] = [
   {
     role: "ASESOR",
     label: "Asesor",
@@ -168,7 +161,7 @@ export default function AssessmentLoginPage({
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3 text-center">
               Login Sebagai
             </p>
-            <div className="grid grid-cols-4 gap-1.5 p-1 bg-slate-100 rounded-xl">
+            <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl">
               {roleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = selectedRole === tab.role;
@@ -215,20 +208,7 @@ export default function AssessmentLoginPage({
                   {currentTab.description}
                 </p>
 
-                {selectedRole === "ADMIN" ? (
-                  <div className="space-y-5">
-                    <Button
-                      onClick={() => router.push(`/admin/login`)}
-                      variant="primary"
-                      size="lg"
-                      className="w-full bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700"
-                    >
-                      <Shield className="w-4 h-4 mr-2" />
-                      Buka Halaman Admin Login
-                    </Button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Error Message */}
                     {error && (
                       <motion.div
@@ -297,7 +277,6 @@ export default function AssessmentLoginPage({
                       {t("assessmentCenter.loginButton")}
                     </Button>
                   </form>
-                )}
               </motion.div>
             </AnimatePresence>
 

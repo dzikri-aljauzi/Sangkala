@@ -7,6 +7,7 @@ export interface Training {
   title: string;
   location: string;
   startDate: string;
+  endDate: string | null;
   price: string | null;
   description: string;
   imagePath: string | null;

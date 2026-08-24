@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, formatRupiah, formatTrainingDateRange } from "@/lib/utils";
 import {
   TRAINING_DATE_FILTERS,
   TrainingDateFilter,
@@ -35,7 +35,7 @@ const getImageUrl = (path: string | null): string | null => {
 };
 
 export default function InfoPelatihanPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -157,7 +157,7 @@ export default function InfoPelatihanPage() {
                   )}
                   {training.price && (
                     <Badge className="notranslate absolute top-3 right-3 bg-white/90 text-blue-700 border border-blue-100 backdrop-blur">
-                      {training.price}
+                      {formatRupiah(training.price)}
                     </Badge>
                   )}
                 </Link>
@@ -174,7 +174,7 @@ export default function InfoPelatihanPage() {
                     </div>
                     <div className="flex items-center gap-2 text-xs text-slate-500">
                       <Calendar className="w-3.5 h-3.5 shrink-0" />
-                      {formatDate(training.startDate)}
+                      {formatTrainingDateRange(training.startDate, training.endDate, language === "en" ? "en-US" : "id-ID")}
                     </div>
                   </div>
                   <p className="text-sm text-slate-500 line-clamp-3 mb-5">
