@@ -242,49 +242,38 @@ export default function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "100vh" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden fixed inset-0 top-16 sm:top-20 bg-white z-40"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="lg:hidden absolute top-full left-0 right-0 w-full h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-5rem)] bg-white border-t border-slate-100 shadow-xl z-40 overflow-y-auto overflow-x-hidden will-change-[transform,opacity]"
           >
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-6 sm:py-8 pb-12">
               <div className="flex flex-col gap-2">
-                {allMobileLinks.map((link, index) => (
-                  <motion.div
+                {allMobileLinks.map((link) => (
+                  <Link
                     key={link.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={cn(
+                      "block px-4 py-3 text-lg font-medium rounded-lg transition-all duration-150",
+                      pathname === link.href
+                        ? "text-[#2563eb] bg-[#2563eb]/10"
+                        : "text-[#1e293b] hover:text-[#2563eb] hover:bg-[#2563eb]/5"
+                    )}
                   >
-                    <Link
-                      href={link.href}
-                      onClick={() => setIsOpen(false)}
-                      className={cn(
-                        "block px-4 py-3 text-lg font-medium rounded-lg transition-all",
-                        pathname === link.href
-                          ? "text-[#2563eb] bg-[#2563eb]/10"
-                          : "text-[#1e293b] hover:text-[#2563eb] hover:bg-[#2563eb]/5"
-                      )}
-                    >
-                      {t(link.key)}
-                    </Link>
-                  </motion.div>
+                    {t(link.key)}
+                  </Link>
                 ))}
               </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="mt-8"
-              >
+              <div className="mt-6 sm:mt-8 pb-6">
                 <Link href="/contact" onClick={() => setIsOpen(false)}>
                   <Button variant="primary" size="lg" className="w-full">
                     {t("nav.cta")}
                   </Button>
                 </Link>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         )}
