@@ -34,14 +34,14 @@ function TestimonialCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="relative bg-white rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8 border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
+      className="relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col w-full min-w-0 overflow-hidden"
     >
-      <Quote className="absolute top-4 sm:top-6 right-4 sm:right-6 w-8 h-8 sm:w-10 sm:h-10 text-blue-500/15" />
+      <Quote className="absolute top-3 sm:top-6 right-3 sm:right-6 w-7 h-7 sm:w-10 sm:h-10 text-blue-500/15 pointer-events-none" />
 
       {/* Author Info at Top */}
-      <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
+      <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5 min-w-0 w-full">
         {testimonial.image ? (
-          <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden ring-2 ring-blue-100 flex-shrink-0">
+          <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden ring-2 ring-blue-100 flex-shrink-0">
             <Image
               src={testimonial.image}
               alt={testimonial.author}
@@ -51,25 +51,25 @@ function TestimonialCard({
             />
           </div>
         ) : (
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
-            <User className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+            <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </div>
         )}
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="font-semibold text-slate-800 text-sm sm:text-base truncate">
             {testimonial.author}
           </p>
-          <p className="text-xs sm:text-sm text-slate-500 line-clamp-2">
+          <p className="text-xs sm:text-sm text-slate-500 line-clamp-2 break-words">
             {testimonial.position}
           </p>
-          <p className="text-xs sm:text-sm font-medium text-blue-600">
+          <p className="text-xs sm:text-sm font-medium text-blue-600 truncate">
             {testimonial.company}
           </p>
         </div>
       </div>
 
       {/* Quote */}
-      <div className="flex-1">
+      <div className="flex-1 min-w-0 w-full">
         <AnimatePresence mode="wait">
           <motion.p
             key={isExpanded ? "expanded" : "collapsed"}
@@ -77,7 +77,7 @@ function TestimonialCard({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className={`text-sm sm:text-base text-slate-600 italic leading-relaxed ${
+            className={`text-sm sm:text-base text-slate-600 italic leading-relaxed break-words ${
               !isExpanded && isLongQuote ? "line-clamp-4" : ""
             }`}
           >
@@ -199,7 +199,7 @@ function ClientLogosCarousel({ language }: { language: string }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: 0.3 }}
-      className="mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-slate-200"
+      className="mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-slate-200 w-full max-w-full overflow-hidden"
     >
       <p className="text-center text-slate-500 mb-6 sm:mb-8 text-sm sm:text-base">
         {language === "id"
@@ -208,7 +208,7 @@ function ClientLogosCarousel({ language }: { language: string }) {
       </p>
 
       <div
-        className="relative"
+        className="relative w-full max-w-full px-8 sm:px-12 md:px-14"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         ref={carouselRef}
@@ -216,22 +216,22 @@ function ClientLogosCarousel({ language }: { language: string }) {
         {/* Navigation Arrows */}
         <button
           onClick={goToPrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-slate-50 transition-colors border border-slate-100"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-slate-50 transition-colors border border-slate-100"
           aria-label="Previous"
         >
-          <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" />
+          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-slate-600" />
         </button>
 
         <button
           onClick={goToNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-slate-50 transition-colors border border-slate-100"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-slate-50 transition-colors border border-slate-100"
           aria-label="Next"
         >
-          <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600" />
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-slate-600" />
         </button>
 
         {/* Carousel Container */}
-        <div className="overflow-hidden mx-12 sm:mx-16">
+        <div className="overflow-hidden w-full max-w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
@@ -239,19 +239,19 @@ function ClientLogosCarousel({ language }: { language: string }) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6"
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6 w-full max-w-full"
             >
               {displayLogos.map((logo, index) => (
                 <div
                   key={`${logo.name}-${index}`}
-                  className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center aspect-[4/3]"
+                  className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center aspect-[4/3] w-full min-w-0 overflow-hidden"
                 >
                   <div className="relative w-full h-full">
                     <Image
                       src={logo.src}
                       alt={logo.name}
                       fill
-                      className="object-contain p-2"
+                      className="object-contain p-1 sm:p-2"
                     />
                   </div>
                 </div>
@@ -339,7 +339,7 @@ export default function Testimonials() {
   ];
 
   return (
-    <Section id="testimonials" variant="light" padding="xl">
+    <Section id="testimonials" variant="light" padding="xl" className="w-full max-w-full overflow-hidden">
       <SectionHeader
         title={language === "id" ? "Klien & Testimoni" : "Clients & Testimonials"}
         subtitle={
@@ -349,7 +349,7 @@ export default function Testimonials() {
         }
       />
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 w-full max-w-full">
         {testimonials.map((testimonial, index) => (
           <TestimonialCard
             key={index}
