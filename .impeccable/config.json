@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "border-b-2",
+        "createdAt": "2026-08-26T13:50:32.865Z",
+        "reason": "false positive: standard Tailwind spinner idiom (rounded-full + single-side border-b-2 + animate-spin), not a decorative accent border on a card. Verified during /impeccable audit critique run 2026-08-26 (Assessment B detector pass)."
+      }
+    ]
+  }
+}
