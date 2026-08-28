@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -59,6 +60,9 @@ const emptyForm = {
 };
 
 export default function AdminPelatihanPage() {
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
+
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -102,12 +106,13 @@ export default function AdminPelatihanPage() {
       if (res.ok) {
         const data = await res.json();
         setFormData((prev) => ({ ...prev, imagePath: data.filePath }));
+        toast.success("Foto berhasil diupload");
       } else {
-        toast.error("Gagal upload gambar");
+        toast.error("Gagal mengupload foto");
       }
     } catch (error) {
       console.error("Error uploading image:", error);
-      toast.error("Gagal upload gambar");
+      toast.error("Gagal mengupload foto");
     } finally {
       setUploading(false);
     }
@@ -133,6 +138,7 @@ export default function AdminPelatihanPage() {
         setShowModal(false);
         setFormData(emptyForm);
         fetchTrainings();
+        toast.success("Pelatihan berhasil dibuat");
       } else {
         const error = await res.json();
         toast.error(error.error || "Gagal menyimpan pelatihan");
@@ -146,24 +152,19 @@ export default function AdminPelatihanPage() {
   };
 
   const filteredTrainings = trainings.filter((t) => {
-    const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.location.toLowerCase().includes(searchQuery.toLowerCase());
+
     if (!matchesSearch) return false;
+    if (!dateFilter) return true;
 
-    if (dateFilter) {
-      const { start, end } = getTrainingDateRange(dateFilter);
-      const startDate = new Date(t.startDate);
-      if (startDate < start || startDate > end) return false;
-    }
+    const range = getTrainingDateRange(dateFilter);
+    if (!range) return true;
 
-    return true;
+    const trainingStart = new Date(t.startDate).getTime();
+    return trainingStart >= range.start.getTime() && trainingStart <= range.end.getTime();
   });
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
 
   if (loading) {
     return (
@@ -175,8 +176,8 @@ export default function AdminPelatihanPage() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Title + Actions */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -195,9 +196,11 @@ export default function AdminPelatihanPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/admin/pelatihan/pengaturan-pembayaran">
-              <Button variant="outline">Pengaturan Rekening</Button>
-            </Link>
+            {isSuperAdmin && (
+              <Link href="/admin/pelatihan/pengaturan-pembayaran">
+                <Button variant="outline">Pengaturan Rekening</Button>
+              </Link>
+            )}
             <Button
               onClick={() => {
                 setFormData(emptyForm);
@@ -298,11 +301,19 @@ export default function AdminPelatihanPage() {
                     <Calendar className="w-3.5 h-3.5 shrink-0" />
                     {formatTrainingDateRange(training.startDate, training.endDate)}
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
                     <Users className="w-3.5 h-3.5 shrink-0" />
                     {training._count.registrants}
                     {training.capacity !== null ? ` / ${training.capacity}` : ""} pendaftar
                   </div>
+                  {training.createdBy && (
+                    <div className="text-[11px] text-slate-400 pt-2 border-t border-slate-100 flex items-center justify-between">
+                      <span>Oleh: <strong className="text-slate-600 font-medium">{training.createdBy.name}</strong></span>
+                      <span className="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px]">
+                        {training.createdBy.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </Link>
             ))}

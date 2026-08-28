@@ -6,13 +6,14 @@ import {
   notifyRegistrantPaymentApproved,
   notifyRegistrantPaymentRejected,
 } from "@/lib/email";
+import { recordAuditLog } from "@/lib/audit";
 
 type Params = {
   id: string;
   registrantId: string;
 };
 
-// PUT approve/reject bukti pembayaran — admin only
+// PUT approve/reject bukti pembayaran — admin / super admin
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<Params> }
@@ -20,7 +21,7 @@ export async function PUT(
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -44,7 +45,6 @@ export async function PUT(
 
     if (action === "reset") {
       // Batalkan keputusan approve/reject sebelumnya — balik ke Menunggu, tidak kirim email
-      // (ini koreksi internal admin, bukan sesuatu yang perlu diketahui peserta).
       const updated = await prisma.trainingRegistrant.update({
         where: { id: registrantId },
         data: {
@@ -54,6 +54,18 @@ export async function PUT(
           reviewedById: null,
         },
       });
+
+      await recordAuditLog({
+        entityType: "TRAINING",
+        entityId: id,
+        action: "REVIEW_PAYMENT",
+        summary: `Mereset status verifikasi pembayaran untuk pendaftar "${registrant.name}" pada pelatihan "${registrant.training.title}"`,
+        changes: {
+          paymentStatus: { old: registrant.paymentStatus, new: "PENDING" },
+        },
+        userId: session.user.id,
+      });
+
       return NextResponse.json(updated);
     }
 
@@ -67,7 +79,6 @@ export async function PUT(
       }
 
       // Sudah ditolak dengan alasan yang sama persis — jangan kirim email duplikat
-      // (mis. admin tidak sengaja klik dua kali / submit ulang).
       if (registrant.paymentStatus === "REJECTED" && registrant.rejectionReason === reason) {
         return NextResponse.json(registrant);
       }
@@ -80,6 +91,18 @@ export async function PUT(
           reviewedAt: new Date(),
           reviewedById: session.user.id,
         },
+      });
+
+      await recordAuditLog({
+        entityType: "TRAINING",
+        entityId: id,
+        action: "REVIEW_PAYMENT",
+        summary: `Menolak bukti pembayaran pendaftar "${registrant.name}" pada pelatihan "${registrant.training.title}"`,
+        changes: {
+          paymentStatus: { old: registrant.paymentStatus, new: "REJECTED" },
+          rejectionReason: { old: registrant.rejectionReason, new: reason },
+        },
+        userId: session.user.id,
       });
 
       notifyRegistrantPaymentRejected({
@@ -108,6 +131,17 @@ export async function PUT(
         reviewedAt: new Date(),
         reviewedById: session.user.id,
       },
+    });
+
+    await recordAuditLog({
+      entityType: "TRAINING",
+      entityId: id,
+      action: "REVIEW_PAYMENT",
+      summary: `Menyetujui pembayaran pendaftar "${registrant.name}" pada pelatihan "${registrant.training.title}"`,
+      changes: {
+        paymentStatus: { old: registrant.paymentStatus, new: "APPROVED" },
+      },
+      userId: session.user.id,
     });
 
     notifyRegistrantPaymentApproved({

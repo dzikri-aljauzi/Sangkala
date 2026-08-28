@@ -34,6 +34,9 @@ yarn-error.log*
 # database lokal
 /prisma/dev.db
 
+# local cron test tooling
+/scripts/*.log
+
 # env files (can opt-in for committing if needed)
 .env*
 
@@ -55,6 +58,10 @@ next-env.d.ts
 
 # local docs
 /docs
+
+# data sampel J7 (dev/testing lokal) -- jangan ikut commit
+/Data_J7_Reminder_baru.xlsx
+/Sampel Data J7.xlsx
 
 # local file
 /public/uploads/logos/

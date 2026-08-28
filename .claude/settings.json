@@ -96,5 +96,8 @@
     "additionalDirectories": [
       "D:\\dzikri - temp\\work\\leadershipnasionalasia.com\\src\\app\\admin\\(protected)\\sertifikat\\[id]\\preview"
     ]
+  },
+  "enabledPlugins": {
+    "impeccable@impeccable": false
   }
 }

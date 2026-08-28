@@ -1,6 +1,7 @@
 import {
   Award,
   BarChart3,
+  BellRing,
   Camera,
   FileText,
   FolderOpen,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-export type AppRole = "ADMIN" | "ASESOR" | "KLIEN" | "STAFF_KLIEN";
+export type AppRole = "SUPER_ADMIN" | "ADMIN" | "ASESOR" | "KLIEN" | "STAFF_KLIEN";
 
 export interface NavItem {
   key: string;
@@ -56,13 +57,26 @@ export const getNavSections = (
 ): NavSection[] => {
   const sections: NavSection[] = [];
 
-  if (role === "ADMIN") {
+  if (role === "SUPER_ADMIN") {
     sections.push(
       globalSection([
         { key: "overview", label: "Overview", icon: LayoutDashboard },
         { key: "pelatihan", label: "Pelatihan", icon: GraduationCap },
         { key: "sertifikat", label: "Sertifikat", icon: Award },
         { key: "manage", label: "Insights", icon: Newspaper },
+        { key: "reminder-sertifikat", label: "Reminder Sertifikasi", icon: BellRing },
+        { key: "users", label: "Kelola Pengguna", icon: Users },
+        { key: "audit-log", label: "Log Aktivitas", icon: History },
+      ])
+    );
+  } else if (role === "ADMIN") {
+    sections.push(
+      globalSection([
+        { key: "overview", label: "Overview", icon: LayoutDashboard },
+        { key: "pelatihan", label: "Pelatihan", icon: GraduationCap },
+        { key: "sertifikat", label: "Sertifikat", icon: Award },
+        { key: "manage", label: "Insights", icon: Newspaper },
+        { key: "reminder-sertifikat", label: "Reminder Sertifikasi", icon: BellRing },
       ])
     );
   }
@@ -80,6 +94,7 @@ export const getNavSections = (
   ]);
 
   switch (role) {
+    case "SUPER_ADMIN":
     case "ADMIN":
       sections.push(adminWorkspace);
       break;

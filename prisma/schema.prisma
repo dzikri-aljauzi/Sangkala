@@ -77,6 +77,7 @@ model User {
   trainings         Training[]      @relation("CreatedTrainings")
   reviewedRegistrants    TrainingRegistrant[] @relation("ReviewedRegistrants")
   updatedPaymentSettings PaymentSetting[]     @relation("UpdatedPaymentSettings")
+  auditLogs              AuditLog[]           @relation("UserAuditLogs")
 
   @@index([assessmentId])
   @@map("users")
@@ -367,6 +368,40 @@ model TrainingRegistrant {
   @@map("training_registrants")
 }
 
+// ===== Reminder Kadaluarsa Sertifikat & Refreshment =====
+
+model CertificationHolder {
+  id                 String   @id @default(cuid())
+  bsmrId             String   @unique // "ID BSMR" — unique biar re-import bisa upsert
+  name               String
+  institution        String
+  level              String   // "Jenjang Terakhir"
+  certificationName  String   // "Sertifikasi yang Diambil" — free text dulu
+  email              String
+  examDate           DateTime // "Tanggal Ujian"
+  expiryDate         DateTime // "Masa Berakhir" — juga jadi trigger checkpoint ke-3/resertifikasi
+  refreshment1Date   DateTime
+  refreshment2Date   DateTime
+  // Sengaja tidak ada refreshment3Date — checkpoint ke-3 pakai expiryDate langsung (selalu identik
+  // di data sumber), simpan kolom terpisah cuma bikin resiko drift antar 2 kolom yang harusnya sama.
+
+  refreshment1CompletedAt DateTime?
+  refreshment2CompletedAt DateTime?
+  recertCompletedAt       DateTime?
+
+  refreshment1ReminderSentAt DateTime?
+  refreshment2ReminderSentAt DateTime?
+  recertReminderSentAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([expiryDate])
+  @@index([refreshment1Date])
+  @@index([refreshment2Date])
+  @@map("certification_holders")
+}
+
 // Info rekening perusahaan untuk pembayaran manual — singleton (selalu 1 row, id tetap "singleton")
 model PaymentSetting {
   id            String   @id @default("singleton")
@@ -379,5 +414,25 @@ model PaymentSetting {
   updatedBy     User?    @relation("UpdatedPaymentSettings", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@map("payment_settings")
+}
+
+// ===== Audit Log Model =====
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  entityType String   // "TRAINING", "PAYMENT_SETTING", "USER", "REGISTRANT"
+  entityId   String
+  action     String   // "CREATE", "UPDATE", "STATUS_CHANGE", "DELETE", "REVIEW_PAYMENT"
+  summary    String
+  changes    String?  // JSON diff string: { field: { old: val, new: val } }
+  userId     String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation("UserAuditLogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
 }
 
