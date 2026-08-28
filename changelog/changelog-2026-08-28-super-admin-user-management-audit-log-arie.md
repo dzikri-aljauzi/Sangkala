@@ -128,16 +128,18 @@ pm2 restart lna-app
 
 ## Panduan Mengubah / Menjadikan `admin@lna.com` sebagai Super Admin di Production
 
-Setelah proses migrasi dan build selesai di server production, akun `admin@lna.com` harus dipastikan memiliki role `SUPER_ADMIN`. Pilih salah satu dari metode berikut:
+Setelah proses migrasi dan build selesai di server production, akun `admin@lna.com` harus dipastikan memiliki role `SUPER_ADMIN`. Pilih salah satu dari metode berikut.
 
-### Opsi 1: Menjalankan Prisma Seed (Direkomendasikan)
-File `prisma/seed.ts` telah dikonfigurasi menggunakan method `upsert` yang secara otomatis memperbarui role `admin@lna.com` menjadi `SUPER_ADMIN` tanpa menghapus data lain:
+> ⚠️ **Revisi (2026-08-28, Dzikri) — baca sebelum pilih opsi.** `prisma/seed.ts` meng-hardcode `password: await bcrypt.hash("admin123", 10)` di blok `update` buat **ketiga** akun admin (`admin@lna.com`, `ferry.hermansyah@lna.com`, `jasmine.putri@lna.com`) — bukan cuma role yang ke-update, password-nya ikut ke-reset ke default tiap kali seed dijalankan ulang, siapapun email-nya. Kalau password akun-akun ini **sudah pernah dirotate manual di production** (misal lewat `scripts/rotate-admin-password.ts`, atau Ferry/Jasmine sudah pegang & ganti password mereka sendiri), **Opsi 1 di bawah akan menimpa balik password itu ke `admin123`** — Ferry & Jasmine bisa kekunci dari akun mereka sendiri, dan password admin utama balik ke default yang literal ke-print di console log seed-nya. **Kalau situasinya begitu, langsung pakai Opsi 2 — jangan jalankan `npx prisma db seed` di production.**
+
+### Opsi 1: Menjalankan Prisma Seed (⚠️ HANYA kalau password ketiga akun admin belum pernah dirotate manual)
+File `prisma/seed.ts` dikonfigurasi menggunakan method `upsert` yang memperbarui role `admin@lna.com` menjadi `SUPER_ADMIN` — **tapi juga ikut me-reset password ketiga akun admin ke `admin123`**, lihat peringatan di atas sebelum jalanin ini:
 ```bash
 npx prisma db seed
 ```
 
-### Opsi 2: Eksekusi Query SQL Langsung (Cepat)
-Jika server production menggunakan database SQLite (misal `prisma/prod.db` atau path file database production yang digunakan pada `.env` `DATABASE_URL`):
+### Opsi 2: Eksekusi Query SQL Langsung (✅ Direkomendasikan — aman dipakai kapan pun, termasuk kalau password sudah dirotate)
+Update kolom `role` doang, tidak menyentuh password atau kolom lain sama sekali. Jika server production menggunakan database SQLite (misal `prisma/prod.db` atau path file database production yang digunakan pada `.env` `DATABASE_URL`):
 ```bash
 sqlite3 prisma/prod.db "UPDATE users SET role = 'SUPER_ADMIN' WHERE email = 'admin@lna.com';"
 ```
@@ -145,6 +147,10 @@ Untuk memverifikasi perubahan role:
 ```bash
 sqlite3 prisma/prod.db "SELECT id, email, name, role FROM users WHERE email = 'admin@lna.com';"
 ```
+
+**Catatan**: Ferry & Jasmine tidak perlu di-update apapun untuk fitur ini — role mereka memang tetap `ADMIN` (Sub Admin) sesuai desain, bukan perlu di-upgrade ke `SUPER_ADMIN`.
+
+**Follow-up disarankan** (di luar scope deploy ini, tapi dicatat biar tidak terulang): perbaiki `prisma/seed.ts` supaya blok `update` untuk user yang sudah ada tidak ikut menimpa `password` — cukup pastikan `role`/`isActive`-nya, biarkan password yang sudah dirotate tetap dipegang pemiliknya. Selama itu belum dibenahi, `npx prisma db seed` tidak aman dijalankan ulang di production kapan pun ada password yang sudah dirotate manual.
 
 ---
 
@@ -157,3 +163,4 @@ sqlite3 prisma/prod.db "SELECT id, email, name, role FROM users WHERE email = 'a
    - Pastikan menu Super Admin tidak muncul di sidebar.
    - Pastikan tombol Pengaturan Rekening tidak terlihat.
    - Buka `/admin/pelatihan/[id]` dan pastikan tab Riwayat Perubahan bekerja dengan baik.
+3. **Kalau tadi pakai Opsi 2 (SQL langsung)**: konfirmasi ke Ferry & Jasmine bahwa password mereka masing-masing (yang sudah dirotate) masih bisa dipakai login seperti biasa — harusnya tidak berubah sama sekali, tapi worth dikonfirmasi sekali setelah deploy.
