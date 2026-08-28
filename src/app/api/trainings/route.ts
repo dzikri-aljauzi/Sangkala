@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { getTrainingDateRange, isTrainingDateFilter } from "@/lib/training-filters";
+import { recordAuditLog } from "@/lib/audit";
 
 // GET list pelatihan — publik (hanya isActive), admin bisa lihat semua lewat ?includeInactive=true
 // Query param opsional: ?search=judul & ?filter=minggu-ini|bulan-ini|tahun-ini (berdasarkan startDate)
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
     let allowInactive = false;
     if (includeInactive) {
       const session = await getServerSession(authOptions);
-      allowInactive = !!session && session.user.role === "ADMIN";
+      allowInactive = !!session && (session.user.role === "ADMIN" || session.user.role === "SUPER_ADMIN");
     }
 
     const whereClause: Prisma.TrainingWhereInput = {};
@@ -42,6 +43,14 @@ export async function GET(request: NextRequest) {
       orderBy: { startDate: "asc" },
       include: {
         _count: { select: { registrants: true } },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
       },
     });
 
@@ -55,7 +64,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST create pelatihan baru — admin only
+// POST create pelatihan baru — admin / super admin only
 export async function POST(request: NextRequest) {
   try {
     const { session, error } = await requireAdmin();
@@ -84,6 +93,15 @@ export async function POST(request: NextRequest) {
         capacity: typeof capacity === "number" ? capacity : null,
         createdById: session.user.id,
       },
+    });
+
+    // Catat riwayat pembuatan di AuditLog
+    await recordAuditLog({
+      entityType: "TRAINING",
+      entityId: training.id,
+      action: "CREATE",
+      summary: `Membuat pelatihan "${training.title}"`,
+      userId: session.user.id,
     });
 
     return NextResponse.json(training, { status: 201 });
