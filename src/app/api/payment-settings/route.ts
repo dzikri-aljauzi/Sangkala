@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireSuperAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
+import { recordAuditLog, computeChangesDiff } from "@/lib/audit";
 
 const SETTINGS_ID = "singleton";
 
@@ -24,14 +24,11 @@ export async function GET() {
   }
 }
 
-// PUT update info rekening pembayaran — admin only
+// PUT update info rekening pembayaran — super admin only
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { session, error } = await requireSuperAdmin();
+    if (error) return error;
 
     const body = await request.json();
     const { bankName, accountNumber, accountHolder, notes } = body;
@@ -47,6 +44,10 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const existing = await prisma.paymentSetting.findUnique({
+      where: { id: SETTINGS_ID },
+    });
+
     const data = {
       bankName: bankName.trim(),
       accountNumber: accountNumber.trim(),
@@ -55,10 +56,29 @@ export async function PUT(request: NextRequest) {
       updatedById: session.user.id,
     };
 
+    const changes = computeChangesDiff(
+      {
+        bankName: existing?.bankName || "",
+        accountNumber: existing?.accountNumber || "",
+        accountHolder: existing?.accountHolder || "",
+        notes: existing?.notes || null,
+      },
+      data
+    );
+
     const settings = await prisma.paymentSetting.upsert({
       where: { id: SETTINGS_ID },
       create: { id: SETTINGS_ID, ...data },
       update: data,
+    });
+
+    await recordAuditLog({
+      entityType: "PAYMENT_SETTING",
+      entityId: SETTINGS_ID,
+      action: "UPDATE",
+      summary: `Memperbarui data rekening pembayaran (${data.bankName} - ${data.accountNumber})`,
+      changes,
+      userId: session.user.id,
     });
 
     return NextResponse.json(settings);
