@@ -633,7 +633,7 @@ export default function AdminAuditLogPage() {
                 >
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div className="w-11 h-11 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-base shrink-0">
                           {user.name.charAt(0).toUpperCase()}
                         </div>
@@ -642,7 +642,9 @@ export default function AdminAuditLogPage() {
                           <p className="text-xs text-slate-500 truncate">{user.email}</p>
                         </div>
                       </div>
-                      <Badge className={user.role === "SUPER_ADMIN" ? "bg-indigo-100 text-indigo-800" : "bg-sky-100 text-sky-800"}>
+                      <Badge
+                        className={`shrink-0 ${user.role === "SUPER_ADMIN" ? "bg-indigo-100 text-indigo-800" : "bg-sky-100 text-sky-800"}`}
+                      >
                         {user.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
                       </Badge>
                     </div>
