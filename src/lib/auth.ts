@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
         // Validate login role matches user's actual role
         const loginRole = credentials.loginRole;
         if (loginRole) {
-          if (loginRole === "ADMIN" && user.role !== "ADMIN") {
+          if (loginRole === "ADMIN" && user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") {
             throw new Error("Akun ini bukan admin. Silakan gunakan tab login yang sesuai.");
           }
           if (loginRole === "ASESOR" && user.role !== "ASESOR") {
@@ -61,8 +61,8 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Role-based validation
-        if (user.role === "ADMIN") {
-          // Admin can login from anywhere (no assessmentId needed)
+        if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+          // Admin and Super Admin can login from anywhere (no assessmentId needed)
         } else {
           // ASESOR, KLIEN, and STAFF_KLIEN MUST provide assessmentId
           if (!credentials.assessmentId) {
