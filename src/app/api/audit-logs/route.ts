@@ -32,12 +32,25 @@ export async function GET(request: NextRequest) {
   }
 
   if (startDate || endDate) {
-    where.createdAt = {};
-    if (startDate) {
-      where.createdAt.gte = new Date(startDate);
+    let start = startDate ? new Date(startDate) : null;
+    let end = endDate ? new Date(endDate) : null;
+
+    if (start && isNaN(start.getTime())) start = null;
+    if (end && isNaN(end.getTime())) end = null;
+
+    // Swap if startDate is after endDate
+    if (start && end && start > end) {
+      const temp = start;
+      start = end;
+      end = temp;
     }
-    if (endDate) {
-      const end = new Date(endDate);
+
+    where.createdAt = {};
+    if (start) {
+      start.setHours(0, 0, 0, 0);
+      where.createdAt.gte = start;
+    }
+    if (end) {
       end.setHours(23, 59, 59, 999);
       where.createdAt.lte = end;
     }

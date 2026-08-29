@@ -19,6 +19,10 @@ import {
   ArrowRight,
   Clock,
   User as UserIcon,
+  Key,
+  ChevronDown,
+  ChevronUp,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -37,6 +41,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface AuditLogUser {
   id: string;
@@ -73,6 +86,7 @@ const ACTION_OPTIONS = [
   { value: "CREATE", label: "Pembuatan (Create)" },
   { value: "UPDATE", label: "Pengeditan (Update)" },
   { value: "STATUS_CHANGE", label: "Ubah Status" },
+  { value: "PASSWORD_RESET", label: "Reset Password" },
   { value: "REVIEW_PAYMENT", label: "Verifikasi Pembayaran" },
   { value: "DELETE", label: "Penghapusan (Delete)" },
 ];
@@ -94,10 +108,12 @@ export default function AdminAuditLogPage() {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const [selectedAction, setSelectedAction] = useState("");
   const [selectedUserId, setSelectedUserId] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   // Sub Admins Summary State
   const [subAdmins, setSubAdmins] = useState<SubAdminSummary[]>([]);
@@ -114,7 +130,7 @@ export default function AdminAuditLogPage() {
         pageSize: String(pageSize),
       });
 
-      if (searchQuery.trim()) params.set("search", searchQuery.trim());
+      if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
       if (selectedAction) params.set("action", selectedAction);
       if (selectedUserId) params.set("userId", selectedUserId);
       if (startDate) params.set("startDate", startDate);
@@ -132,11 +148,11 @@ export default function AdminAuditLogPage() {
       }
     } catch (err) {
       console.error("Error fetching audit logs:", err);
-      toast.error("Gagal mengambil catatan log");
+      toast.error("Gagal mengambil log aktivitas");
     } finally {
       setLoadingLogs(false);
     }
-  }, [page, pageSize, searchQuery, selectedAction, selectedUserId, startDate, endDate, router]);
+  }, [page, pageSize, debouncedSearch, selectedAction, selectedUserId, startDate, endDate, router]);
 
   const fetchSubAdmins = useCallback(async () => {
     setLoadingSubAdmins(true);
@@ -175,8 +191,12 @@ export default function AdminAuditLogPage() {
   const handleSelectSubAdmin = (userId: string) => {
     setSelectedUserId(userId);
     setActiveTab("all");
+    setShowAdvancedFilters(true);
     setPage(1);
   };
+
+  const advancedFiltersCount = (selectedUserId ? 1 : 0) + (startDate || endDate ? 1 : 0);
+  const isAnyFilterActive = Boolean(searchQuery || selectedAction || selectedUserId || startDate || endDate);
 
   const getActionBadge = (action: string) => {
     switch (action) {
@@ -186,6 +206,13 @@ export default function AdminAuditLogPage() {
         return <Badge className="bg-blue-100 text-blue-800 border-transparent">DIUBAH</Badge>;
       case "STATUS_CHANGE":
         return <Badge className="bg-amber-100 text-amber-800 border-transparent">STATUS</Badge>;
+      case "PASSWORD_RESET":
+        return (
+          <Badge className="bg-amber-100 text-amber-900 border-amber-300 gap-1 font-medium">
+            <Key className="w-3 h-3 text-amber-700" />
+            RESET PASS
+          </Badge>
+        );
       case "REVIEW_PAYMENT":
         return <Badge className="bg-purple-100 text-purple-800 border-transparent">PEMBAYARAN</Badge>;
       case "DELETE":
@@ -358,12 +385,13 @@ export default function AdminAuditLogPage() {
       {/* TAB 1: SEMUA LOG (GRID VIEW + PAGINATION + FILTERS) */}
       {activeTab === "all" && (
         <div className="space-y-6">
-          {/* Filters Bar */}
+          {/* Compact Filters Bar */}
           <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-3 shadow-xs">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Primary Filter Row */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               {/* Search input */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
                 <Input
                   type="text"
                   placeholder="Cari aktivitas / user..."
@@ -372,12 +400,23 @@ export default function AdminAuditLogPage() {
                     setSearchQuery(e.target.value);
                     setPage(1);
                   }}
-                  className="pl-9 h-9.5 text-xs rounded-lg"
+                  className="pl-9 pr-8 h-9.5 text-xs rounded-xl"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setPage(1);
+                    }}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
 
               {/* Action dropdown */}
-              <div>
+              <div className="w-full sm:w-56 shrink-0">
                 <Select
                   value={selectedAction || "ALL"}
                   onValueChange={(val) => {
@@ -385,7 +424,7 @@ export default function AdminAuditLogPage() {
                     setPage(1);
                   }}
                 >
-                  <SelectTrigger className="w-full h-9.5 rounded-lg border-slate-200 text-xs bg-white">
+                  <SelectTrigger className="w-full h-9.5 rounded-xl border-slate-200 text-xs bg-white">
                     <SelectValue placeholder="Semua Aksi" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-slate-200 text-xs font-sans">
@@ -393,100 +432,153 @@ export default function AdminAuditLogPage() {
                     <SelectItem value="CREATE">Pembuatan (Create)</SelectItem>
                     <SelectItem value="UPDATE">Pengeditan (Update)</SelectItem>
                     <SelectItem value="STATUS_CHANGE">Ubah Status</SelectItem>
+                    <SelectItem value="PASSWORD_RESET">Reset Password</SelectItem>
                     <SelectItem value="REVIEW_PAYMENT">Verifikasi Pembayaran</SelectItem>
                     <SelectItem value="DELETE">Penghapusan (Delete)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Sub Admin dropdown */}
-              <div>
-                <Select
-                  value={selectedUserId || "ALL"}
-                  onValueChange={(val) => {
-                    setSelectedUserId(val === "ALL" ? "" : val);
-                    setPage(1);
-                  }}
-                >
-                  <SelectTrigger className="w-full h-9.5 rounded-lg border-slate-200 text-xs bg-white">
-                    <SelectValue placeholder="Semua Pelaku / User" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-200 text-xs font-sans max-h-60">
-                    <SelectItem value="ALL">Semua Pelaku / User</SelectItem>
-                    {subAdmins.map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        {user.name} ({user.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Advanced Filter Toggle Button */}
+              <Button
+                variant={showAdvancedFilters || advancedFiltersCount > 0 ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => setShowAdvancedFilters((prev) => !prev)}
+                className={`h-9.5 rounded-xl text-xs gap-1.5 shrink-0 ${
+                  showAdvancedFilters || advancedFiltersCount > 0
+                    ? "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+                    : "text-slate-600"
+                }`}
+              >
+                <Filter className="w-3.5 h-3.5" />
+                <span>Filter Lanjutan</span>
+                {advancedFiltersCount > 0 && (
+                  <span className="w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">
+                    {advancedFiltersCount}
+                  </span>
+                )}
+                {showAdvancedFilters ? (
+                  <ChevronUp className="w-3.5 h-3.5" />
+                ) : (
+                  <ChevronDown className="w-3.5 h-3.5" />
+                )}
+              </Button>
 
-              {/* Date pickers */}
-              <div className="grid grid-cols-2 gap-1.5">
-                <Input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => {
-                    setStartDate(e.target.value);
-                    setPage(1);
-                  }}
-                  placeholder="Dari"
-                  className="h-9.5 text-xs rounded-lg"
-                />
-                <Input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => {
-                    setEndDate(e.target.value);
-                    setPage(1);
-                  }}
-                  placeholder="Sampai"
-                  className="h-9.5 text-xs rounded-lg"
-                />
-              </div>
+              {/* Reset Button */}
+              {isAnyFilterActive && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="h-9.5 px-2.5 text-xs text-slate-500 hover:text-slate-800 gap-1 shrink-0"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Reset
+                </Button>
+              )}
             </div>
 
-            {/* Active filter pills & Reset button */}
-            {(searchQuery || selectedAction || selectedUserId || startDate || endDate) && (
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
-                  <Filter className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Filter Aktif:</span>
-                  {searchQuery && (
-                    <Badge variant="outline" className="bg-slate-50 text-[11px]">
-                      &quot;{searchQuery}&quot;
-                    </Badge>
-                  )}
-                  {selectedAction && (
-                    <Badge variant="outline" className="bg-slate-50 text-[11px]">
-                      Aksi: {selectedAction}
-                    </Badge>
-                  )}
-                  {selectedUserId && (
-                    <Badge variant="outline" className="bg-slate-50 text-[11px]">
-                      User: {subAdmins.find((u) => u.id === selectedUserId)?.name || selectedUserId}
-                    </Badge>
-                  )}
-                  {(startDate || endDate) && (
-                    <Badge variant="outline" className="bg-slate-50 text-[11px]">
-                      Tanggal: {startDate || "Awal"} s/d {endDate || "Sekarang"}
-                    </Badge>
-                  )}
+            {/* Collapsible Advanced Filters */}
+            {showAdvancedFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-3"
+              >
+                {/* Sub Admin dropdown */}
+                <div>
+                  <label className="text-[11px] font-medium text-slate-500 block mb-1">
+                    Pelaku / Sub Admin
+                  </label>
+                  <Select
+                    value={selectedUserId || "ALL"}
+                    onValueChange={(val) => {
+                      setSelectedUserId(val === "ALL" ? "" : val);
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="w-full h-9 rounded-lg border-slate-200 text-xs bg-white">
+                      <SelectValue placeholder="Semua Pelaku / User" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-slate-200 text-xs font-sans max-h-60">
+                      <SelectItem value="ALL">Semua Pelaku / User</SelectItem>
+                      {subAdmins.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name} ({user.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <button
-                  onClick={resetFilters}
-                  className="text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline"
-                >
-                  Reset Semua Filter
-                </button>
+
+                {/* Date pickers */}
+                <div>
+                  <label className="text-[11px] font-medium text-slate-500 block mb-1">
+                    Rentang Waktu (Dari - Sampai)
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => {
+                        setStartDate(e.target.value);
+                        setPage(1);
+                      }}
+                      className="h-9 text-xs rounded-lg"
+                    />
+                    <Input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => {
+                        setEndDate(e.target.value);
+                        setPage(1);
+                      }}
+                      className="h-9 text-xs rounded-lg"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Active filter pills */}
+            {isAnyFilterActive && (
+              <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 text-xs text-slate-500">
+                <span className="font-medium text-slate-400">Filter:</span>
+                {searchQuery && (
+                  <Badge variant="outline" className="bg-slate-50 text-[11px]">
+                    &quot;{searchQuery}&quot;
+                  </Badge>
+                )}
+                {selectedAction && (
+                  <Badge variant="outline" className="bg-slate-50 text-[11px]">
+                    Aksi: {selectedAction}
+                  </Badge>
+                )}
+                {selectedUserId && (
+                  <Badge variant="outline" className="bg-slate-50 text-[11px]">
+                    User: {subAdmins.find((u) => u.id === selectedUserId)?.name || selectedUserId}
+                  </Badge>
+                )}
+                {(startDate || endDate) && (
+                  <Badge variant="outline" className="bg-slate-50 text-[11px]">
+                    Tanggal: {startDate || "Awal"} s/d {endDate || "Sekarang"}
+                  </Badge>
+                )}
               </div>
             )}
           </div>
 
-          {/* Grid View of Logs */}
+          {/* Total Counter Header */}
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-slate-500">
+              Ditemukan <strong className="text-slate-800 font-semibold">{totalItems}</strong> catatan aktivitas
+            </p>
+          </div>
+
+          {/* Logs Table View */}
           {loadingLogs ? (
-            <div className="flex items-center justify-center py-20">
+            <div className="flex items-center justify-center py-20 bg-white rounded-xl border border-slate-200">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
             </div>
           ) : logs.length === 0 ? (
@@ -495,71 +587,88 @@ export default function AdminAuditLogPage() {
               <p className="text-sm">Tidak ada catatan log yang sesuai dengan filter.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {logs.map((log) => {
-                const hasDiff = !!log.changes && log.changes !== "{}" && log.changes !== "null";
-
-                return (
-                  <motion.div
-                    key={log.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col justify-between hover:shadow-md hover:border-blue-200 transition-all group"
-                  >
-                    <div className="space-y-3">
-                      {/* Card Header: Action badge & entity */}
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5">
-                          {getActionBadge(log.action)}
-                          <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                            {getEntityTypeLabel(log.entityType)}
-                          </span>
-                        </div>
-                        <span className="text-[11px] text-slate-400 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-400 shrink-0" />
-                          {new Date(log.createdAt).toLocaleDateString("id-ID", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-
-                      {/* Summary text */}
-                      <p className="text-sm font-semibold text-slate-900 leading-snug line-clamp-3">
-                        {log.summary}
-                      </p>
-                    </div>
-
-                    {/* Card Footer: Actor info & View detail button */}
-                    <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0">
-                          {log.user.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-medium text-slate-800 truncate">{log.user.name}</p>
-                          <p className="text-[10px] text-slate-400 truncate">
-                            {log.user.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
-                          </p>
-                        </div>
-                      </div>
-
-                      {hasDiff && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedLog(log)}
-                          className="h-7 px-2 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-1"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>Detail</span>
-                        </Button>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader className="bg-slate-50/80 border-b border-slate-200">
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="font-semibold text-slate-700 text-xs px-4 py-3.5 w-44">Waktu</TableHead>
+                      <TableHead className="font-semibold text-slate-700 text-xs px-4 py-3.5 w-48">Pelaku / User</TableHead>
+                      <TableHead className="font-semibold text-slate-700 text-xs px-4 py-3.5 w-36">Aksi</TableHead>
+                      <TableHead className="font-semibold text-slate-700 text-xs px-4 py-3.5 w-40">Modul</TableHead>
+                      <TableHead className="font-semibold text-slate-700 text-xs px-4 py-3.5">Ringkasan Aktivitas</TableHead>
+                      <TableHead className="font-semibold text-slate-700 text-xs px-4 py-3.5 text-right w-24">Snapshot</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {logs.map((log) => {
+                      const hasDiff = !!log.changes && log.changes !== "{}" && log.changes !== "null";
+                      return (
+                        <TableRow key={log.id} className="hover:bg-slate-50/80 transition-colors">
+                          <TableCell className="px-4 py-3 text-xs text-slate-600">
+                            <div>
+                              <p className="font-medium text-slate-800">
+                                {new Date(log.createdAt).toLocaleDateString("id-ID", {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                              </p>
+                              <p className="text-[11px] text-slate-400 font-mono">
+                                {new Date(log.createdAt).toLocaleTimeString("id-ID", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  second: "2-digit",
+                                })}{" "}
+                                WIB
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-xs">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0">
+                                {log.user.name.charAt(0).toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-medium text-slate-800 truncate">{log.user.name}</p>
+                                <p className="text-[10px] text-slate-400 truncate">
+                                  {log.user.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
+                                </p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-xs">
+                            {getActionBadge(log.action)}
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-xs">
+                            <span className="font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded text-[11px]">
+                              {getEntityTypeLabel(log.entityType)}
+                            </span>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-xs text-slate-900 font-medium leading-relaxed">
+                            {log.summary}
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-xs text-right">
+                            {hasDiff ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedLog(log)}
+                                className="h-7 px-2 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-1 font-medium"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>Detail</span>
+                              </Button>
+                            ) : (
+                              <span className="text-slate-300 text-xs">-</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           )}
 

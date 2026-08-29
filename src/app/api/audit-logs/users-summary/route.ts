@@ -19,31 +19,41 @@ export async function GET() {
   if (error) return error;
 
   try {
-    const subAdmins = await prisma.user.findMany({
-      where: {
-        role: { in: ["ADMIN", "SUPER_ADMIN"] },
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        isActive: true,
-        createdAt: true,
-        _count: {
-          select: {
-            auditLogs: true,
-            trainings: true,
+    const [subAdmins, lastActivities] = await Promise.all([
+      prisma.user.findMany({
+        where: {
+          role: { in: ["ADMIN", "SUPER_ADMIN"] },
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+          _count: {
+            select: {
+              auditLogs: true,
+              trainings: true,
+            },
           },
         },
-        auditLogs: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          select: { createdAt: true },
+        orderBy: { name: "asc" },
+      }),
+      prisma.auditLog.groupBy({
+        by: ["userId"],
+        _max: {
+          createdAt: true,
         },
-      },
-      orderBy: { name: "asc" },
-    });
+      }),
+    ]);
+
+    const lastActivityMap = new Map<string, Date>();
+    for (const item of lastActivities) {
+      if (item._max.createdAt) {
+        lastActivityMap.set(item.userId, item._max.createdAt);
+      }
+    }
 
     const summary: SubAdminSummaryItem[] = subAdmins.map((user) => ({
       id: user.id,
@@ -53,7 +63,7 @@ export async function GET() {
       isActive: user.isActive,
       createdAt: user.createdAt,
       totalLogs: user._count.auditLogs,
-      lastActivityAt: user.auditLogs[0]?.createdAt ?? null,
+      lastActivityAt: lastActivityMap.get(user.id) ?? null,
       trainingsCount: user._count.trainings,
     }));
 

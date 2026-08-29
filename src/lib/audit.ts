@@ -1,7 +1,13 @@
 import { prisma } from "@/lib/prisma";
 
 export type AuditEntityType = "TRAINING" | "PAYMENT_SETTING" | "USER" | "REGISTRANT";
-export type AuditAction = "CREATE" | "UPDATE" | "STATUS_CHANGE" | "DELETE" | "REVIEW_PAYMENT";
+export type AuditAction =
+  | "CREATE"
+  | "UPDATE"
+  | "STATUS_CHANGE"
+  | "PASSWORD_RESET"
+  | "DELETE"
+  | "REVIEW_PAYMENT";
 
 export interface FieldChange {
   old: unknown;
