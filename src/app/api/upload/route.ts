@@ -78,7 +78,8 @@ export async function POST(request: NextRequest) {
     }
     if (
       (type === "resume" || type === "documentation" || type === "logo") &&
-      session.user.role !== "ADMIN"
+      session.user.role !== "ADMIN" &&
+      session.user.role !== "SUPER_ADMIN"
     ) {
       return NextResponse.json(
         { error: "Only admin can upload this type" },

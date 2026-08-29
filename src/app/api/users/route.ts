@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate role
-    if (!["ADMIN", "ASESOR", "KLIEN", "STAFF_KLIEN"].includes(role)) {
+    if (!["ADMIN", "SUPER_ADMIN", "ASESOR", "KLIEN", "STAFF_KLIEN"].includes(role)) {
       return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         role,
-        assessmentId: role !== "ADMIN" ? assessmentId : null,
+        assessmentId: (role !== "ADMIN" && role !== "SUPER_ADMIN") ? assessmentId : null,
       },
       select: {
         id: true,

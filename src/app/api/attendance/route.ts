@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
     // Admin and Asesor can access all, Klien and Staff_Klien only their own assessment
     if (
       user.role !== "ADMIN" &&
+      user.role !== "SUPER_ADMIN" &&
       user.role !== "ASESOR" &&
       user.assessmentId !== assessmentId
     ) {
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Upload new attendance (Admin only)
+// POST - Upload new attendance (Admin/SUPER_ADMIN only)
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Only admin can upload attendance
-    if (session.user.role !== "ADMIN") {
+    if (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN") {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 

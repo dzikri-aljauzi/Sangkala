@@ -18,7 +18,7 @@ export async function DELETE(
     }
 
     // Only admin can delete attendance
-    if (session.user.role !== "ADMIN") {
+    if (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN") {
       return NextResponse.json({ error: "Admin access required" }, { status: 403 });
     }
 

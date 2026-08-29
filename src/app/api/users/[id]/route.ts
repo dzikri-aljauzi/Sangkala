@@ -23,7 +23,7 @@ export async function PUT(
     if (email !== undefined) updateData.email = email;
     if (role !== undefined) {
       updateData.role = role;
-      updateData.assessmentId = role !== "ADMIN" ? assessmentId : null;
+      updateData.assessmentId = (role !== "ADMIN" && role !== "SUPER_ADMIN") ? assessmentId : null;
     }
     if (isActive !== undefined) updateData.isActive = isActive;
 

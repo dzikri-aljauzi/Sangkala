@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const where: any = {};
 
     // If not admin, only show published articles
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN")) {
       where.status = "PUBLISHED";
     } else if (status) {
       where.status = status;
