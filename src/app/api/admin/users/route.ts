@@ -37,35 +37,56 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    const users = await prisma.user.findMany({
-      where,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        assessmentId: true,
-        isActive: true,
-        createdAt: true,
-        updatedAt: true,
-        assessment: {
-          select: {
-            id: true,
-            name: true,
-            clientName: true,
-          },
-        },
-        _count: {
-          select: {
-            trainings: true,
-            auditLogs: true,
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    const pageParam = searchParams.get("page");
+    const pageSizeParam = searchParams.get("pageSize");
+    const page = pageParam ? Math.max(1, parseInt(pageParam, 10)) : 1;
+    const pageSize = pageSizeParam ? Math.max(1, parseInt(pageSizeParam, 10)) : 10;
+    const skip = (page - 1) * pageSize;
 
-    return NextResponse.json(users);
+    const [total, users] = await prisma.$transaction([
+      prisma.user.count({ where }),
+      prisma.user.findMany({
+        where,
+        skip,
+        take: pageSize,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          assessmentId: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+          assessment: {
+            select: {
+              id: true,
+              name: true,
+              clientName: true,
+            },
+          },
+          _count: {
+            select: {
+              trainings: true,
+              auditLogs: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    return NextResponse.json({
+      users,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages,
+      },
+    });
   } catch (err) {
     console.error("Error fetching users:", err);
     return NextResponse.json(

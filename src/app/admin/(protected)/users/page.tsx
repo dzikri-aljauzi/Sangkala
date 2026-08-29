@@ -20,6 +20,9 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
+  ChevronLeft,
+  ChevronRight,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -40,6 +43,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useDebounce } from "@/hooks/use-debounce";
 import {
   Table,
   TableHeader,
@@ -92,14 +96,23 @@ export default function AdminUsersPage() {
   const [assessments, setAssessments] = useState<AssessmentOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const [selectedRole, setSelectedRole] = useState("ALL");
   const [selectedAssessment, setSelectedAssessment] = useState("ALL");
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   // Modal States
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showConfirmEditModal, setShowConfirmEditModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showConfirmResetModal, setShowConfirmResetModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [confirmToggleUser, setConfirmToggleUser] = useState<UserItem | null>(null);
 
   const [activeUser, setActiveUser] = useState<UserItem | null>(null);
 
@@ -136,15 +149,27 @@ export default function AdminUsersPage() {
   }, []);
 
   const fetchUsers = useCallback(async () => {
+    setLoading(true);
     try {
       const queryParams = new URLSearchParams();
-      if (searchQuery.trim()) queryParams.set("search", searchQuery.trim());
+      queryParams.set("page", page.toString());
+      queryParams.set("pageSize", pageSize.toString());
+      if (debouncedSearch.trim()) queryParams.set("search", debouncedSearch.trim());
       if (selectedRole !== "ALL") queryParams.set("role", selectedRole);
       if (selectedAssessment !== "ALL") queryParams.set("assessmentId", selectedAssessment);
 
       const res = await fetch(`/api/admin/users?${queryParams.toString()}`);
       if (res.ok) {
-        setUsers(await res.json());
+        const data = await res.json();
+        if (data.users && data.pagination) {
+          setUsers(data.users);
+          setTotalPages(data.pagination.totalPages || 1);
+          setTotalItems(data.pagination.total || 0);
+        } else if (Array.isArray(data)) {
+          setUsers(data);
+          setTotalPages(1);
+          setTotalItems(data.length);
+        }
       } else if (res.status === 403) {
         toast.error("Hanya Super Admin yang berwenang mengakses halaman ini");
         router.push("/admin");
@@ -155,7 +180,12 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, selectedRole, selectedAssessment, router]);
+  }, [page, pageSize, debouncedSearch, selectedRole, selectedAssessment, router]);
+
+  // Reset to page 1 when search query changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, selectedRole, selectedAssessment]);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -166,6 +196,13 @@ export default function AdminUsersPage() {
     fetchUsers();
     fetchAssessments();
   }, [session, status, fetchUsers, fetchAssessments, router]);
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setSelectedRole("ALL");
+    setSelectedAssessment("ALL");
+    setPage(1);
+  };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -201,8 +238,13 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
+  const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!activeUser) return;
+    setShowConfirmEditModal(true);
+  };
+
+  const executeEditSubmit = async () => {
     if (!activeUser) return;
     setSubmitting(true);
     try {
@@ -220,7 +262,16 @@ export default function AdminUsersPage() {
         }),
       });
       if (res.ok) {
-        toast.success("Profil pengguna berhasil diperbarui");
+        const isSelf =
+          (!!session?.user?.id && activeUser.id === session.user.id) ||
+          (!!session?.user?.email && activeUser.email.toLowerCase() === session.user.email.toLowerCase());
+
+        if (isSelf && editForm.email.toLowerCase().trim() !== activeUser.email.toLowerCase()) {
+          toast.success("Profil berhasil diperbarui. Gunakan email baru saat login berikutnya.");
+        } else {
+          toast.success("Profil pengguna berhasil diperbarui");
+        }
+        setShowConfirmEditModal(false);
         setShowEditModal(false);
         fetchUsers();
       } else {
@@ -235,8 +286,13 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleResetPasswordSubmit = async (e: React.FormEvent) => {
+  const handleResetPasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!activeUser || !resetPasswordValue.trim() || resetPasswordValue.trim().length < 6) return;
+    setShowConfirmResetModal(true);
+  };
+
+  const executeResetPassword = async () => {
     if (!activeUser) return;
     setSubmitting(true);
     try {
@@ -247,6 +303,7 @@ export default function AdminUsersPage() {
       });
       if (res.ok) {
         toast.success(`Password untuk ${activeUser.name} berhasil direset`);
+        setShowConfirmResetModal(false);
         setShowResetModal(false);
         setResetPasswordValue("");
       } else {
@@ -261,7 +318,8 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleToggleStatus = async (user: UserItem) => {
+  const executeToggleStatus = async (user: UserItem) => {
+    setSubmitting(true);
     try {
       const res = await fetch(`/api/admin/users/${user.id}`, {
         method: "PUT",
@@ -270,6 +328,7 @@ export default function AdminUsersPage() {
       });
       if (res.ok) {
         toast.success(`Status ${user.name} berhasil diubah ke ${!user.isActive ? "Aktif" : "Nonaktif"}`);
+        setConfirmToggleUser(null);
         fetchUsers();
       } else {
         const error = await res.json();
@@ -278,6 +337,8 @@ export default function AdminUsersPage() {
     } catch (err) {
       console.error("Error toggling user status:", err);
       toast.error("Gagal mengubah status pengguna");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -358,34 +419,42 @@ export default function AdminUsersPage() {
         </Button>
       </motion.div>
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row md:items-center gap-3">
+      {/* Filters Bar */}
+      <div className="flex flex-col lg:flex-row lg:items-center gap-3">
         {/* Search Input */}
-        <div className="relative flex-1 min-w-[220px]">
+        <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
           <Input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari nama atau email..."
-            className="pl-10 h-10 rounded-xl text-xs"
+            className="pl-9 pr-8 h-10 rounded-xl text-sm bg-white border-slate-200 shadow-xs"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         {/* Assessment Dropdown Filter */}
-        <div className="w-full md:w-72 shrink-0">
+        <div className="w-full sm:w-64 lg:w-72 shrink-0">
           <Select
             value={selectedAssessment}
             onValueChange={(val) => setSelectedAssessment(val)}
           >
-            <SelectTrigger className="w-full h-10 rounded-xl border-slate-200 text-xs bg-white">
+            <SelectTrigger className="w-full h-9.5 rounded-xl border-slate-200 text-xs bg-white">
               <SelectValue placeholder="Semua Proyek Assessment" />
             </SelectTrigger>
             <SelectContent className="rounded-xl border-slate-200 text-xs font-sans max-h-64">
               <SelectItem value="ALL">Semua Proyek Assessment</SelectItem>
               <SelectItem value="NONE">Tanpa Assessment (Global Admin)</SelectItem>
               {assessments.map((a) => (
-                <SelectItem key={a.id} value={a.id}>
+                <SelectItem key={a.id} value={a.id} className="truncate">
                   {a.clientName} — {a.name}
                 </SelectItem>
               ))}
@@ -394,7 +463,7 @@ export default function AdminUsersPage() {
         </div>
 
         {/* Role Pills Filter */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
           {ROLES.map((r) => (
             <button
               key={r.value}
@@ -409,6 +478,19 @@ export default function AdminUsersPage() {
             </button>
           ))}
         </div>
+
+        {/* Reset Filter Button */}
+        {(selectedRole !== "ALL" || selectedAssessment !== "ALL" || searchQuery.trim() !== "") && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={resetFilters}
+            className="h-9 px-2.5 text-xs text-slate-500 hover:text-slate-800 gap-1 shrink-0"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Reset
+          </Button>
+        )}
       </div>
 
       {/* Users Table */}
@@ -420,11 +502,17 @@ export default function AdminUsersPage() {
       >
         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
           <p className="text-sm font-semibold text-slate-800">
-            Total Pengguna: <span className="text-blue-600">{users.length}</span>
+            Total Pengguna: <span className="text-blue-600">{totalItems}</span>
           </p>
-          <Button variant="ghost" size="sm" onClick={fetchUsers} className="gap-1.5 text-xs text-slate-500">
-            <RotateCcw className="w-3.5 h-3.5" />
-            Refresh
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={fetchUsers}
+            disabled={loading}
+            className="gap-1.5 text-xs text-slate-500"
+          >
+            <RotateCcw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+            Muat Ulang
           </Button>
         </div>
 
@@ -446,7 +534,9 @@ export default function AdminUsersPage() {
             </TableHeader>
             <TableBody>
               {users.map((user) => {
-                const isCurrentSelf = user.id === session?.user?.id;
+                const isCurrentSelf =
+                  (!!session?.user?.id && user.id === session.user.id) ||
+                  (!!session?.user?.email && user.email.toLowerCase() === session.user.email.toLowerCase());
 
                 return (
                   <TableRow key={user.id} className="hover:bg-slate-50/70">
@@ -470,7 +560,29 @@ export default function AdminUsersPage() {
                     </TableCell>
 
                     <TableCell className="px-4 py-3.5">
-                      {getRoleBadge(user.role)}
+                      <span
+                        className={`inline-flex px-2.5 py-0.5 text-xs font-semibold rounded-full ${
+                          user.role === "SUPER_ADMIN"
+                            ? "bg-indigo-100 text-indigo-800 border border-indigo-200"
+                            : user.role === "ADMIN"
+                            ? "bg-sky-100 text-sky-800 border border-sky-200"
+                            : user.role === "ASESOR"
+                            ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                            : user.role === "KLIEN"
+                            ? "bg-amber-100 text-amber-800 border border-amber-200"
+                            : "bg-purple-100 text-purple-800 border border-purple-200"
+                        }`}
+                      >
+                        {user.role === "SUPER_ADMIN"
+                          ? "Super Admin"
+                          : user.role === "ADMIN"
+                          ? "Sub Admin"
+                          : user.role === "ASESOR"
+                          ? "Asesor"
+                          : user.role === "KLIEN"
+                          ? "Klien"
+                          : "Staff Klien"}
+                      </span>
                     </TableCell>
 
                     <TableCell className="px-4 py-3.5">
@@ -493,28 +605,38 @@ export default function AdminUsersPage() {
                     </TableCell>
 
                     <TableCell className="px-4 py-3.5">
-                      <button
-                        onClick={() => !isCurrentSelf && handleToggleStatus(user)}
-                        disabled={isCurrentSelf}
-                        className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${
-                          user.isActive
-                            ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                            : "bg-red-50 text-red-700 hover:bg-red-100"
-                        } ${isCurrentSelf ? "cursor-default" : "cursor-pointer"}`}
-                        title={isCurrentSelf ? "Tidak bisa menonaktifkan akun sendiri" : "Klik untuk toggle status"}
-                      >
-                        {user.isActive ? (
-                          <>
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>Aktif</span>
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="w-3.5 h-3.5 text-red-600" />
-                            <span>Nonaktif</span>
-                          </>
-                        )}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => !isCurrentSelf && setConfirmToggleUser(user)}
+                          disabled={isCurrentSelf}
+                          role="switch"
+                          aria-checked={user.isActive}
+                          className={`
+                            relative inline-flex h-6 w-11 shrink-0 items-center rounded-full
+                            transition-colors duration-200 ease-in-out
+                            ${user.isActive ? "bg-green-500" : "bg-red-500"}
+                            ${isCurrentSelf ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                          `}
+                          title={
+                            isCurrentSelf
+                              ? "Tidak bisa menonaktifkan akun sendiri"
+                              : user.isActive
+                              ? "Klik untuk menonaktifkan user"
+                              : "Klik untuk mengaktifkan kembali user"
+                          }
+                        >
+                          <span
+                            className={`
+                              inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0
+                              transition-transform duration-200 ease-in-out
+                              ${user.isActive ? "translate-x-[22px]" : "translate-x-[2px]"}
+                            `}
+                          />
+                        </button>
+                        <span className={`text-xs font-medium ${user.isActive ? "text-green-700" : "text-red-600"}`}>
+                          {user.isActive ? "Aktif" : "Nonaktif"}
+                        </span>
+                      </div>
                     </TableCell>
 
                     <TableCell className="px-4 py-3.5 text-xs text-slate-600">
@@ -531,7 +653,7 @@ export default function AdminUsersPage() {
                     </TableCell>
 
                     <TableCell className="px-4 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
+                      <div className="flex items-center justify-end gap-1">
                         <Button
                           variant="ghost"
                           size="sm"
@@ -587,6 +709,65 @@ export default function AdminUsersPage() {
               })}
             </TableBody>
           </Table>
+        )}
+
+        {/* Pagination Bar */}
+        {totalItems > 0 && (
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+            {/* Left: Summary text with bigger font */}
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-slate-600 font-medium">
+                Menampilkan <strong className="text-slate-900 font-semibold">{Math.min(totalItems, (page - 1) * pageSize + 1)}</strong> -{" "}
+                <strong className="text-slate-900 font-semibold">{Math.min(totalItems, page * pageSize)}</strong> dari{" "}
+                <strong className="text-slate-900 font-semibold">{totalItems}</strong> pengguna
+              </p>
+            </div>
+
+            {/* Right: Baris selector + Prev / Next Controls */}
+            <div className="flex items-center gap-4 self-end sm:self-auto">
+              <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
+                <span>Baris:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className="bg-white border border-slate-200 text-sm font-medium text-slate-800 rounded-lg px-2.5 py-1.5 outline-none focus:border-blue-500 shadow-xs cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page <= 1}
+                  onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  className="h-9 px-3 text-sm font-medium gap-1.5 bg-white disabled:opacity-40"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Sebelumnya
+                </Button>
+                <span className="text-sm text-slate-700 px-2 font-semibold">
+                  {page} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page >= totalPages}
+                  onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                  className="h-9 px-3 text-sm font-medium gap-1.5 bg-white disabled:opacity-40"
+                >
+                  Berikutnya
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
       </motion.div>
 
@@ -671,7 +852,7 @@ export default function AdminUsersPage() {
             {(createForm.role === "ASESOR" ||
               createForm.role === "KLIEN" ||
               createForm.role === "STAFF_KLIEN") && (
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 min-w-0 w-full">
                 <Label htmlFor="create-assessment">Proyek Assessment Terkait</Label>
                 <Select
                   value={createForm.assessmentId || "NONE"}
@@ -684,14 +865,14 @@ export default function AdminUsersPage() {
                 >
                   <SelectTrigger
                     id="create-assessment"
-                    className="w-full h-10 rounded-md border-slate-200 text-sm bg-white"
+                    className="w-full min-w-0 max-w-full h-10 rounded-md border-slate-200 text-sm bg-white overflow-hidden"
                   >
-                    <SelectValue placeholder="Pilih Proyek Assessment" />
+                    <SelectValue placeholder="Pilih Proyek Assessment" className="truncate text-left" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-200 text-sm font-sans max-h-60">
+                  <SelectContent className="rounded-xl border-slate-200 text-sm font-sans max-h-60 max-w-sm sm:max-w-md">
                     <SelectItem value="NONE">-- Tidak Terkait Assessment --</SelectItem>
                     {assessments.map((a) => (
-                      <SelectItem key={a.id} value={a.id}>
+                      <SelectItem key={a.id} value={a.id} className="truncate">
                         {a.clientName} — {a.name}
                       </SelectItem>
                     ))}
@@ -714,54 +895,81 @@ export default function AdminUsersPage() {
 
       {/* Modal Edit User */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="sm:max-w-md rounded-2xl w-full">
           <DialogHeader>
             <DialogTitle>Edit Profil Pengguna</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleEditSubmit} className="space-y-4 pt-2">
-            <div className="space-y-1.5">
+          <form onSubmit={handleEditSubmit} className="space-y-4 pt-2 w-full min-w-0">
+            <div className="space-y-1.5 min-w-0 w-full">
               <Label htmlFor="edit-name">Nama Lengkap</Label>
               <Input
                 id="edit-name"
                 required
+                className="w-full min-w-0"
                 value={editForm.name}
                 onChange={(e) => setEditForm((prev) => ({ ...prev, name: e.target.value }))}
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 min-w-0 w-full">
               <Label htmlFor="edit-email">Alamat Email</Label>
               <Input
                 id="edit-email"
                 type="email"
                 required
+                className="w-full min-w-0"
                 value={editForm.email}
                 onChange={(e) => setEditForm((prev) => ({ ...prev, email: e.target.value }))}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="edit-role">Role Pengguna</Label>
-              <Select
-                value={editForm.role}
-                onValueChange={(val) => setEditForm((prev) => ({ ...prev, role: val }))}
-              >
-                <SelectTrigger id="edit-role" className="w-full h-10 rounded-md border-slate-200 text-sm bg-white">
-                  <SelectValue placeholder="Pilih Role" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-200 text-sm font-sans">
-                  <SelectItem value="ADMIN">Sub Admin</SelectItem>
-                  <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
-                  <SelectItem value="ASESOR">Asesor</SelectItem>
-                  <SelectItem value="KLIEN">Klien</SelectItem>
-                  <SelectItem value="STAFF_KLIEN">Staff Klien</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {(() => {
+              const isEditingSelf =
+                (!!session?.user?.id && activeUser?.id === session.user.id) ||
+                (!!session?.user?.email && activeUser?.email.toLowerCase() === session.user.email.toLowerCase());
+
+              return (
+                <div className="space-y-1.5 min-w-0 w-full">
+                  <Label htmlFor="edit-role">Role Pengguna</Label>
+                  {isEditingSelf ? (
+                    <div className="w-full h-10 px-3 py-2 rounded-md border border-slate-200 text-sm bg-slate-100 text-slate-700 flex items-center justify-between cursor-not-allowed select-none">
+                      <span className="font-semibold text-slate-800">Super Admin (Akses Penuh)</span>
+                      <span className="text-[11px] bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.5 rounded font-medium">
+                        Terkunci
+                      </span>
+                    </div>
+                  ) : (
+                    <Select
+                      value={editForm.role}
+                      onValueChange={(val) => setEditForm((prev) => ({ ...prev, role: val }))}
+                    >
+                      <SelectTrigger
+                        id="edit-role"
+                        className="w-full min-w-0 max-w-full h-10 rounded-md border-slate-200 text-sm bg-white overflow-hidden"
+                      >
+                        <SelectValue placeholder="Pilih Role" className="truncate text-left" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border-slate-200 text-sm font-sans max-w-sm sm:max-w-md">
+                        <SelectItem value="ADMIN">Sub Admin</SelectItem>
+                        <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
+                        <SelectItem value="ASESOR">Asesor</SelectItem>
+                        <SelectItem value="KLIEN">Klien</SelectItem>
+                        <SelectItem value="STAFF_KLIEN">Staff Klien</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                  {isEditingSelf && (
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Untuk mencegah penguncian akses sistem, Anda tidak dapat mengubah role akun Super Admin Anda sendiri.
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Assessment selector in Edit Modal */}
             {(editForm.role === "ASESOR" ||
               editForm.role === "KLIEN" ||
               editForm.role === "STAFF_KLIEN") && (
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 min-w-0 w-full">
                 <Label htmlFor="edit-assessment">Proyek Assessment Terkait</Label>
                 <Select
                   value={editForm.assessmentId || "NONE"}
@@ -774,14 +982,14 @@ export default function AdminUsersPage() {
                 >
                   <SelectTrigger
                     id="edit-assessment"
-                    className="w-full h-10 rounded-md border-slate-200 text-sm bg-white"
+                    className="w-full min-w-0 max-w-full h-10 rounded-md border-slate-200 text-sm bg-white overflow-hidden"
                   >
-                    <SelectValue placeholder="Pilih Proyek Assessment" />
+                    <SelectValue placeholder="Pilih Proyek Assessment" className="truncate text-left" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-200 text-sm font-sans max-h-60">
+                  <SelectContent className="rounded-xl border-slate-200 text-sm font-sans max-h-60 max-w-sm sm:max-w-md">
                     <SelectItem value="NONE">-- Tidak Terkait Assessment --</SelectItem>
                     {assessments.map((a) => (
-                      <SelectItem key={a.id} value={a.id}>
+                      <SelectItem key={a.id} value={a.id} className="truncate">
                         {a.clientName} — {a.name}
                       </SelectItem>
                     ))}
@@ -851,6 +1059,136 @@ export default function AdminUsersPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Konfirmasi Edit Profil */}
+      <Dialog open={showConfirmEditModal} onOpenChange={setShowConfirmEditModal}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-blue-600">
+              <AlertTriangle className="w-5 h-5 text-blue-600" />
+              Konfirmasi Perubahan Profil
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-sm text-slate-600 space-y-3">
+            <p>
+              Apakah Anda yakin ingin menyimpan perubahan pada akun <strong>{activeUser?.name}</strong>?
+            </p>
+            {activeUser && editForm.email.toLowerCase().trim() !== activeUser.email.toLowerCase().trim() && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-900 space-y-1">
+                <p className="font-semibold">Perubahan Alamat Email:</p>
+                <p className="font-mono">
+                  {activeUser.email} → <strong className="text-blue-700">{editForm.email}</strong>
+                </p>
+                <p className="text-[11px] text-amber-700">
+                  User akan menggunakan email baru ini untuk login berikutnya.
+                </p>
+              </div>
+            )}
+            {activeUser && editForm.name.trim() !== activeUser.name.trim() && (
+              <p className="text-xs text-slate-500">
+                Nama lengkap akan diubah menjadi: <strong>{editForm.name}</strong>
+              </p>
+            )}
+            {activeUser && editForm.role !== activeUser.role && (
+              <p className="text-xs text-slate-500">
+                Role pengguna akan diubah menjadi: <strong>{editForm.role}</strong>
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowConfirmEditModal(false)} disabled={submitting}>
+              Batal
+            </Button>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={executeEditSubmit}
+              disabled={submitting}
+            >
+              {submitting ? "Menyimpan..." : "Ya, Simpan Perubahan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Konfirmasi Reset Password */}
+      <Dialog open={showConfirmResetModal} onOpenChange={setShowConfirmResetModal}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-600">
+              <Key className="w-5 h-5 text-amber-600" />
+              Konfirmasi Reset Password
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>
+              Apakah Anda yakin ingin mengganti password untuk akun <strong>{activeUser?.name}</strong> ({activeUser?.email})?
+            </p>
+            <p className="text-xs text-slate-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+              Password lama tidak akan dapat digunakan lagi setelah reset dikonfirmasi.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowConfirmResetModal(false)} disabled={submitting}>
+              Batal
+            </Button>
+            <Button
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+              onClick={executeResetPassword}
+              disabled={submitting}
+            >
+              {submitting ? "Mereset..." : "Ya, Reset Password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Konfirmasi Toggle Status */}
+      <Dialog open={!!confirmToggleUser} onOpenChange={(open) => !open && setConfirmToggleUser(null)}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className={`flex items-center gap-2 ${confirmToggleUser?.isActive ? "text-red-600" : "text-emerald-600"}`}>
+              <AlertTriangle className="w-5 h-5" />
+              Konfirmasi Status Akun
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>
+              Apakah Anda yakin ingin{" "}
+              <strong>{confirmToggleUser?.isActive ? "menonaktifkan" : "mengaktifkan kembali"}</strong> akun{" "}
+              <strong>{confirmToggleUser?.name}</strong> ({confirmToggleUser?.email})?
+            </p>
+            {confirmToggleUser?.isActive ? (
+              <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-100">
+                Pengguna yang dinonaktifkan tidak akan dapat masuk (login) ke dalam sistem sampai diaktifkan kembali.
+              </p>
+            ) : (
+              <p className="text-xs text-emerald-700 bg-emerald-50 p-2.5 rounded-lg border border-emerald-100">
+                Pengguna akan dapat masuk kembali ke sistem seperti biasa.
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmToggleUser(null)} disabled={submitting}>
+              Batal
+            </Button>
+            <Button
+              className={
+                confirmToggleUser?.isActive
+                  ? "bg-red-600 hover:bg-red-700 text-white"
+                  : "bg-emerald-600 hover:bg-emerald-700 text-white"
+              }
+              onClick={() => confirmToggleUser && executeToggleStatus(confirmToggleUser)}
+              disabled={submitting}
+            >
+              {submitting
+                ? "Memproses..."
+                : confirmToggleUser?.isActive
+                ? "Ya, Nonaktifkan Akun"
+                : "Ya, Aktifkan Akun"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

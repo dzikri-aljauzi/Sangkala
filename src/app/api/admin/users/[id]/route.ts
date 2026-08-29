@@ -29,6 +29,22 @@ export async function PUT(
       return NextResponse.json({ error: "Pengguna tidak ditemukan" }, { status: 404 });
     }
 
+    // Lockout Guard: Super Admin tidak boleh menurunkan role sendiri atau menonaktifkan akun sendiri
+    if (id === session.user.id) {
+      if (role && role !== "SUPER_ADMIN") {
+        return NextResponse.json(
+          { error: "Anda tidak dapat mengubah role akun Super Admin Anda sendiri untuk mencegah kehilangan akses sistem" },
+          { status: 400 }
+        );
+      }
+      if (isActive === false) {
+        return NextResponse.json(
+          { error: "Anda tidak dapat menonaktifkan akun Super Admin Anda sendiri" },
+          { status: 400 }
+        );
+      }
+    }
+
     const updateData: {
       name?: string;
       email?: string;
@@ -111,13 +127,13 @@ export async function PUT(
 
     const isStatusOnly = Object.keys(changes).length === 1 && "isActive" in changes;
     const isPasswordReset = !!updateData.password;
-    const action = isStatusOnly ? "STATUS_CHANGE" : "UPDATE";
+    const action = isPasswordReset ? "PASSWORD_RESET" : isStatusOnly ? "STATUS_CHANGE" : "UPDATE";
 
     let summary = `Mengubah data pengguna: ${updated.name} (${updated.email})`;
-    if (isStatusOnly) {
-      summary = `${updated.isActive ? "Mengaktifkan" : "Menonaktifkan"} akun ${updated.name}`;
-    } else if (isPasswordReset) {
+    if (isPasswordReset) {
       summary = `Mereset password untuk akun ${updated.name} (${updated.email})`;
+    } else if (isStatusOnly) {
+      summary = `${updated.isActive ? "Mengaktifkan" : "Menonaktifkan"} akun ${updated.name}`;
     }
 
     await recordAuditLog({
