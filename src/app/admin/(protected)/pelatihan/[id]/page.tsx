@@ -129,6 +129,11 @@ export default function AdminPelatihanDetailPage() {
   const [proofTarget, setProofTarget] = useState<Registrant | null>(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
+  // Confirmation Modal States
+  const [showToggleActiveModal, setShowToggleActiveModal] = useState(false);
+  const [confirmApproveRegistrant, setConfirmApproveRegistrant] = useState<Registrant | null>(null);
+  const [confirmResetRegistrant, setConfirmResetRegistrant] = useState<Registrant | null>(null);
+
   const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
   const canModify = isSuperAdmin || (training && training.createdById === session?.user?.id);
 
@@ -271,6 +276,7 @@ export default function AdminPelatihanDetailPage() {
       });
       if (res.ok) {
         toast.success(training.isActive ? "Pelatihan dinonaktifkan" : "Pelatihan diaktifkan");
+        setShowToggleActiveModal(false);
         fetchData();
         fetchAuditLogs();
       } else {
@@ -345,6 +351,7 @@ export default function AdminPelatihanDetailPage() {
       });
       if (res.ok) {
         toast.success("Bukti pembayaran disetujui");
+        setConfirmApproveRegistrant(null);
         fetchData();
       } else {
         const error = await res.json();
@@ -406,6 +413,7 @@ export default function AdminPelatihanDetailPage() {
       });
       if (res.ok) {
         toast.success("Status pembayaran dikembalikan ke Menunggu");
+        setConfirmResetRegistrant(null);
         fetchData();
       } else {
         const error = await res.json();
@@ -555,7 +563,17 @@ export default function AdminPelatihanDetailPage() {
               <div className="flex flex-wrap gap-2 shrink-0">
                 {canModify ? (
                   <>
-                    <Button variant="outline" onClick={toggleActive} disabled={togglingActive}>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        if (!canModify) {
+                          toast.error("Anda hanya dapat mengubah pelatihan yang Anda buat sendiri");
+                          return;
+                        }
+                        setShowToggleActiveModal(true);
+                      }}
+                      disabled={togglingActive}
+                    >
                       <Power className="w-4 h-4" />
                       {training.isActive ? "Nonaktifkan" : "Aktifkan"}
                     </Button>
@@ -727,7 +745,7 @@ export default function AdminPelatihanDetailPage() {
                               <Button
                                 size="sm"
                                 disabled={reviewingId === r.id}
-                                onClick={() => handleApprove(r.id)}
+                                onClick={() => setConfirmApproveRegistrant(r)}
                                 className="h-8 gap-1 text-xs bg-green-600 hover:bg-green-700 text-white"
                               >
                                 <Check className="w-3.5 h-3.5" />
@@ -750,7 +768,7 @@ export default function AdminPelatihanDetailPage() {
                               size="sm"
                               variant="ghost"
                               disabled={reviewingId === r.id}
-                              onClick={() => handleReset(r.id)}
+                              onClick={() => setConfirmResetRegistrant(r)}
                               className="h-8 gap-1 text-xs text-slate-600 hover:text-slate-900"
                             >
                               <RotateCcw className="w-3.5 h-3.5" />
@@ -1064,22 +1082,120 @@ export default function AdminPelatihanDetailPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Image Full Preview Modal */}
-      <Dialog open={!!previewImageUrl} onOpenChange={(open) => !open && setPreviewImageUrl(null)}>
-        <DialogContent className="sm:max-w-3xl rounded-2xl max-h-[90vh] overflow-y-auto p-4">
+      {/* Toggle Active Confirmation Modal */}
+      <Dialog open={showToggleActiveModal} onOpenChange={setShowToggleActiveModal}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Preview Gambar Pelatihan</DialogTitle>
+            <DialogTitle className={`flex items-center gap-2 ${training?.isActive ? "text-amber-600" : "text-blue-600"}`}>
+              <AlertTriangle className="w-5 h-5" />
+              Konfirmasi Status Pelatihan
+            </DialogTitle>
           </DialogHeader>
-          {previewImageUrl && (
-            <div className="relative w-full flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden mt-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewImageUrl}
-                alt="Preview Full"
-                className="w-full h-auto max-h-[75vh] object-contain rounded-xl"
-              />
-            </div>
-          )}
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>
+              Apakah Anda yakin ingin{" "}
+              <strong>{training?.isActive ? "menonaktifkan" : "mengaktifkan dan mempublikasikan"}</strong> pelatihan{" "}
+              <strong>&ldquo;{training?.title}&rdquo;</strong>?
+            </p>
+            {training?.isActive ? (
+              <p className="text-xs text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                Pelatihan yang dinonaktifkan tidak akan muncul di halaman publik dan tidak dapat menerima pendaftaran baru.
+              </p>
+            ) : (
+              <p className="text-xs text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-100">
+                Pelatihan akan langsung tampil di website dan peserta dapat melakukan pendaftaran.
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowToggleActiveModal(false)} disabled={togglingActive}>
+              Batal
+            </Button>
+            <Button
+              className={
+                training?.isActive
+                  ? "bg-amber-600 hover:bg-amber-700 text-white"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }
+              onClick={toggleActive}
+              disabled={togglingActive}
+            >
+              {togglingActive
+                ? "Memproses..."
+                : training?.isActive
+                ? "Ya, Nonaktifkan Pelatihan"
+                : "Ya, Publikasikan Pelatihan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Approve Payment Modal */}
+      <Dialog open={!!confirmApproveRegistrant} onOpenChange={(open) => !open && setConfirmApproveRegistrant(null)}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-green-600 flex items-center gap-2">
+              <Check className="w-5 h-5" />
+              Konfirmasi Persetujuan Pembayaran
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>
+              Apakah Anda yakin ingin menyetujui bukti pembayaran dari peserta{" "}
+              <strong>{confirmApproveRegistrant?.name}</strong>?
+            </p>
+            {training.price && (
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-700 space-y-1">
+                <p>Email: <strong className="font-mono">{confirmApproveRegistrant?.email}</strong></p>
+                <p>Nominal: <strong className="text-green-700">{formatRupiah(training.price)}</strong></p>
+              </div>
+            )}
+            <p className="text-xs text-slate-500">
+              Status pendaftar akan berubah menjadi <strong>Disetujui (APPROVED)</strong> dan tercatat pada riwayat log.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmApproveRegistrant(null)} disabled={!!reviewingId}>
+              Batal
+            </Button>
+            <Button
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={() => confirmApproveRegistrant && handleApprove(confirmApproveRegistrant.id)}
+              disabled={!!reviewingId}
+            >
+              {reviewingId ? "Memproses..." : "Ya, Setujui Pembayaran"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Reset Payment Modal */}
+      <Dialog open={!!confirmResetRegistrant} onOpenChange={(open) => !open && setConfirmResetRegistrant(null)}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-slate-800 flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-slate-600" />
+              Konfirmasi Reset Status Pembayaran
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>
+              Apakah Anda yakin ingin mereset keputusan verifikasi untuk peserta{" "}
+              <strong>{confirmResetRegistrant?.name}</strong> kembali ke status <strong>Menunggu (PENDING)</strong>?
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmResetRegistrant(null)} disabled={!!reviewingId}>
+              Batal
+            </Button>
+            <Button
+              className="bg-slate-800 hover:bg-slate-900 text-white"
+              onClick={() => confirmResetRegistrant && handleReset(confirmResetRegistrant.id)}
+              disabled={!!reviewingId}
+            >
+              {reviewingId ? "Mereset..." : "Ya, Kembalikan ke Menunggu"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

@@ -184,12 +184,6 @@ export default function AdminPelatihanPage() {
           className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
           <div className="flex items-center gap-4">
-            <Link
-              href="/admin"
-              className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Data Pelatihan</h1>
               <p className="text-slate-500 mt-1">Kelola daftar pelatihan yang tampil di /info-pelatihan</p>
@@ -222,7 +216,7 @@ export default function AdminPelatihanPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari pelatihan..."
-              className="pl-10 h-10 rounded-xl"
+              className="pl-10 h-10 rounded-xl bg-white border border-slate-200 text-sm shadow-xs"
             />
           </div>
           <ToggleGroup

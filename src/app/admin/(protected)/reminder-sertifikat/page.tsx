@@ -427,13 +427,6 @@ export default function ReminderSertifikatPage() {
           className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
           <div className="flex items-center gap-4">
-            <Link
-              href="/admin"
-              aria-label="Kembali ke Admin"
-              className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
             <div>
               <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
                 <BellRing className="w-5 h-5 text-blue-600" />
@@ -485,7 +478,7 @@ export default function ReminderSertifikatPage() {
                 setPage(1);
               }}
               placeholder="Cari nama, ID BSMR, atau instansi..."
-              className="pl-10 h-10 rounded-xl"
+              className="pl-10 h-10 rounded-xl bg-white border border-slate-200 text-sm shadow-xs"
             />
           </div>
           <Select
@@ -495,7 +488,7 @@ export default function ReminderSertifikatPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-48 rounded-xl">
+            <SelectTrigger className="w-48 h-10 rounded-xl bg-white border border-slate-200 text-sm shadow-xs">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -514,7 +507,7 @@ export default function ReminderSertifikatPage() {
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-32 rounded-xl">
+              <SelectTrigger className="w-36 h-10 rounded-xl bg-white border border-slate-200 text-sm shadow-xs">
                 <SelectValue placeholder="Jenjang" />
               </SelectTrigger>
               <SelectContent>
