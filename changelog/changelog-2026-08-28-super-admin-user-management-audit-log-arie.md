@@ -164,3 +164,21 @@ sqlite3 prisma/prod.db "SELECT id, email, name, role FROM users WHERE email = 'a
    - Pastikan tombol Pengaturan Rekening tidak terlihat.
    - Buka `/admin/pelatihan/[id]` dan pastikan tab Riwayat Perubahan bekerja dengan baik.
 3. **Kalau tadi pakai Opsi 2 (SQL langsung)**: konfirmasi ke Ferry & Jasmine bahwa password mereka masing-masing (yang sudah dirotate) masih bisa dipakai login seperti biasa — harusnya tidak berubah sama sekali, tapi worth dikonfirmasi sekali setelah deploy.
+
+---
+
+## Update (2026-08-28, Dzikri): Perbaikan Sisa Issue dari Laporan Audit
+
+Laporan lengkap temuan `/impeccable critique` + `/impeccable audit` ada di `docs/laporan-super-admin-audit-log.md` (20 issue bernomor). Sebagian besar (termasuk #1 yang paling urgent, #2–#10, #12, #13, #18) sudah dibenerin Arie di commit-commit sebelumnya. Ronde ini nyelesain **7 issue sisa: #11, #14, #15, #16, #17, #19, #20** — masing-masing satu commit terpisah biar gampang di-review/di-revert satu-satu kalau perlu.
+
+1. **#11 — Bulk action** (`8ab9804`): halaman Users sekarang punya checkbox pilih-banyak (select-all + per-baris, akun sendiri dikecualikan dari seleksi) dan bar aksi massal "Aktifkan Terpilih" / "Nonaktifkan Terpilih" dengan dialog konfirmasi. Seleksi otomatis kebersihin tiap ganti halaman/filter.
+2. **#14 — Responsive halaman login** (`d228ef6`): dua halaman login (admin + assessment-center) sebelumnya zero breakpoint. Padding, ukuran header/icon, dan spacing form sekarang nyusut di breakpoint `sm:` biar nggak maksa scroll di viewport mobile pendek.
+3. **#15 — Komponen toggle password bersama** (`14cd610`): `src/components/ui/password-toggle-button.tsx` baru, narik keluar logic tombol show/hide yang sebelumnya di-copy-paste 4x (2 ukuran beda-beda dikit tanpa alasan) jadi satu komponen dengan prop `size`. Sekalian nambahin `aria-label` yang sebelumnya nggak ada (cuma `title`).
+4. **#16 — Audit-log write jadi fire-and-forget** (`e5d3054`): create/update/delete di `/api/admin/users` sebelumnya `await recordAuditLog(...)` sebelum response — padahal fungsi itu udah nangkep error-nya sendiri, jadi nunggu itu selesai cuma nambah latency tanpa manfaat. Sekarang `void recordAuditLog(...)`, aman karena app ini jalan sebagai proses Node/PM2 yang panjang umur, bukan serverless.
+5. **#17 — Tombol generate password otomatis** (`7c2a8a0`): field "Password Sementara" (Tambah Pengguna) dan "Password Baru" (Reset Password) sekarang ada tombol "Buat Otomatis" yang ngisi password 12-karakter acak (`crypto.getRandomValues`, exclude karakter yang gampang ketuker kayak 0/O dan 1/l/I) dan langsung nampilinnya biar bisa di-copy.
+6. **#19 — Dialog hapus jelasin efek ke training** (`7c804c1`): kalau Sub Admin yang mau dihapus punya training yang dia buat, dialog konfirmasi sekarang nyebut eksplisit jumlah training-nya dan bilang training itu bakal jadi permanent Super-Admin-only buat diedit setelah dihapus.
+7. **#20 — Filter bar nggak "loncat" lagi** (`664c941`): baris pill filter-aktif (dan panel filter-lanjutan di atasnya, yang ternyata prop `exit`-nya emang nggak pernah jalan karena kelewat `AnimatePresence`) sekarang dianimasiin height-nya pas muncul/hilang, bukan conditional render polos.
+
+**Temuan di luar scope, dicatat tapi belum digarap**: hook desain Impeccable nemuin 4 finding `gray-on-color` (kontras teks abu-abu di atas background berwarna) di modal perbandingan admin side-by-side (`audit-log/page.tsx`, sekitar baris 975/1024/1045/1094) — itu bagian dari fitur yang Arie tambahin belakangan (`46989dd`), bukan salah satu dari 20 issue di laporan, jadi sengaja nggak disentuh di ronde ini.
+
+**Verifikasi**: `npx tsc --noEmit` dan `eslint` bersih di tiap commit (warning yang muncul semuanya pre-existing, nggak berhubungan sama perubahan di commit itu). `npm run build` (full production build) sukses setelah ketujuh fix digabung — semua route ke-generate normal.
