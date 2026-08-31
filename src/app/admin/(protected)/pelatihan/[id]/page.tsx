@@ -479,8 +479,9 @@ export default function AdminPelatihanDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
+      <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <span className="sr-only">Memuat detail pelatihan...</span>
       </div>
     );
   }
@@ -494,6 +495,7 @@ export default function AdminPelatihanDetailPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/admin/pelatihan"
+            aria-label="Kembali ke daftar pelatihan"
             className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors shadow-sm shrink-0"
           >
             <ArrowLeft className="w-5 h-5" />

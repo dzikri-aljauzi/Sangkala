@@ -168,8 +168,9 @@ export default function AdminPelatihanPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
+      <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <span className="sr-only">Memuat data pelatihan...</span>
       </div>
     );
   }
@@ -216,6 +217,7 @@ export default function AdminPelatihanPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari pelatihan..."
+              aria-label="Cari judul atau lokasi pelatihan"
               className="pl-10 h-10 rounded-xl bg-white border border-slate-200 text-sm shadow-xs"
             />
           </div>

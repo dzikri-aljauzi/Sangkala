@@ -316,8 +316,9 @@ export default function AdminInsightsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <span className="sr-only">Memuat data artikel...</span>
       </div>
     );
   }
@@ -356,6 +357,7 @@ export default function AdminInsightsPage() {
           <input
             type="text"
             placeholder="Cari artikel..."
+            aria-label="Cari artikel berdasarkan judul atau penulis"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-4 h-10 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-xs placeholder:text-slate-400"
@@ -496,6 +498,7 @@ export default function AdminInsightsPage() {
                     <div className="mt-4 flex items-center gap-2">
                       <button
                         onClick={() => handleEdit(article)}
+                        aria-label={`Edit artikel ${article.titleId}`}
                         className="flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
@@ -503,6 +506,7 @@ export default function AdminInsightsPage() {
                       </button>
                       <button
                         onClick={() => toggleStatus(article)}
+                        aria-label={`Ubah status publish ${article.titleId}`}
                         className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
                           article.status === "PUBLISHED"
                             ? "text-yellow-600 hover:bg-yellow-50"
@@ -523,6 +527,7 @@ export default function AdminInsightsPage() {
                       </button>
                       <button
                         onClick={() => toggleFeatured(article)}
+                        aria-label={`Ubah status featured ${article.titleId}`}
                         className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
                           article.isFeatured
                             ? "text-purple-600 hover:bg-purple-50"
@@ -543,6 +548,7 @@ export default function AdminInsightsPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(article.id)}
+                        aria-label={`Hapus artikel ${article.titleId}`}
                         className="flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />

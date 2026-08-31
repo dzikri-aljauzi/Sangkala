@@ -368,13 +368,13 @@ export default function AdminUsersPage() {
   const getRoleBadge = (role: string) => {
     switch (role) {
       case "SUPER_ADMIN":
-        return <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200">Super Admin</Badge>;
+        return <Badge className="bg-status-purple-bg text-status-purple border-status-purple-border">Super Admin</Badge>;
       case "ADMIN":
-        return <Badge className="bg-sky-100 text-sky-800 border-sky-200">Sub Admin</Badge>;
+        return <Badge className="bg-status-info-bg text-status-info border-status-info-border">Sub Admin</Badge>;
       case "ASESOR":
-        return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">Asesor</Badge>;
+        return <Badge className="bg-status-success-bg text-status-success border-status-success-border">Asesor</Badge>;
       case "KLIEN":
-        return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Klien</Badge>;
+        return <Badge className="bg-status-warning-bg text-status-warning border-status-warning-border">Klien</Badge>;
       case "STAFF_KLIEN":
         return <Badge className="bg-slate-100 text-slate-800 border-slate-200">Staff Klien</Badge>;
       default:
@@ -384,8 +384,9 @@ export default function AdminUsersPage() {
 
   if (loading && users.length === 0) {
     return (
-      <div className="flex items-center justify-center py-24">
+      <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <span className="sr-only">Memuat data pengguna...</span>
       </div>
     );
   }
@@ -429,11 +430,13 @@ export default function AdminUsersPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari nama atau email..."
+            aria-label="Cari nama atau email pengguna"
             className="pl-9 pr-8 h-10 rounded-xl text-sm bg-white border-slate-200 shadow-xs"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
+              aria-label="Hapus teks pencarian"
               className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
             >
               <X className="w-3.5 h-3.5" />
@@ -509,6 +512,7 @@ export default function AdminUsersPage() {
             size="sm"
             onClick={fetchUsers}
             disabled={loading}
+            aria-label="Muat ulang daftar pengguna"
             className="gap-1.5 text-xs text-slate-500"
           >
             <RotateCcw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -563,14 +567,14 @@ export default function AdminUsersPage() {
                       <span
                         className={`inline-flex px-2.5 py-0.5 text-xs font-semibold rounded-full ${
                           user.role === "SUPER_ADMIN"
-                            ? "bg-indigo-100 text-indigo-800 border border-indigo-200"
+                            ? "bg-status-purple-bg text-status-purple border border-status-purple-border"
                             : user.role === "ADMIN"
-                            ? "bg-sky-100 text-sky-800 border border-sky-200"
+                            ? "bg-status-info-bg text-status-info border border-status-info-border"
                             : user.role === "ASESOR"
-                            ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                            ? "bg-status-success-bg text-status-success border border-status-success-border"
                             : user.role === "KLIEN"
-                            ? "bg-amber-100 text-amber-800 border border-amber-200"
-                            : "bg-purple-100 text-purple-800 border border-purple-200"
+                            ? "bg-status-warning-bg text-status-warning border border-status-warning-border"
+                            : "bg-slate-100 text-slate-800 border border-slate-200"
                         }`}
                       >
                         {user.role === "SUPER_ADMIN"
@@ -592,6 +596,7 @@ export default function AdminUsersPage() {
                           target="_blank"
                           className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 hover:underline font-medium group"
                           title={`${user.assessment.clientName} - ${user.assessment.name}`}
+                          aria-label={`Buka dashboard assessment ${user.assessment.clientName} - ${user.assessment.name}`}
                         >
                           <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0 group-hover:text-blue-600" />
                           <span className="truncate max-w-[200px]">
@@ -611,6 +616,7 @@ export default function AdminUsersPage() {
                           disabled={isCurrentSelf}
                           role="switch"
                           aria-checked={user.isActive}
+                          aria-label={`Ubah status aktif pengguna ${user.name}`}
                           className={`
                             relative inline-flex h-6 w-11 shrink-0 items-center rounded-full
                             transition-colors duration-200 ease-in-out
@@ -670,6 +676,7 @@ export default function AdminUsersPage() {
                           }}
                           className="h-8 w-8 p-0 text-slate-600 hover:text-slate-900"
                           title="Edit Profil/Role/Assessment"
+                          aria-label={`Edit profil ${user.name}`}
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </Button>
@@ -684,6 +691,7 @@ export default function AdminUsersPage() {
                           }}
                           className="h-8 w-8 p-0 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
                           title="Reset Password"
+                          aria-label={`Reset password ${user.name}`}
                         >
                           <Key className="w-3.5 h-3.5" />
                         </Button>
@@ -698,6 +706,7 @@ export default function AdminUsersPage() {
                             }}
                             className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                             title="Hapus Akun"
+                            aria-label={`Hapus akun ${user.name}`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </Button>
@@ -747,6 +756,7 @@ export default function AdminUsersPage() {
                   size="sm"
                   disabled={page <= 1}
                   onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                  aria-label="Halaman sebelumnya"
                   className="h-9 px-3 text-sm font-medium gap-1.5 bg-white disabled:opacity-40"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -760,6 +770,7 @@ export default function AdminUsersPage() {
                   size="sm"
                   disabled={page >= totalPages}
                   onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                  aria-label="Halaman berikutnya"
                   className="h-9 px-3 text-sm font-medium gap-1.5 bg-white disabled:opacity-40"
                 >
                   Berikutnya
