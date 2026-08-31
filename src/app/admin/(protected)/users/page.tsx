@@ -116,6 +116,12 @@ export default function AdminUsersPage() {
 
   const [activeUser, setActiveUser] = useState<UserItem | null>(null);
 
+  // Bulk action: pilih beberapa akun sekaligus buat aktifkan/nonaktifkan bareng --
+  // sebelumnya harus satu-satu klik toggle per baris.
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkConfirmActive, setBulkConfirmActive] = useState<boolean | null>(null);
+  const [bulkSubmitting, setBulkSubmitting] = useState(false);
+
   // Form states
   const [createForm, setCreateForm] = useState({
     name: "",
@@ -187,6 +193,12 @@ export default function AdminUsersPage() {
     setPage(1);
   }, [debouncedSearch, selectedRole, selectedAssessment]);
 
+  // Selection bulk-action nggak relevan lagi begitu halaman/filter ganti (baris
+  // yang keliatan udah beda) -- bersihin biar nggak nyangkut nunjuk row lama.
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [page, pageSize, debouncedSearch, selectedRole, selectedAssessment]);
+
   useEffect(() => {
     if (status === "loading") return;
     if (!session || session.user.role !== "SUPER_ADMIN") {
@@ -202,6 +214,73 @@ export default function AdminUsersPage() {
     setSelectedRole("ALL");
     setSelectedAssessment("ALL");
     setPage(1);
+  };
+
+  const isSelfUser = useCallback(
+    (user: UserItem) =>
+      (!!session?.user?.id && user.id === session.user.id) ||
+      (!!session?.user?.email && user.email.toLowerCase() === session.user.email.toLowerCase()),
+    [session]
+  );
+
+  const selectableUsers = users.filter((u) => !isSelfUser(u));
+  const allSelectableSelected =
+    selectableUsers.length > 0 && selectableUsers.every((u) => selectedIds.has(u.id));
+  const someSelectableSelected = selectableUsers.some((u) => selectedIds.has(u.id));
+
+  const toggleSelectAll = () => {
+    if (allSelectableSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(selectableUsers.map((u) => u.id)));
+    }
+  };
+
+  const toggleSelectOne = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const executeBulkToggle = async (activate: boolean) => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    setBulkSubmitting(true);
+    try {
+      const results = await Promise.all(
+        ids.map((id) =>
+          fetch(`/api/admin/users/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ isActive: activate }),
+          })
+        )
+      );
+      const failed = results.filter((r) => !r.ok).length;
+      const succeeded = results.length - failed;
+      if (succeeded > 0) {
+        toast.success(
+          `${succeeded} akun berhasil di${activate ? "aktifkan" : "nonaktifkan"}`
+        );
+      }
+      if (failed > 0) {
+        toast.error(`${failed} akun gagal diproses`);
+      }
+      setSelectedIds(new Set());
+      setBulkConfirmActive(null);
+      fetchUsers();
+    } catch (err) {
+      console.error("Error processing bulk status change:", err);
+      toast.error("Gagal memproses aksi massal");
+    } finally {
+      setBulkSubmitting(false);
+    }
   };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
@@ -503,22 +582,61 @@ export default function AdminUsersPage() {
         transition={{ delay: 0.1 }}
         className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs"
       >
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-          <p className="text-sm font-semibold text-slate-800">
-            Total Pengguna: <span className="text-blue-600">{totalItems}</span>
-          </p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={fetchUsers}
-            disabled={loading}
-            aria-label="Muat ulang daftar pengguna"
-            className="gap-1.5 text-xs text-slate-500"
-          >
-            <RotateCcw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-            Muat Ulang
-          </Button>
-        </div>
+        {selectedIds.size > 0 ? (
+          <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-blue-50/60">
+            <p className="text-sm font-semibold text-blue-900">
+              {selectedIds.size} akun dipilih
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setBulkConfirmActive(true)}
+                disabled={bulkSubmitting}
+                className="h-8 text-xs gap-1.5 bg-white border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Aktifkan Terpilih
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setBulkConfirmActive(false)}
+                disabled={bulkSubmitting}
+                className="h-8 text-xs gap-1.5 bg-white border-red-200 text-red-600 hover:bg-red-50"
+              >
+                <XCircle className="w-3.5 h-3.5" />
+                Nonaktifkan Terpilih
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedIds(new Set())}
+                disabled={bulkSubmitting}
+                className="h-8 text-xs text-slate-500"
+              >
+                Batal
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <p className="text-sm font-semibold text-slate-800">
+              Total Pengguna: <span className="text-blue-600">{totalItems}</span>
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={fetchUsers}
+              disabled={loading}
+              aria-label="Muat ulang daftar pengguna"
+              className="gap-1.5 text-xs text-slate-500"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              Muat Ulang
+            </Button>
+          </div>
+        )}
 
         {users.length === 0 ? (
           <div className="text-center py-16 text-slate-400 text-sm">
@@ -528,6 +646,19 @@ export default function AdminUsersPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50 hover:bg-slate-50">
+                <TableHead className="px-4 py-3 w-10">
+                  <input
+                    type="checkbox"
+                    checked={allSelectableSelected}
+                    ref={(el) => {
+                      if (el) el.indeterminate = !allSelectableSelected && someSelectableSelected;
+                    }}
+                    onChange={toggleSelectAll}
+                    disabled={selectableUsers.length === 0}
+                    aria-label="Pilih semua pengguna di halaman ini"
+                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                  />
+                </TableHead>
                 <TableHead className="px-4 py-3 text-slate-600 text-xs">Pengguna</TableHead>
                 <TableHead className="px-4 py-3 text-slate-600 text-xs">Role</TableHead>
                 <TableHead className="px-4 py-3 text-slate-600 text-xs">Proyek Assessment</TableHead>
@@ -538,12 +669,21 @@ export default function AdminUsersPage() {
             </TableHeader>
             <TableBody>
               {users.map((user) => {
-                const isCurrentSelf =
-                  (!!session?.user?.id && user.id === session.user.id) ||
-                  (!!session?.user?.email && user.email.toLowerCase() === session.user.email.toLowerCase());
+                const isCurrentSelf = isSelfUser(user);
 
                 return (
                   <TableRow key={user.id} className="hover:bg-slate-50/70">
+                    <TableCell className="px-4 py-3.5">
+                      {!isCurrentSelf && (
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(user.id)}
+                          onChange={() => toggleSelectOne(user.id)}
+                          aria-label={`Pilih ${user.name}`}
+                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        />
+                      )}
+                    </TableCell>
                     <TableCell className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
@@ -1198,6 +1338,50 @@ export default function AdminUsersPage() {
                 : confirmToggleUser?.isActive
                 ? "Ya, Nonaktifkan Akun"
                 : "Ya, Aktifkan Akun"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Konfirmasi Aksi Massal */}
+      <Dialog open={bulkConfirmActive !== null} onOpenChange={(open) => !open && setBulkConfirmActive(null)}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className={`flex items-center gap-2 ${bulkConfirmActive ? "text-emerald-600" : "text-red-600"}`}>
+              <AlertTriangle className="w-5 h-5" />
+              Konfirmasi Aksi Massal
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>
+              Apakah Anda yakin ingin{" "}
+              <strong>{bulkConfirmActive ? "mengaktifkan kembali" : "menonaktifkan"}</strong>{" "}
+              <strong>{selectedIds.size} akun</strong> yang dipilih sekaligus?
+            </p>
+            {bulkConfirmActive === false && (
+              <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-100">
+                Semua akun yang dinonaktifkan tidak akan dapat masuk (login) ke dalam sistem sampai diaktifkan kembali.
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBulkConfirmActive(null)} disabled={bulkSubmitting}>
+              Batal
+            </Button>
+            <Button
+              className={
+                bulkConfirmActive
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                  : "bg-red-600 hover:bg-red-700 text-white"
+              }
+              onClick={() => bulkConfirmActive !== null && executeBulkToggle(bulkConfirmActive)}
+              disabled={bulkSubmitting}
+            >
+              {bulkSubmitting
+                ? "Memproses..."
+                : bulkConfirmActive
+                ? "Ya, Aktifkan Semua"
+                : "Ya, Nonaktifkan Semua"}
             </Button>
           </DialogFooter>
         </DialogContent>
