@@ -87,6 +87,16 @@ const ROLES = [
   { value: "STAFF_KLIEN", label: "Staff Klien" },
 ];
 
+// Issue #17: sebelumnya Super Admin harus mikirin & ngetik sendiri password
+// sementara tiap kali bikin/reset akun. Exclude karakter yang gampang ketuker
+// (0/O, 1/l/I) karena password ini kadang perlu disampein manual ke user.
+function generateSecurePassword(length = 12): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*";
+  const randomValues = new Uint32Array(length);
+  crypto.getRandomValues(randomValues);
+  return Array.from(randomValues, (n) => chars[n % chars.length]).join("");
+}
+
 export default function AdminUsersPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -953,7 +963,19 @@ export default function AdminUsersPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="create-password">Password Sementara</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="create-password">Password Sementara</Label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCreateForm((prev) => ({ ...prev, password: generateSecurePassword() }));
+                    setShowCreatePassword(true);
+                  }}
+                  className="text-xs text-blue-600 hover:underline font-medium"
+                >
+                  Buat Otomatis
+                </button>
+              </div>
               <div className="relative">
                 <Input
                   id="create-password"
@@ -1167,7 +1189,19 @@ export default function AdminUsersPage() {
               Masukkan password baru untuk pengguna <strong>{activeUser?.email}</strong>.
             </p>
             <div className="space-y-1.5">
-              <Label htmlFor="reset-new-pass">Password Baru</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="reset-new-pass">Password Baru</Label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setResetPasswordValue(generateSecurePassword());
+                    setShowResetPassword(true);
+                  }}
+                  className="text-xs text-blue-600 hover:underline font-medium"
+                >
+                  Buat Otomatis
+                </button>
+              </div>
               <div className="relative">
                 <Input
                   id="reset-new-pass"
