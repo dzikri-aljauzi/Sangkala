@@ -1422,6 +1422,14 @@ export default function AdminUsersPage() {
             <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-100">
               Tindakan ini tidak dapat dibatalkan.
             </p>
+            {!!activeUser?._count?.trainings && activeUser._count.trainings > 0 && (
+              <p className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                <strong>{activeUser.name}</strong> sudah membuat{" "}
+                <strong>{activeUser._count.trainings} pelatihan</strong>. Setelah akun ini dihapus,
+                pelatihan-pelatihan tersebut hanya bisa diedit oleh Super Admin — Sub Admin lain tidak akan
+                pernah bisa mengelolanya lagi, karena pembuat aslinya sudah tidak ada.
+              </p>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={submitting}>
