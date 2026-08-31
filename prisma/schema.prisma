@@ -367,6 +367,40 @@ model TrainingRegistrant {
   @@map("training_registrants")
 }
 
+// ===== Reminder Kadaluarsa Sertifikat & Refreshment =====
+
+model CertificationHolder {
+  id                 String   @id @default(cuid())
+  bsmrId             String   @unique // "ID BSMR" — unique biar re-import bisa upsert
+  name               String
+  institution        String
+  level              String   // "Jenjang Terakhir"
+  certificationName  String   // "Sertifikasi yang Diambil" — free text dulu
+  email              String
+  examDate           DateTime // "Tanggal Ujian"
+  expiryDate         DateTime // "Masa Berakhir" — juga jadi trigger checkpoint ke-3/resertifikasi
+  refreshment1Date   DateTime
+  refreshment2Date   DateTime
+  // Sengaja tidak ada refreshment3Date — checkpoint ke-3 pakai expiryDate langsung (selalu identik
+  // di data sumber), simpan kolom terpisah cuma bikin resiko drift antar 2 kolom yang harusnya sama.
+
+  refreshment1CompletedAt DateTime?
+  refreshment2CompletedAt DateTime?
+  recertCompletedAt       DateTime?
+
+  refreshment1ReminderSentAt DateTime?
+  refreshment2ReminderSentAt DateTime?
+  recertReminderSentAt       DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([expiryDate])
+  @@index([refreshment1Date])
+  @@index([refreshment2Date])
+  @@map("certification_holders")
+}
+
 // Info rekening perusahaan untuk pembayaran manual — singleton (selalu 1 row, id tetap "singleton")
 model PaymentSetting {
   id            String   @id @default("singleton")

@@ -1,6 +1,7 @@
 import {
   Award,
   BarChart3,
+  BellRing,
   Camera,
   FileText,
   FolderOpen,
@@ -63,6 +64,7 @@ export const getNavSections = (
         { key: "pelatihan", label: "Pelatihan", icon: GraduationCap },
         { key: "sertifikat", label: "Sertifikat", icon: Award },
         { key: "manage", label: "Insights", icon: Newspaper },
+        { key: "reminder-sertifikat", label: "Reminder Sertifikasi", icon: BellRing },
       ])
     );
   }

@@ -1,5 +1,18 @@
 import nodemailer from "nodemailer";
 
+// Nama/sertifikasi holder itu data admin-controlled (manual input atau import
+// Excel), bukan hardcode -- HTML-escape sebelum diselipin ke email supaya
+// karakter kayak <, &, " nggak ngerusak markup atau (kalau ada yang iseng)
+// nyuntik HTML/link ke email reminder.
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 interface SendNotificationParams {
   trainingTitle: string;
   name: string;
@@ -16,6 +29,21 @@ interface PaymentVerdictParams {
 
 interface PaymentRejectedParams extends PaymentVerdictParams {
   rejectionReason: string;
+}
+
+interface RefreshmentReminderParams {
+  to: string;
+  name: string;
+  certificationName: string;
+  checkpointLabel: string;
+  checkpointDate: Date;
+}
+
+interface RecertificationReminderParams {
+  to: string;
+  name: string;
+  certificationName: string;
+  expiryDate: Date;
 }
 
 const isPlaceholder = (value: string | undefined): boolean => {
@@ -143,5 +171,72 @@ export async function notifyRegistrantPaymentRejected({
     });
   } catch (error) {
     console.error("Failed to send payment-rejected email:", error);
+  }
+}
+
+// Beda dari fungsi email lain di file ini: return boolean (bukan void) karena
+// caller (cron reminder) cuma boleh stamp *ReminderSentAt kalau kirimnya beneran
+// berhasil -- reminder ini cuma dikirim SEKALI seumur checkpoint, jadi SMTP yang
+// gagal sesaat tidak boleh "membakar" satu-satunya kesempatan kirim.
+export async function sendRefreshmentReminder({
+  to,
+  name,
+  certificationName,
+  checkpointLabel,
+  checkpointDate,
+}: RefreshmentReminderParams): Promise<boolean> {
+  const mailer = getMailer();
+  if (!mailer) return false;
+
+  const html = `
+    <h2>Pengingat Refreshment Sertifikasi</h2>
+    <p>Halo ${escapeHtml(name)},</p>
+    <p>Ini pengingat bahwa Anda perlu mengikuti kegiatan <strong>refreshment ${escapeHtml(checkpointLabel)}</strong> untuk sertifikasi <strong>${escapeHtml(certificationName)}</strong>, dengan tenggat <strong>${checkpointDate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</strong>.</p>
+    <p>Refreshment wajib diikuti setiap tahun selama masa berlaku sertifikasi Anda, untuk memastikan kompetensi yang didapat tetap terjaga.</p>
+    <p>Silakan hubungi tim kami untuk informasi lebih lanjut mengenai jadwal refreshment.</p>
+  `;
+
+  try {
+    await mailer.transporter.sendMail({
+      from: mailer.from,
+      to,
+      subject: `[Pengingat Refreshment] ${certificationName}`,
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("Failed to send refreshment reminder email:", error);
+    return false;
+  }
+}
+
+export async function sendRecertificationReminder({
+  to,
+  name,
+  certificationName,
+  expiryDate,
+}: RecertificationReminderParams): Promise<boolean> {
+  const mailer = getMailer();
+  if (!mailer) return false;
+
+  const html = `
+    <h2>Pengingat Sertifikasi Akan Berakhir</h2>
+    <p>Halo ${escapeHtml(name)},</p>
+    <p>Sertifikasi <strong>${escapeHtml(certificationName)}</strong> Anda akan berakhir masa berlakunya pada <strong>${expiryDate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</strong>.</p>
+    <p>Anda perlu mengikuti sertifikasi ulang agar sertifikasi tetap berlaku.</p>
+    <p>Silakan hubungi tim kami untuk informasi lebih lanjut mengenai jadwal sertifikasi ulang.</p>
+  `;
+
+  try {
+    await mailer.transporter.sendMail({
+      from: mailer.from,
+      to,
+      subject: `[Pengingat Sertifikasi Ulang] ${certificationName}`,
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("Failed to send recertification reminder email:", error);
+    return false;
   }
 }
