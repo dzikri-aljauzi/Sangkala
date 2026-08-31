@@ -71,7 +71,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center p-4 pt-32">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center p-4 pt-20 sm:pt-32">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -79,13 +79,13 @@ export default function AdminLoginPage() {
       >
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 px-8 py-10 text-center">
+          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-8 sm:px-8 sm:py-10 text-center">
             <div className="flex justify-center mb-4">
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                <Shield className="w-10 h-10 text-white" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">
               Admin Login
             </h1>
             <p className="text-blue-100 text-sm">
@@ -94,7 +94,7 @@ export default function AdminLoginPage() {
           </div>
 
           {/* Login Form */}
-          <div className="px-8 py-8">
+          <div className="px-6 py-6 sm:px-8 sm:py-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Error Message */}
               {error && (
