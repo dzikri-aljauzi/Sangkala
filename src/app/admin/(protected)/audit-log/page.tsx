@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   History,
   Search,
@@ -489,95 +489,113 @@ export default function AdminAuditLogPage() {
               )}
             </div>
 
-            {/* Collapsible Advanced Filters */}
-            {showAdvancedFilters && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-3"
-              >
-                {/* Sub Admin dropdown */}
-                <div>
-                  <label className="text-[11px] font-medium text-slate-500 block mb-1">
-                    Pelaku / Sub Admin
-                  </label>
-                  <Select
-                    value={selectedUserId || "ALL"}
-                    onValueChange={(val) => {
-                      setSelectedUserId(val === "ALL" ? "" : val);
-                      setPage(1);
-                    }}
-                  >
-                    <SelectTrigger className="w-full h-9 rounded-lg border-slate-200 text-xs bg-white">
-                      <SelectValue placeholder="Semua Pelaku / User" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl border-slate-200 text-xs font-sans max-h-60">
-                      <SelectItem value="ALL">Semua Pelaku / User</SelectItem>
-                      {subAdmins.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.name} ({user.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            {/* Collapsible Advanced Filters -- AnimatePresence di sini bukan hiasan:
+                tanpa itu prop `exit` di atas nggak pernah jalan sama sekali (React
+                unmount langsung, framer-motion nggak sempat animasiin exit-nya). */}
+            <AnimatePresence initial={false}>
+              {showAdvancedFilters && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Sub Admin dropdown */}
+                    <div>
+                      <label className="text-[11px] font-medium text-slate-500 block mb-1">
+                        Pelaku / Sub Admin
+                      </label>
+                      <Select
+                        value={selectedUserId || "ALL"}
+                        onValueChange={(val) => {
+                          setSelectedUserId(val === "ALL" ? "" : val);
+                          setPage(1);
+                        }}
+                      >
+                        <SelectTrigger className="w-full h-9 rounded-lg border-slate-200 text-xs bg-white">
+                          <SelectValue placeholder="Semua Pelaku / User" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-slate-200 text-xs font-sans max-h-60">
+                          <SelectItem value="ALL">Semua Pelaku / User</SelectItem>
+                          {subAdmins.map((user) => (
+                            <SelectItem key={user.id} value={user.id}>
+                              {user.name} ({user.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                {/* Date pickers */}
-                <div>
-                  <label className="text-[11px] font-medium text-slate-500 block mb-1">
-                    Rentang Waktu (Dari - Sampai)
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => {
-                        setStartDate(e.target.value);
-                        setPage(1);
-                      }}
-                      className="h-9 text-xs rounded-lg"
-                    />
-                    <Input
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => {
-                        setEndDate(e.target.value);
-                        setPage(1);
-                      }}
-                      className="h-9 text-xs rounded-lg"
-                    />
+                    {/* Date pickers */}
+                    <div>
+                      <label className="text-[11px] font-medium text-slate-500 block mb-1">
+                        Rentang Waktu (Dari - Sampai)
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => {
+                            setStartDate(e.target.value);
+                            setPage(1);
+                          }}
+                          className="h-9 text-xs rounded-lg"
+                        />
+                        <Input
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => {
+                            setEndDate(e.target.value);
+                            setPage(1);
+                          }}
+                          className="h-9 text-xs rounded-lg"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            {/* Active filter pills */}
-            {isAnyFilterActive && (
-              <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 text-xs text-slate-500">
-                <span className="font-medium text-slate-400">Filter:</span>
-                {searchQuery && (
-                  <Badge variant="outline" className="bg-slate-50 text-[11px]">
-                    &quot;{searchQuery}&quot;
-                  </Badge>
-                )}
-                {selectedAction && (
-                  <Badge variant="outline" className="bg-slate-50 text-[11px]">
-                    Aksi: {selectedAction}
-                  </Badge>
-                )}
-                {selectedUserId && (
-                  <Badge variant="outline" className="bg-slate-50 text-[11px]">
-                    User: {subAdmins.find((u) => u.id === selectedUserId)?.name || selectedUserId}
-                  </Badge>
-                )}
-                {(startDate || endDate) && (
-                  <Badge variant="outline" className="bg-slate-50 text-[11px]">
-                    Tanggal: {startDate || "Awal"} s/d {endDate || "Sekarang"}
-                  </Badge>
-                )}
-              </div>
-            )}
+            {/* Active filter pills -- issue #20: sebelumnya conditional render
+                polos, muncul/hilangnya bikin elemen di bawah "loncat" tiba-tiba.
+                Sekarang dianimasiin height-nya, sama kayak block filter lanjutan
+                di atas. */}
+            <AnimatePresence initial={false}>
+              {isAnyFilterActive && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 text-xs text-slate-500">
+                    <span className="font-medium text-slate-400">Filter:</span>
+                    {searchQuery && (
+                      <Badge variant="outline" className="bg-slate-50 text-[11px]">
+                        &quot;{searchQuery}&quot;
+                      </Badge>
+                    )}
+                    {selectedAction && (
+                      <Badge variant="outline" className="bg-slate-50 text-[11px]">
+                        Aksi: {selectedAction}
+                      </Badge>
+                    )}
+                    {selectedUserId && (
+                      <Badge variant="outline" className="bg-slate-50 text-[11px]">
+                        User: {subAdmins.find((u) => u.id === selectedUserId)?.name || selectedUserId}
+                      </Badge>
+                    )}
+                    {(startDate || endDate) && (
+                      <Badge variant="outline" className="bg-slate-50 text-[11px]">
+                        Tanggal: {startDate || "Awal"} s/d {endDate || "Sekarang"}
+                      </Badge>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Total Counter Header */}
