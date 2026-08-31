@@ -165,7 +165,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    await recordAuditLog({
+    // Fire-and-forget: recordAuditLog udah nangkep error-nya sendiri secara
+    // internal (nggak pernah throw), jadi nunggu ini selesai sebelum response
+    // cuma nambah latency tanpa manfaat reliability apapun (issue #16).
+    void recordAuditLog({
       entityType: "USER",
       entityId: newUser.id,
       action: "CREATE",

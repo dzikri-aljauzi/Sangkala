@@ -136,7 +136,8 @@ export async function PUT(
       summary = `${updated.isActive ? "Mengaktifkan" : "Menonaktifkan"} akun ${updated.name}`;
     }
 
-    await recordAuditLog({
+    // Fire-and-forget -- lihat catatan yang sama di route.ts POST (issue #16).
+    void recordAuditLog({
       entityType: "USER",
       entityId: updated.id,
       action,
@@ -185,7 +186,8 @@ export async function DELETE(
       where: { id },
     });
 
-    await recordAuditLog({
+    // Fire-and-forget -- lihat catatan yang sama di route.ts POST (issue #16).
+    void recordAuditLog({
       entityType: "USER",
       entityId: id,
       action: "DELETE",
