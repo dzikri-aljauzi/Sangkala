@@ -18,8 +18,6 @@ import {
   RotateCcw,
   Building2,
   ExternalLink,
-  Eye,
-  EyeOff,
   ChevronLeft,
   ChevronRight,
   X,
@@ -43,6 +41,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PasswordToggleButton } from "@/components/ui/password-toggle-button";
 import { useDebounce } from "@/hooks/use-debounce";
 import {
   Table,
@@ -966,18 +965,11 @@ export default function AdminUsersPage() {
                   onChange={(e) => setCreateForm((prev) => ({ ...prev, password: e.target.value }))}
                   className="pr-10"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowCreatePassword(!showCreatePassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
-                  title={showCreatePassword ? "Sembunyikan password" : "Lihat password"}
-                >
-                  {showCreatePassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
+                <PasswordToggleButton
+                  visible={showCreatePassword}
+                  onToggle={() => setShowCreatePassword(!showCreatePassword)}
+                  size="sm"
+                />
               </div>
             </div>
             <div className="space-y-1.5">
@@ -1187,18 +1179,11 @@ export default function AdminUsersPage() {
                   onChange={(e) => setResetPasswordValue(e.target.value)}
                   className="pr-10"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowResetPassword(!showResetPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
-                  title={showResetPassword ? "Sembunyikan password" : "Lihat password"}
-                >
-                  {showResetPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
+                <PasswordToggleButton
+                  visible={showResetPassword}
+                  onToggle={() => setShowResetPassword(!showResetPassword)}
+                  size="sm"
+                />
               </div>
             </div>
             <DialogFooter className="pt-2">
