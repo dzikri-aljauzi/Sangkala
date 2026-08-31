@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 
+import { Prisma } from "@prisma/client";
+
 // GET all articles (public for published, all for admin)
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +18,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get("limit");
 
     // Build where clause
-    const where: any = {};
+    const where: Prisma.ArticleWhereInput = {};
 
     // If not admin, only show published articles
     if (!session || (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN")) {

@@ -3,6 +3,8 @@ import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+import { Prisma } from "@prisma/client";
+
 // PUT update user (Admin only)
 export async function PUT(
   request: NextRequest,
@@ -16,7 +18,7 @@ export async function PUT(
     const data = await request.json();
     const { name, email, password, role, assessmentId, isActive } = data;
 
-    const updateData: any = {};
+    const updateData: Prisma.UserUncheckedUpdateInput = {};
 
     // Only include fields that are provided
     if (name !== undefined) updateData.name = name;
