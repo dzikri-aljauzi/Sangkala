@@ -23,6 +23,7 @@ import {
   ChevronDown,
   ChevronUp,
   X,
+  ArrowLeftRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -102,7 +103,7 @@ export default function AdminAuditLogPage() {
   const [logs, setLogs] = useState<AuditLogItem[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(true);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
@@ -118,6 +119,11 @@ export default function AdminAuditLogPage() {
   // Sub Admins Summary State
   const [subAdmins, setSubAdmins] = useState<SubAdminSummary[]>([]);
   const [loadingSubAdmins, setLoadingSubAdmins] = useState(true);
+
+  // Compare Admins Modal State
+  const [showCompareModal, setShowCompareModal] = useState(false);
+  const [compareAdminAId, setCompareAdminAId] = useState("");
+  const [compareAdminBId, setCompareAdminBId] = useState("");
 
   // Detail Modal State
   const [selectedLog, setSelectedLog] = useState<AuditLogItem | null>(null);
@@ -201,22 +207,22 @@ export default function AdminAuditLogPage() {
   const getActionBadge = (action: string) => {
     switch (action) {
       case "CREATE":
-        return <Badge className="bg-emerald-100 text-emerald-800 border-transparent">DIBUAT</Badge>;
+        return <Badge className="bg-status-success-bg text-status-success border-status-success-border">DIBUAT</Badge>;
       case "UPDATE":
-        return <Badge className="bg-blue-100 text-blue-800 border-transparent">DIUBAH</Badge>;
+        return <Badge className="bg-status-info-bg text-status-info border-status-info-border">DIUBAH</Badge>;
       case "STATUS_CHANGE":
-        return <Badge className="bg-amber-100 text-amber-800 border-transparent">STATUS</Badge>;
+        return <Badge className="bg-status-warning-bg text-status-warning border-status-warning-border">STATUS</Badge>;
       case "PASSWORD_RESET":
         return (
-          <Badge className="bg-amber-100 text-amber-900 border-amber-300 gap-1 font-medium">
-            <Key className="w-3 h-3 text-amber-700" />
+          <Badge className="bg-status-warning-bg text-status-warning border-status-warning-border gap-1 font-medium">
+            <Key className="w-3 h-3 text-status-warning" />
             RESET PASS
           </Badge>
         );
       case "REVIEW_PAYMENT":
-        return <Badge className="bg-purple-100 text-purple-800 border-transparent">PEMBAYARAN</Badge>;
+        return <Badge className="bg-status-purple-bg text-status-purple border-status-purple-border">PEMBAYARAN</Badge>;
       case "DELETE":
-        return <Badge variant="destructive">DIHAPUS</Badge>;
+        return <Badge className="bg-status-danger-bg text-status-danger border-status-danger-border">DIHAPUS</Badge>;
       default:
         return <Badge variant="secondary">{action}</Badge>;
     }
@@ -349,7 +355,7 @@ export default function AdminAuditLogPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Button variant="outline" size="sm" onClick={fetchLogs} className="gap-1.5 text-xs">
+          <Button variant="outline" size="sm" onClick={fetchLogs} aria-label="Muat ulang log aktivitas" className="gap-1.5 text-xs">
             <RotateCcw className="w-3.5 h-3.5" />
             Refresh Log
           </Button>
@@ -360,6 +366,7 @@ export default function AdminAuditLogPage() {
       <div className="flex items-center gap-2 border-b border-slate-200">
         <button
           onClick={() => setActiveTab("all")}
+          aria-label={`Tampilkan semua log, total ${totalItems}`}
           className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === "all"
               ? "border-blue-600 text-blue-600 font-semibold"
@@ -371,6 +378,7 @@ export default function AdminAuditLogPage() {
         </button>
         <button
           onClick={() => setActiveTab("users")}
+          aria-label={`Tampilkan log per sub admin, total ${subAdmins.length}`}
           className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === "users"
               ? "border-blue-600 text-blue-600 font-semibold"
@@ -395,6 +403,7 @@ export default function AdminAuditLogPage() {
                 <Input
                   type="text"
                   placeholder="Cari aktivitas / user..."
+                  aria-label="Cari aktivitas atau user"
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -408,6 +417,7 @@ export default function AdminAuditLogPage() {
                       setSearchQuery("");
                       setPage(1);
                     }}
+                    aria-label="Hapus teks pencarian"
                     className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -444,6 +454,7 @@ export default function AdminAuditLogPage() {
                 variant={showAdvancedFilters || advancedFiltersCount > 0 ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => setShowAdvancedFilters((prev) => !prev)}
+                aria-label="Tampilkan atau sembunyikan filter lanjutan"
                 className={`h-9.5 rounded-xl text-xs gap-1.5 shrink-0 ${
                   showAdvancedFilters || advancedFiltersCount > 0
                     ? "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
@@ -578,8 +589,9 @@ export default function AdminAuditLogPage() {
 
           {/* Logs Table View */}
           {loadingLogs ? (
-            <div className="flex items-center justify-center py-20 bg-white rounded-xl border border-slate-200">
+            <div className="flex items-center justify-center py-20 bg-white rounded-xl border border-slate-200" role="status" aria-live="polite">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+              <span className="sr-only">Memuat data log aktivitas...</span>
             </div>
           ) : logs.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-xl border border-slate-200 text-slate-400 space-y-2">
@@ -654,6 +666,7 @@ export default function AdminAuditLogPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => setSelectedLog(log)}
+                                aria-label={`Lihat detail snapshot log ${log.summary}`}
                                 className="h-7 px-2 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 gap-1 font-medium"
                               >
                                 <Eye className="w-3.5 h-3.5" />
@@ -669,38 +682,69 @@ export default function AdminAuditLogPage() {
                   </TableBody>
                 </Table>
               </div>
-            </div>
-          )}
 
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-xs">
-              <p className="text-xs text-slate-500">
-                Menampilkan halaman <strong className="text-slate-800">{page}</strong> dari{" "}
-                <strong className="text-slate-800">{totalPages}</strong> (Total {totalItems} log)
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page <= 1}
-                  onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                  className="h-8 gap-1 text-xs"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                  Sebelumnya
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-                  className="h-8 gap-1 text-xs"
-                >
-                  Berikutnya
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </Button>
-              </div>
+              {/* Pagination Bar */}
+              {totalItems > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+                  {/* Left: Summary text with bigger font */}
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-slate-600 font-medium">
+                      Menampilkan <strong className="text-slate-900 font-semibold">{Math.min(totalItems, (page - 1) * pageSize + 1)}</strong> -{" "}
+                      <strong className="text-slate-900 font-semibold">{Math.min(totalItems, page * pageSize)}</strong> dari{" "}
+                      <strong className="text-slate-900 font-semibold">{totalItems}</strong> log aktivitas
+                    </p>
+                  </div>
+
+                  {/* Right: Baris selector + Prev / Next Controls */}
+                  <div className="flex items-center gap-4 self-end sm:self-auto">
+                    <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
+                      <span>Baris:</span>
+                      <select
+                        value={pageSize}
+                        onChange={(e) => {
+                          setPageSize(Number(e.target.value));
+                          setPage(1);
+                        }}
+                        aria-label="Pilih jumlah baris per halaman"
+                        className="bg-white border border-slate-200 text-sm font-medium text-slate-800 rounded-lg px-2.5 py-1.5 outline-none focus:border-blue-500 shadow-xs cursor-pointer"
+                      >
+                        <option value={10}>10</option>
+                        <option value={25}>25</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={page <= 1}
+                        onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                        aria-label="Halaman sebelumnya"
+                        className="h-9 px-3 text-sm font-medium gap-1.5 bg-white disabled:opacity-40"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        Sebelumnya
+                      </Button>
+                      <span className="text-sm text-slate-700 px-2 font-semibold">
+                        {page} / {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={page >= totalPages}
+                        onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                        aria-label="Halaman berikutnya"
+                        className="h-9 px-3 text-sm font-medium gap-1.5 bg-white disabled:opacity-40"
+                      >
+                        Berikutnya
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -709,7 +753,7 @@ export default function AdminAuditLogPage() {
       {/* TAB 2: LOG PER SUB ADMIN */}
       {activeTab === "users" && (
         <div className="space-y-6">
-          <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div className="bg-blue-50/70 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
                 <Users className="w-5 h-5" />
@@ -717,15 +761,29 @@ export default function AdminAuditLogPage() {
               <div>
                 <p className="text-sm font-semibold text-slate-900">Aktivitas Sub Admin & Administrator</p>
                 <p className="text-xs text-slate-500">
-                  Pilih Sub Admin untuk melihat riwayat log aktivitas yang dilakukan secara spesifik
+                  Pilih Sub Admin untuk melihat riwayat log aktivitas atau bandingkan kinerja dua admin secara berdampingan
                 </p>
               </div>
             </div>
+            {subAdmins.length >= 2 && (
+              <Button
+                onClick={() => {
+                  setCompareAdminAId(subAdmins[0]?.id || "");
+                  setCompareAdminBId(subAdmins[1]?.id || "");
+                  setShowCompareModal(true);
+                }}
+                className="gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs text-xs shrink-0 self-start sm:self-auto"
+              >
+                <ArrowLeftRight className="w-4 h-4" />
+                Bandingkan 2 Admin
+              </Button>
+            )}
           </div>
 
           {loadingSubAdmins ? (
-            <div className="flex items-center justify-center py-20">
+            <div className="flex items-center justify-center py-20" role="status" aria-live="polite">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+              <span className="sr-only">Memuat data aktivitas Sub Admin...</span>
             </div>
           ) : subAdmins.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-xl border border-slate-200 text-slate-400 text-sm">
@@ -752,7 +810,7 @@ export default function AdminAuditLogPage() {
                         </div>
                       </div>
                       <Badge
-                        className={`shrink-0 ${user.role === "SUPER_ADMIN" ? "bg-indigo-100 text-indigo-800" : "bg-sky-100 text-sky-800"}`}
+                        className={`shrink-0 ${user.role === "SUPER_ADMIN" ? "bg-status-purple-bg text-status-purple border-status-purple-border" : "bg-status-info-bg text-status-info border-status-info-border"}`}
                       >
                         {user.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
                       </Badge>
@@ -802,6 +860,230 @@ export default function AdminAuditLogPage() {
           )}
         </div>
       )}
+
+      {/* Modal Komparasi 2 Admin Berdampingan */}
+      <Dialog open={showCompareModal} onOpenChange={setShowCompareModal}>
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto p-6">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-slate-900">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
+                <ArrowLeftRight className="w-4 h-4" />
+              </div>
+              Perbandingan Aktivitas Dua Admin
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Selector Row */}
+          <div className="flex flex-row items-end gap-3 pt-2">
+            <div className="flex-1 space-y-1.5 min-w-0">
+              <label className="text-xs font-semibold text-slate-700">Pilih Admin 1</label>
+              <Select value={compareAdminAId} onValueChange={setCompareAdminAId}>
+                <SelectTrigger className="w-full h-10 bg-white border-slate-200 rounded-xl text-sm truncate">
+                  <SelectValue placeholder="Pilih Admin 1" />
+                </SelectTrigger>
+                <SelectContent>
+                  {subAdmins.map((u) => (
+                    <SelectItem key={u.id} value={u.id} disabled={u.id === compareAdminBId}>
+                      {u.name} ({u.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex justify-center pb-0.5 shrink-0">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const temp = compareAdminAId;
+                  setCompareAdminAId(compareAdminBId);
+                  setCompareAdminBId(temp);
+                }}
+                aria-label="Tukar posisi admin yang dibandingkan"
+                className="h-10 w-10 p-0 rounded-xl border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:border-slate-300 transition-all shrink-0"
+              >
+                <ArrowLeftRight className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="flex-1 space-y-1.5 min-w-0">
+              <label className="text-xs font-semibold text-slate-700">Pilih Admin 2</label>
+              <Select value={compareAdminBId} onValueChange={setCompareAdminBId}>
+                <SelectTrigger className="w-full h-10 bg-white border-slate-200 rounded-xl text-sm truncate">
+                  <SelectValue placeholder="Pilih Admin 2" />
+                </SelectTrigger>
+                <SelectContent>
+                  {subAdmins.map((u) => (
+                    <SelectItem key={u.id} value={u.id} disabled={u.id === compareAdminAId}>
+                      {u.name} ({u.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Comparison Details Side-by-Side */}
+          {(() => {
+            const adminA = subAdmins.find((u) => u.id === compareAdminAId);
+            const adminB = subAdmins.find((u) => u.id === compareAdminBId);
+
+            if (!adminA || !adminB) {
+              return (
+                <div className="py-8 text-center text-sm text-slate-500">
+                  Silakan pilih dua admin yang ingin Anda bandingkan di atas.
+                </div>
+              );
+            }
+
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
+                {/* Admin A Card */}
+                <div className="bg-slate-50/80 border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg shrink-0">
+                        {adminA.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-slate-900 text-sm truncate">{adminA.name}</h4>
+                        <p className="text-xs text-slate-500 truncate">{adminA.email}</p>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <Badge className={adminA.role === "SUPER_ADMIN" ? "bg-status-purple-bg text-status-purple border-status-purple-border text-[10px]" : "bg-status-info-bg text-status-info border-status-info-border text-[10px]"}>
+                            {adminA.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
+                          </Badge>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${adminA.isActive ? "bg-emerald-100 text-emerald-800" : "bg-slate-200 text-slate-600"}`}>
+                            {adminA.isActive ? "Aktif" : "Nonaktif"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 text-xs pt-1">
+                      <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
+                        <span className="text-slate-600 font-medium">Pelatihan Dibuat:</span>
+                        <span className="font-bold text-sm text-blue-600">{adminA.trainingsCount}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
+                        <span className="text-slate-600 font-medium">Total Log / Aksi:</span>
+                        <span className="font-bold text-sm text-slate-800">{adminA.totalLogs}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
+                        <span className="text-slate-600 font-medium">Aktivitas Terakhir:</span>
+                        <span className="font-medium text-slate-800 text-right">
+                          {adminA.lastActivityAt
+                            ? new Date(adminA.lastActivityAt).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "-"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
+                        <span className="text-slate-600 font-medium">Bergabung Sejak:</span>
+                        <span className="font-medium text-slate-800">
+                          {new Date(adminA.createdAt).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setShowCompareModal(false);
+                      handleSelectSubAdmin(adminA.id);
+                    }}
+                    className="w-full mt-3 h-10 gap-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-xs"
+                  >
+                    <span className="truncate">Lihat Log {adminA.name}</span>
+                    <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                  </Button>
+                </div>
+
+                {/* Admin B Card */}
+                <div className="bg-slate-50/80 border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-lg shrink-0">
+                        {adminB.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-slate-900 text-sm truncate">{adminB.name}</h4>
+                        <p className="text-xs text-slate-500 truncate">{adminB.email}</p>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <Badge className={adminB.role === "SUPER_ADMIN" ? "bg-status-purple-bg text-status-purple border-status-purple-border text-[10px]" : "bg-status-info-bg text-status-info border-status-info-border text-[10px]"}>
+                            {adminB.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
+                          </Badge>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${adminB.isActive ? "bg-emerald-100 text-emerald-800" : "bg-slate-200 text-slate-600"}`}>
+                            {adminB.isActive ? "Aktif" : "Nonaktif"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 text-xs pt-1">
+                      <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
+                        <span className="text-slate-600 font-medium">Pelatihan Dibuat:</span>
+                        <span className="font-bold text-sm text-blue-600">{adminB.trainingsCount}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
+                        <span className="text-slate-600 font-medium">Total Log / Aksi:</span>
+                        <span className="font-bold text-sm text-slate-800">{adminB.totalLogs}</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
+                        <span className="text-slate-600 font-medium">Aktivitas Terakhir:</span>
+                        <span className="font-medium text-slate-800 text-right">
+                          {adminB.lastActivityAt
+                            ? new Date(adminB.lastActivityAt).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "-"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs">
+                        <span className="text-slate-600 font-medium">Bergabung Sejak:</span>
+                        <span className="font-medium text-slate-800">
+                          {new Date(adminB.createdAt).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setShowCompareModal(false);
+                      handleSelectSubAdmin(adminB.id);
+                    }}
+                    className="w-full mt-3 h-10 gap-1.5 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all shadow-xs"
+                  >
+                    <span className="truncate">Lihat Log {adminB.name}</span>
+                    <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                  </Button>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
 
       {/* Render Detail Changes Modal */}
       {renderDiffModal()}
