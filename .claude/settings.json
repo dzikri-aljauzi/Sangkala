@@ -98,6 +98,6 @@
     ]
   },
   "enabledPlugins": {
-    "impeccable@impeccable": false
+    "impeccable@impeccable": true
   }
 }

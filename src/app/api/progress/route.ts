@@ -22,9 +22,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check access - ADMIN can access any, others only their assigned assessment
+    // Check access - ADMIN/SUPER_ADMIN can access any, others only their assigned assessment
     const role = session.user.role;
-    if (role !== "ADMIN") {
+    if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
       if (session.user.assessmentId !== assessmentId) {
         return NextResponse.json(
           { error: "Access denied to this assessment" },
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Create new progress (ADMIN only)
+// POST - Create new progress (ADMIN/SUPER_ADMIN only)
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (session.user.role !== "ADMIN") {
+    if (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN") {
       return NextResponse.json(
         { error: "Only admin can create progress" },
         { status: 403 }

@@ -32,6 +32,7 @@ export default function WorkspaceViewPage({
   // resolveView guarantees `resolved` is in the role's allowed view set,
   // so the cast below is safe for each role's tab union.
   switch (role) {
+    case "SUPER_ADMIN":
     case "ADMIN":
       return <AdminDashboard assessmentId={id} embedded initialTab={resolved as never} />;
     case "ASESOR":

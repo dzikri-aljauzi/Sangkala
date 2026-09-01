@@ -33,10 +33,13 @@ export default function PengaturanPembayaranPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
+
   useEffect(() => {
     if (status === "loading") return;
-    if (!session || session.user.role !== "ADMIN") {
-      router.push("/");
+    if (!session || session.user.role !== "SUPER_ADMIN") {
+      toast.error("Hanya Super Admin yang berwenang mengakses Pengaturan Rekening");
+      router.push("/admin/pelatihan");
       return;
     }
     fetchSettings();
@@ -59,6 +62,10 @@ export default function PengaturanPembayaranPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (session?.user?.role !== "SUPER_ADMIN") {
+      toast.error("Hanya Super Admin yang berwenang mengubah rekening");
+      return;
+    }
     setSaving(true);
 
     try {
@@ -110,10 +117,12 @@ export default function PengaturanPembayaranPage() {
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium text-slate-700">{session.user?.name}</p>
-                <p className="text-xs text-slate-500">{session.user?.email}</p>
+                <p className="text-xs text-slate-500">
+                  {session.user?.email} ({isSuperAdmin ? "Super Admin" : "Sub Admin"})
+                </p>
               </div>
               <button
-                onClick={() => signOut({ callbackUrl: "/assessment-center/admin-login" })}
+                onClick={() => signOut({ callbackUrl: "/admin/login" })}
                 className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
                 <LogOut className="w-4 h-4" />
@@ -188,9 +197,9 @@ export default function PengaturanPembayaranPage() {
             />
           </div>
           <div className="flex justify-end pt-2">
-            <Button type="submit" disabled={saving}>
+            <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white">
               <Save className="w-4 h-4" />
-              {saving ? "Menyimpan..." : "Simpan"}
+              {saving ? "Menyimpan..." : "Simpan Pengaturan"}
             </Button>
           </div>
         </motion.form>

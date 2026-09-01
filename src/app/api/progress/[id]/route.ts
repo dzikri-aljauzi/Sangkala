@@ -31,7 +31,7 @@ export async function GET(
 
     // Check access
     const role = session.user.role;
-    if (role !== "ADMIN") {
+    if (role !== "ADMIN" && role !== "SUPER_ADMIN") {
       if (session.user.assessmentId !== progress.assessmentId) {
         return NextResponse.json(
           { error: "Access denied" },
@@ -58,7 +58,7 @@ export async function GET(
   }
 }
 
-// PUT - Update progress (ADMIN only)
+// PUT - Update progress (ADMIN/SUPER_ADMIN only)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -70,7 +70,7 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (session.user.role !== "ADMIN") {
+    if (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN") {
       return NextResponse.json(
         { error: "Only admin can update progress" },
         { status: 403 }
@@ -124,7 +124,7 @@ export async function PUT(
   }
 }
 
-// DELETE - Delete progress (ADMIN only)
+// DELETE - Delete progress (ADMIN/SUPER_ADMIN only)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -136,7 +136,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (session.user.role !== "ADMIN") {
+    if (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN") {
       return NextResponse.json(
         { error: "Only admin can delete progress" },
         { status: 403 }

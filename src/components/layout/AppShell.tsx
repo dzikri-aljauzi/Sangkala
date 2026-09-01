@@ -42,7 +42,7 @@ export default function AppShell({
   const [paletteOpen, setPaletteOpen] = useState(false);
 
   const role = session?.user?.role;
-  const isAdmin = role === "ADMIN";
+  const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN";
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: isAdmin ? "/admin/login" : "/assessment-center" });

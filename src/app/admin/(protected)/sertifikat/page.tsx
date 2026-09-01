@@ -234,26 +234,6 @@ export default function CertificatesPage() {
         {/* Navigation Bar & Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => {
-                if (view === "create" || view === "edit") {
-                  setView("list");
-                  setEditingId(null);
-                  setCertCode("");
-                  setRecipientName("");
-                  setProgramName("");
-                  setDescription("");
-                  setIssuedDate(new Date().toISOString().split("T")[0]);
-                  setParticipants([]);
-                  setType("INDIVIDU");
-                } else {
-                  router.push("/admin");
-                }
-              }}
-              className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">
                 {view === "create" ? "Terbitkan Sertifikat Baru" : view === "edit" ? "Edit Sertifikat" : "Kelola Sertifikat"}

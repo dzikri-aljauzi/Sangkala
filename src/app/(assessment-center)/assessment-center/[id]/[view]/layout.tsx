@@ -49,7 +49,7 @@ export default function WorkspaceViewLayout({
     if (status === "authenticated" && session && id) {
       const userRole = session.user.role;
       const userAssessmentId = session.user.assessmentId;
-      if (userRole !== "ADMIN" && userAssessmentId !== id) {
+      if (userRole !== "ADMIN" && userRole !== "SUPER_ADMIN" && userAssessmentId !== id) {
         router.push("/assessment-center");
       }
     }

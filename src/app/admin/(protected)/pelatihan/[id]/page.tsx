@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -24,6 +25,9 @@ import {
   Download,
   RotateCcw,
   Maximize2,
+  History,
+  Trash2,
+  User as UserIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -64,6 +68,22 @@ interface Registrant {
   rejectionReason: string | null;
 }
 
+interface AuditLogItem {
+  id: string;
+  entityType: string;
+  entityId: string;
+  action: string;
+  summary: string;
+  changes: string | null;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+}
+
 const getImageUrl = (path: string | null) => {
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
@@ -71,16 +91,21 @@ const getImageUrl = (path: string | null) => {
   return path;
 };
 
-
 export default function AdminPelatihanDetailPage() {
+  const { data: session } = useSession();
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
 
   const [training, setTraining] = useState<Training | null>(null);
   const [registrants, setRegistrants] = useState<Registrant[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
+  const [activeTab, setActiveTab] = useState<"registrants" | "history">("registrants");
   const [loading, setLoading] = useState(true);
+  const [loadingLogs, setLoadingLogs] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     location: "",
@@ -103,6 +128,28 @@ export default function AdminPelatihanDetailPage() {
   const [showProofDialog, setShowProofDialog] = useState(false);
   const [proofTarget, setProofTarget] = useState<Registrant | null>(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+
+  // Confirmation Modal States
+  const [showToggleActiveModal, setShowToggleActiveModal] = useState(false);
+  const [confirmApproveRegistrant, setConfirmApproveRegistrant] = useState<Registrant | null>(null);
+  const [confirmResetRegistrant, setConfirmResetRegistrant] = useState<Registrant | null>(null);
+
+  const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
+  const canModify = isSuperAdmin || (training && training.createdById === session?.user?.id);
+
+  const fetchAuditLogs = useCallback(async () => {
+    setLoadingLogs(true);
+    try {
+      const res = await fetch(`/api/trainings/${id}/audit-logs`);
+      if (res.ok) {
+        setAuditLogs(await res.json());
+      }
+    } catch (err) {
+      console.error("Error fetching audit logs:", err);
+    } finally {
+      setLoadingLogs(false);
+    }
+  }, [id]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -131,7 +178,8 @@ export default function AdminPelatihanDetailPage() {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    fetchAuditLogs();
+  }, [fetchData, fetchAuditLogs]);
 
   const openEditModal = () => {
     if (!training) return;
@@ -197,6 +245,8 @@ export default function AdminPelatihanDetailPage() {
       if (res.ok) {
         setShowEditModal(false);
         fetchData();
+        fetchAuditLogs();
+        toast.success("Perubahan pelatihan berhasil disimpan");
       } else {
         const error = await res.json();
         toast.error(error.error || "Gagal menyimpan perubahan");
@@ -211,25 +261,24 @@ export default function AdminPelatihanDetailPage() {
 
   const toggleActive = async () => {
     if (!training) return;
+    if (!canModify) {
+      toast.error("Anda hanya dapat mengubah pelatihan yang Anda buat sendiri");
+      return;
+    }
     setTogglingActive(true);
     try {
       const res = await fetch(`/api/trainings/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: training.title,
-          location: training.location,
-          startDate: training.startDate,
-          price: training.price,
-          description: training.description,
-          imagePath: training.imagePath,
           isActive: !training.isActive,
-          requiresPayment: training.requiresPayment,
-          capacity: training.capacity,
         }),
       });
       if (res.ok) {
+        toast.success(training.isActive ? "Pelatihan dinonaktifkan" : "Pelatihan diaktifkan");
+        setShowToggleActiveModal(false);
         fetchData();
+        fetchAuditLogs();
       } else {
         toast.error("Gagal mengubah status pelatihan");
       }
@@ -238,6 +287,57 @@ export default function AdminPelatihanDetailPage() {
       toast.error("Gagal mengubah status pelatihan");
     } finally {
       setTogglingActive(false);
+    }
+  };
+
+  const handleDeleteTraining = async () => {
+    if (!training) return;
+    if (!canModify) {
+      toast.error("Anda hanya dapat menghapus pelatihan yang Anda buat sendiri");
+      return;
+    }
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/trainings/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        toast.success("Pelatihan berhasil dihapus");
+        router.push("/admin/pelatihan");
+      } else {
+        const error = await res.json();
+        toast.error(error.error || "Gagal menghapus pelatihan");
+      }
+    } catch (err) {
+      console.error("Error deleting training:", err);
+      toast.error("Gagal menghapus pelatihan");
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
+  const renderDiffContent = (changesStr: string | null) => {
+    if (!changesStr) return null;
+    try {
+      const diff: Record<string, { old: unknown; new: unknown }> = JSON.parse(changesStr);
+      return (
+        <div className="mt-2 space-y-1.5 bg-slate-50 rounded-lg p-3 text-xs border border-slate-200">
+          <p className="font-semibold text-slate-700">Perubahan Data:</p>
+          <div className="grid grid-cols-1 gap-1">
+            {Object.entries(diff).map(([field, value]) => (
+              <div key={field} className="flex flex-wrap items-center gap-1.5 text-slate-600">
+                <span className="font-mono bg-slate-200 px-1 py-0.5 rounded text-slate-800">{field}:</span>
+                <span className="line-through text-red-600 bg-red-50 px-1 rounded">{String(value.old ?? "kosong")}</span>
+                <span>→</span>
+                <span className="text-emerald-700 font-medium bg-emerald-50 px-1 rounded">{String(value.new ?? "kosong")}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    } catch {
+      return null;
     }
   };
 
@@ -251,6 +351,7 @@ export default function AdminPelatihanDetailPage() {
       });
       if (res.ok) {
         toast.success("Bukti pembayaran disetujui");
+        setConfirmApproveRegistrant(null);
         fetchData();
       } else {
         const error = await res.json();
@@ -312,6 +413,7 @@ export default function AdminPelatihanDetailPage() {
       });
       if (res.ok) {
         toast.success("Status pembayaran dikembalikan ke Menunggu");
+        setConfirmResetRegistrant(null);
         fetchData();
       } else {
         const error = await res.json();
@@ -377,8 +479,9 @@ export default function AdminPelatihanDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
+      <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <span className="sr-only">Memuat detail pelatihan...</span>
       </div>
     );
   }
@@ -392,6 +495,7 @@ export default function AdminPelatihanDetailPage() {
         <div className="flex items-center gap-4">
           <Link
             href="/admin/pelatihan"
+            aria-label="Kembali ke daftar pelatihan"
             className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors shadow-sm shrink-0"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -442,19 +546,57 @@ export default function AdminPelatihanDetailPage() {
                 Berbayar
               </Badge>
             )}
-          </div>
-          <div className="p-6">
+          </div>          <div className="p-6">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{training.title}</h1>
-              <div className="flex gap-2 shrink-0">
-                <Button variant="outline" onClick={toggleActive} disabled={togglingActive}>
-                  <Power className="w-4 h-4" />
-                  {training.isActive ? "Nonaktifkan" : "Aktifkan"}
-                </Button>
-                <Button onClick={openEditModal}>
-                  <Pencil className="w-4 h-4" />
-                  Edit
-                </Button>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{training.title}</h1>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-500">
+                  <UserIcon className="w-3.5 h-3.5 text-slate-400" />
+                  <span>
+                    Dibuat oleh: <strong className="text-slate-700">{training.createdBy?.name || "Admin"}</strong>
+                    {training.createdBy?.role && (
+                      <span className="ml-1 text-[11px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                        {training.createdBy.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 shrink-0">
+                {canModify ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        if (!canModify) {
+                          toast.error("Anda hanya dapat mengubah pelatihan yang Anda buat sendiri");
+                          return;
+                        }
+                        setShowToggleActiveModal(true);
+                      }}
+                      disabled={togglingActive}
+                    >
+                      <Power className="w-4 h-4" />
+                      {training.isActive ? "Nonaktifkan" : "Aktifkan"}
+                    </Button>
+                    <Button variant="outline" onClick={openEditModal}>
+                      <Pencil className="w-4 h-4" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                      onClick={() => setShowDeleteModal(true)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Hapus
+                    </Button>
+                  </>
+                ) : (
+                  <Badge variant="outline" className="text-amber-700 border-amber-300 bg-amber-50 py-1.5 px-3">
+                    Mode Hanya Lihat (Dibuat oleh Sub Admin lain)
+                  </Badge>
+                )}
               </div>
             </div>
 
@@ -482,125 +624,268 @@ export default function AdminPelatihanDetailPage() {
           </div>
         </motion.div>
 
-        {/* Registrants Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-xl border border-slate-200 overflow-hidden"
-        >
-          <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-3">
-            <h2 className="font-semibold text-slate-900">Data Pendaftar ({registrants.length})</h2>
-            {registrants.length > 0 && (
-              <Button variant="outline" size="sm" onClick={exportToCSV}>
-                <Download className="w-3.5 h-3.5" />
-                Export CSV
-              </Button>
-            )}
-          </div>
-          {registrants.length === 0 ? (
-            <div className="text-center py-12 text-slate-400 text-sm">Belum ada pendaftar.</div>
-          ) : (
-            <Table className="text-base">
-              <TableHeader>
-                <TableRow className="bg-slate-50 hover:bg-slate-50">
-                  <TableHead className="w-16 px-4 text-center text-slate-500 text-sm">No</TableHead>
-                  <TableHead className="px-4 text-slate-500 text-sm">Nama</TableHead>
-                  <TableHead className="px-4 text-slate-500 text-sm">Email</TableHead>
-                  <TableHead className="px-4 text-slate-500 text-sm">No. HP</TableHead>
-                  <TableHead className="px-4 text-slate-500 text-sm">Instansi</TableHead>
-                  <TableHead className="px-4 text-slate-500 text-sm">Tanggal Daftar</TableHead>
-                  <TableHead className="px-4 text-slate-500 text-sm">Status Pembayaran</TableHead>
-                  <TableHead className="px-4 text-slate-500 text-sm">Bukti</TableHead>
-                  <TableHead className="px-4 text-slate-500 text-sm">Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {registrants.map((r, index) => (
-                  <TableRow key={r.id}>
-                    <TableCell className="px-4 py-4 text-slate-400 text-center">
-                      {String(index + 1).padStart(2, "0")}
-                    </TableCell>
-                    <TableCell className="px-4 py-4 font-medium text-slate-800">{r.name}</TableCell>
-                    <TableCell className="px-4 py-4 text-slate-600">
-                      <span className="inline-flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                        {r.email}
-                      </span>
-                    </TableCell>
-                    <TableCell className="px-4 py-4 text-slate-600">
-                      <span className="inline-flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                        {r.phone}
-                      </span>
-                    </TableCell>
-                    <TableCell className="px-4 py-4 text-slate-600">
-                      {r.institution ? (
+        {/* Tab Switcher: Pendaftar vs Riwayat */}
+        <div className="flex items-center gap-2 border-b border-slate-200">
+          <button
+            onClick={() => setActiveTab("registrants")}
+            className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+              activeTab === "registrants"
+                ? "border-blue-600 text-blue-600 font-semibold"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Data Pendaftar ({registrants.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+              activeTab === "history"
+                ? "border-blue-600 text-blue-600 font-semibold"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <History className="w-4 h-4" />
+            Riwayat Perubahan ({auditLogs.length})
+          </button>
+        </div>
+
+        {/* Tab Content: Registrants */}
+        {activeTab === "registrants" && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-xl border border-slate-200 overflow-hidden"
+          >
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-3">
+              <h2 className="font-semibold text-slate-900">Data Pendaftar ({registrants.length})</h2>
+              {registrants.length > 0 && (
+                <Button variant="outline" size="sm" onClick={exportToCSV}>
+                  <Download className="w-3.5 h-3.5" />
+                  Export CSV
+                </Button>
+              )}
+            </div>
+            {registrants.length === 0 ? (
+              <div className="text-center py-12 text-slate-400 text-sm">Belum ada pendaftar.</div>
+            ) : (
+              <Table className="text-base">
+                <TableHeader>
+                  <TableRow className="bg-slate-50 hover:bg-slate-50">
+                    <TableHead className="w-16 px-4 text-center text-slate-500 text-sm">No</TableHead>
+                    <TableHead className="px-4 text-slate-500 text-sm">Nama</TableHead>
+                    <TableHead className="px-4 text-slate-500 text-sm">Email</TableHead>
+                    <TableHead className="px-4 text-slate-500 text-sm">No. HP</TableHead>
+                    <TableHead className="px-4 text-slate-500 text-sm">Instansi</TableHead>
+                    <TableHead className="px-4 text-slate-500 text-sm">Tanggal Daftar</TableHead>
+                    <TableHead className="px-4 text-slate-500 text-sm">Status Pembayaran</TableHead>
+                    <TableHead className="px-4 text-slate-500 text-sm">Bukti</TableHead>
+                    <TableHead className="px-4 text-slate-500 text-sm">Aksi</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {registrants.map((r, index) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="px-4 py-4 text-slate-400 text-center">
+                        {String(index + 1).padStart(2, "0")}
+                      </TableCell>
+                      <TableCell className="px-4 py-4 font-medium text-slate-800">{r.name}</TableCell>
+                      <TableCell className="px-4 py-4 text-slate-600">
                         <span className="inline-flex items-center gap-2">
-                          <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
-                          {r.institution}
+                          <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+                          {r.email}
                         </span>
-                      ) : (
-                        "-"
-                      )}
-                    </TableCell>
-                    <TableCell className="px-4 py-4 text-slate-500">
-                      {new Date(r.createdAt).toLocaleDateString("id-ID")}
-                    </TableCell>
-                    <TableCell className="px-4 py-4">
-                      {renderPaymentBadge(r.paymentStatus)}
-                    </TableCell>
-                    <TableCell className="px-4 py-4">
-                      {r.paymentProofPath ? (
-                        <Button variant="outline" size="sm" onClick={() => openProofDialog(r)}>
-                          <Eye className="w-3.5 h-3.5" />
-                          Lihat Bukti
-                        </Button>
-                      ) : (
-                        <span className="text-slate-400">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="px-4 py-4">
-                      {r.paymentStatus === "PENDING" && (
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleApprove(r.id)}
-                            disabled={reviewingId === r.id}
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            Setujui
-                          </Button>
+                      </TableCell>
+                      <TableCell className="px-4 py-4 text-slate-600">
+                        <span className="inline-flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-slate-400 shrink-0" />
+                          {r.phone}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-4 py-4 text-slate-600">
+                        {r.institution ? (
+                          <span className="inline-flex items-center gap-2">
+                            <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
+                            {r.institution}
+                          </span>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                      <TableCell className="px-4 py-4 text-slate-500">
+                        {new Date(r.createdAt).toLocaleDateString("id-ID")}
+                      </TableCell>
+                      <TableCell className="px-4 py-4">
+                        <div className="flex flex-col gap-1">
+                          {renderPaymentBadge(r.paymentStatus)}
+                          {r.paymentStatus === "REJECTED" && r.rejectionReason && (
+                            <span className="text-xs text-red-600 max-w-[200px] truncate" title={r.rejectionReason}>
+                              {r.rejectionReason}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-4 py-4">
+                        {r.paymentProofPath ? (
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => openRejectDialog(r)}
-                            disabled={reviewingId === r.id}
+                            onClick={() => openProofDialog(r)}
+                            className="h-8 gap-1.5 text-xs text-blue-600 border-blue-200 hover:bg-blue-50"
                           >
-                            <X className="w-3.5 h-3.5" />
-                            Tolak
+                            <Eye className="w-3.5 h-3.5" />
+                            Lihat Bukti
                           </Button>
+                        ) : (
+                          <span className="text-xs text-slate-400">Tidak ada</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="px-4 py-4">
+                        <div className="flex items-center gap-1.5">
+                          {r.paymentStatus === "PENDING" && (
+                            <>
+                              <Button
+                                size="sm"
+                                disabled={reviewingId === r.id}
+                                onClick={() => setConfirmApproveRegistrant(r)}
+                                className="h-8 gap-1 text-xs bg-green-600 hover:bg-green-700 text-white"
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                                Terima
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={reviewingId === r.id}
+                                onClick={() => openRejectDialog(r)}
+                                className="h-8 gap-1 text-xs text-red-600 border-red-200 hover:bg-red-50"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                                Tolak
+                              </Button>
+                            </>
+                          )}
+                          {(r.paymentStatus === "APPROVED" || r.paymentStatus === "REJECTED") && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              disabled={reviewingId === r.id}
+                              onClick={() => setConfirmResetRegistrant(r)}
+                              className="h-8 gap-1 text-xs text-slate-600 hover:text-slate-900"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" />
+                              Reset
+                            </Button>
+                          )}
                         </div>
-                      )}
-                      {(r.paymentStatus === "APPROVED" || r.paymentStatus === "REJECTED") && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleReset(r.id)}
-                          disabled={reviewingId === r.id}
-                        >
-                          <RotateCcw className="w-3.5 h-3.5" />
-                          Batalkan
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </motion.div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </motion.div>
+        )}
+
+        {/* Tab Content: Riwayat Perubahan (Audit Logs) */}
+        {activeTab === "history" && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-xl border border-slate-200 overflow-hidden p-6"
+          >
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+              <div>
+                <h2 className="font-semibold text-slate-900">Riwayat Perubahan & Aktivitas</h2>
+                <p className="text-xs text-slate-500 mt-0.5">Catatan log aktivitas pembuatan, pengeditan, dan verifikasi</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={fetchAuditLogs} disabled={loadingLogs}>
+                <RotateCcw className={`w-3.5 h-3.5 ${loadingLogs ? "animate-spin" : ""}`} />
+                Muat Ulang
+              </Button>
+            </div>
+
+            {loadingLogs ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+              </div>
+            ) : auditLogs.length === 0 ? (
+              <div className="text-center py-12 text-slate-400 text-sm">
+                Belum ada catatan riwayat perubahan untuk pelatihan ini.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {auditLogs.map((log) => {
+                  const actionBadge = {
+                    CREATE: <Badge className="bg-emerald-100 text-emerald-800 border-transparent">DIBUAT</Badge>,
+                    UPDATE: <Badge className="bg-blue-100 text-blue-800 border-transparent">DIUBAH</Badge>,
+                    STATUS_CHANGE: <Badge className="bg-amber-100 text-amber-800 border-transparent">STATUS</Badge>,
+                    DELETE: <Badge variant="destructive">DIHAPUS</Badge>,
+                    REVIEW_PAYMENT: <Badge className="bg-purple-100 text-purple-800 border-transparent">PEMBAYARAN</Badge>,
+                  }[log.action] || <Badge variant="secondary">{log.action}</Badge>;
+
+                  return (
+                    <div key={log.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          {actionBadge}
+                          <span className="text-sm font-semibold text-slate-900">{log.summary}</span>
+                        </div>
+                        <span className="text-xs text-slate-400">
+                          {new Date(log.createdAt).toLocaleDateString("id-ID", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-500 flex items-center gap-1.5">
+                        <UserIcon className="w-3.5 h-3.5 text-slate-400" />
+                        <span>
+                          Oleh <strong className="text-slate-700">{log.user?.name || "Admin"}</strong> ({log.user?.email} - {log.user?.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"})
+                        </span>
+                      </div>
+                      {renderDiffContent(log.changes)}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </motion.div>
+        )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-red-600 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              Hapus Pelatihan
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>Apakah Anda yakin ingin menghapus pelatihan <strong>{training?.title}</strong>?</p>
+            <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-100">
+              Tindakan ini permanen. Semua data pendaftar pelatihan ini juga akan dihapus.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)} disabled={deleting}>
+              Batal
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleDeleteTraining}
+              disabled={deleting}
+            >
+              {deleting ? "Menghapus..." : "Ya, Hapus Pelatihan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
@@ -799,22 +1084,120 @@ export default function AdminPelatihanDetailPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Image Full Preview Modal */}
-      <Dialog open={!!previewImageUrl} onOpenChange={(open) => !open && setPreviewImageUrl(null)}>
-        <DialogContent className="sm:max-w-3xl rounded-2xl max-h-[90vh] overflow-y-auto p-4">
+      {/* Toggle Active Confirmation Modal */}
+      <Dialog open={showToggleActiveModal} onOpenChange={setShowToggleActiveModal}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Preview Gambar Pelatihan</DialogTitle>
+            <DialogTitle className={`flex items-center gap-2 ${training?.isActive ? "text-amber-600" : "text-blue-600"}`}>
+              <AlertTriangle className="w-5 h-5" />
+              Konfirmasi Status Pelatihan
+            </DialogTitle>
           </DialogHeader>
-          {previewImageUrl && (
-            <div className="relative w-full flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden mt-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewImageUrl}
-                alt="Preview Full"
-                className="w-full h-auto max-h-[75vh] object-contain rounded-xl"
-              />
-            </div>
-          )}
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>
+              Apakah Anda yakin ingin{" "}
+              <strong>{training?.isActive ? "menonaktifkan" : "mengaktifkan dan mempublikasikan"}</strong> pelatihan{" "}
+              <strong>&ldquo;{training?.title}&rdquo;</strong>?
+            </p>
+            {training?.isActive ? (
+              <p className="text-xs text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                Pelatihan yang dinonaktifkan tidak akan muncul di halaman publik dan tidak dapat menerima pendaftaran baru.
+              </p>
+            ) : (
+              <p className="text-xs text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-100">
+                Pelatihan akan langsung tampil di website dan peserta dapat melakukan pendaftaran.
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowToggleActiveModal(false)} disabled={togglingActive}>
+              Batal
+            </Button>
+            <Button
+              className={
+                training?.isActive
+                  ? "bg-amber-600 hover:bg-amber-700 text-white"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }
+              onClick={toggleActive}
+              disabled={togglingActive}
+            >
+              {togglingActive
+                ? "Memproses..."
+                : training?.isActive
+                ? "Ya, Nonaktifkan Pelatihan"
+                : "Ya, Publikasikan Pelatihan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Approve Payment Modal */}
+      <Dialog open={!!confirmApproveRegistrant} onOpenChange={(open) => !open && setConfirmApproveRegistrant(null)}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-green-600 flex items-center gap-2">
+              <Check className="w-5 h-5" />
+              Konfirmasi Persetujuan Pembayaran
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>
+              Apakah Anda yakin ingin menyetujui bukti pembayaran dari peserta{" "}
+              <strong>{confirmApproveRegistrant?.name}</strong>?
+            </p>
+            {training.price && (
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-700 space-y-1">
+                <p>Email: <strong className="font-mono">{confirmApproveRegistrant?.email}</strong></p>
+                <p>Nominal: <strong className="text-green-700">{formatRupiah(training.price)}</strong></p>
+              </div>
+            )}
+            <p className="text-xs text-slate-500">
+              Status pendaftar akan berubah menjadi <strong>Disetujui (APPROVED)</strong> dan tercatat pada riwayat log.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmApproveRegistrant(null)} disabled={!!reviewingId}>
+              Batal
+            </Button>
+            <Button
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={() => confirmApproveRegistrant && handleApprove(confirmApproveRegistrant.id)}
+              disabled={!!reviewingId}
+            >
+              {reviewingId ? "Memproses..." : "Ya, Setujui Pembayaran"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Reset Payment Modal */}
+      <Dialog open={!!confirmResetRegistrant} onOpenChange={(open) => !open && setConfirmResetRegistrant(null)}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-slate-800 flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-slate-600" />
+              Konfirmasi Reset Status Pembayaran
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-sm text-slate-600 space-y-2">
+            <p>
+              Apakah Anda yakin ingin mereset keputusan verifikasi untuk peserta{" "}
+              <strong>{confirmResetRegistrant?.name}</strong> kembali ke status <strong>Menunggu (PENDING)</strong>?
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmResetRegistrant(null)} disabled={!!reviewingId}>
+              Batal
+            </Button>
+            <Button
+              className="bg-slate-800 hover:bg-slate-900 text-white"
+              onClick={() => confirmResetRegistrant && handleReset(confirmResetRegistrant.id)}
+              disabled={!!reviewingId}
+            >
+              {reviewingId ? "Mereset..." : "Ya, Kembalikan ke Menunggu"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

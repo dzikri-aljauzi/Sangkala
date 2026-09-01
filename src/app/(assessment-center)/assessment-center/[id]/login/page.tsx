@@ -8,6 +8,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, AlertCircle, UserCheck, Building2, Users, type LucideIcon } from "lucide-react";
+import { PasswordToggleButton } from "@/components/ui/password-toggle-button";
 
 interface Assessment {
   id: string;
@@ -53,6 +54,7 @@ export default function AssessmentLoginPage({
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<LoginRole>("ASESOR");
@@ -128,7 +130,7 @@ export default function AssessmentLoginPage({
       >
         <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
           {/* Header with Logo & Assessment Info */}
-          <div className={`bg-gradient-to-r ${currentTab.color} px-8 py-8 text-center transition-all duration-500`}>
+          <div className={`bg-gradient-to-r ${currentTab.color} px-6 py-6 sm:px-8 sm:py-8 text-center transition-all duration-500`}>
             <div className="flex justify-center mb-4">
               {assessment.clientLogo ? (
                 <div className="bg-white rounded-xl p-3 shadow-lg">
@@ -137,18 +139,18 @@ export default function AssessmentLoginPage({
                     alt={assessment.clientName}
                     width={100}
                     height={100}
-                    className="object-contain"
+                    className="object-contain w-16 h-16 sm:w-[100px] sm:h-[100px]"
                   />
                 </div>
               ) : (
-                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-3xl font-bold text-white">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-2xl sm:text-3xl font-bold text-white">
                     {assessment.clientName.charAt(0)}
                   </span>
                 </div>
               )}
             </div>
-            <h1 className="text-xl font-bold text-white mb-1">
+            <h1 className="text-lg sm:text-xl font-bold text-white mb-1">
               {assessment.name}
             </h1>
             <p className="text-white/80 text-sm">
@@ -157,7 +159,7 @@ export default function AssessmentLoginPage({
           </div>
 
           {/* Role Selection Tabs */}
-          <div className="px-6 pt-6">
+          <div className="px-4 pt-5 sm:px-6 sm:pt-6">
             <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3 text-center">
               Login Sebagai
             </p>
@@ -194,7 +196,7 @@ export default function AssessmentLoginPage({
           </div>
 
           {/* Login Form */}
-          <div className="px-8 py-6">
+          <div className="px-5 py-5 sm:px-8 sm:py-6">
             <AnimatePresence mode="wait">
               <motion.div
                 key={selectedRole}
@@ -252,15 +254,19 @@ export default function AssessmentLoginPage({
                         {t("assessmentCenter.password")}
                       </label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
                         <input
                           id="password"
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
-                          className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          className="w-full pl-10 pr-11 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                           placeholder="••••••••"
+                        />
+                        <PasswordToggleButton
+                          visible={showPassword}
+                          onToggle={() => setShowPassword(!showPassword)}
                         />
                       </div>
                     </div>

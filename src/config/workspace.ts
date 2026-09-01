@@ -25,6 +25,7 @@ export const VIEW_SUBTITLES: Record<string, string> = {
 };
 
 export const ALLOWED_VIEWS: Record<AppRole, string[]> = {
+  SUPER_ADMIN: ["overview", "users", "documents", "resumes", "documentations", "progress", "echelons"],
   ADMIN: ["overview", "users", "documents", "resumes", "documentations", "progress", "echelons"],
   ASESOR: ["overview", "upload", "history"],
   KLIEN: ["overview", "resumes", "documentations", "progress"],

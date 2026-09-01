@@ -33,6 +33,7 @@ export async function DELETE(
     // Check permissions: Admin or owner can delete
     if (
       session.user.role !== "ADMIN" &&
+      session.user.role !== "SUPER_ADMIN" &&
       document.uploadedById !== session.user.id
     ) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });

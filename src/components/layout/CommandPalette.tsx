@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Search, CornerDownLeft, ArrowRight, FolderOpen } from "lucide-react";
+import { Search, CornerDownLeft, ArrowRight, FolderOpen, Compass, User } from "lucide-react";
 import type { NavSection } from "@/config/nav";
 
 interface AssessmentItem {
@@ -11,6 +11,13 @@ interface AssessmentItem {
   name: string;
   clientName: string;
   clientLogo: string | null;
+}
+
+interface UserItem {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
 }
 
 interface CommandPaletteProps {
@@ -29,7 +36,7 @@ interface PaletteItem {
 
 /**
  * Signature element of the Unified Workbench: Cmd/Ctrl+K search.
- * Jumps to any assessment or view from anywhere in the app.
+ * Jumps to any assessment, user, or view from anywhere in the app.
  * Opens via keyboard shortcut or the `command-palette:open` custom event.
  */
 export default function CommandPalette({
@@ -42,11 +49,12 @@ export default function CommandPalette({
   const [internalOpen, setInternalOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [assessments, setAssessments] = useState<AssessmentItem[]>([]);
+  const [users, setUsers] = useState<UserItem[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const isAdmin = session?.user?.role === "ADMIN";
+  const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN";
 
   const isOpen = controlledOpen ?? internalOpen;
   const setOpen = useCallback(
@@ -75,14 +83,18 @@ export default function CommandPalette({
     };
   }, [isOpen, setOpen]);
 
-  // Fetch assessments when opened (admin only — endpoint is public, so
-  // non-admin roles must not see other clients' assessments)
+  // Fetch assessments & users when opened (admin only)
   useEffect(() => {
     if (!isOpen || !isAdmin) return;
     fetch("/api/assessments")
       .then((res) => (res.ok ? res.json() : []))
       .then((data: AssessmentItem[]) => setAssessments(Array.isArray(data) ? data : []))
       .catch(() => setAssessments([]));
+
+    fetch("/api/admin/users?pageSize=100")
+      .then((res) => (res.ok ? res.json() : { users: [] }))
+      .then((data: { users?: UserItem[] }) => setUsers(Array.isArray(data?.users) ? data.users : []))
+      .catch(() => setUsers([]));
   }, [isOpen, isAdmin]);
 
   const items = useMemo<PaletteItem[]>(() => {
@@ -117,8 +129,32 @@ export default function CommandPalette({
       }
     }
 
+    for (const u of users) {
+      const match = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+      if (match) {
+        const roleLabel =
+          u.role === "SUPER_ADMIN"
+            ? "Super Admin"
+            : u.role === "ADMIN"
+            ? "Sub Admin"
+            : u.role === "ASESOR"
+            ? "Asesor"
+            : u.role === "KLIEN"
+            ? "Klien"
+            : "Staff Klien";
+
+        result.push({
+          id: `user-${u.id}`,
+          label: u.name,
+          description: `${roleLabel} · ${u.email}`,
+          href: `/admin/users?search=${encodeURIComponent(u.name)}`,
+          group: "Pengguna",
+        });
+      }
+    }
+
     return result;
-  }, [query, sections, assessments]);
+  }, [query, sections, assessments, users]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -204,11 +240,17 @@ export default function CommandPalette({
                   index === activeIndex ? "bg-paper text-ink" : "text-ink-muted"
                 }`}
               >
-                <FolderOpen className="h-4 w-4 flex-shrink-0 text-primary" />
+                {item.group === "Pengguna" ? (
+                  <User className="h-4 w-4 flex-shrink-0 text-indigo-600" />
+                ) : item.group === "Assessment" ? (
+                  <FolderOpen className="h-4 w-4 flex-shrink-0 text-blue-600" />
+                ) : (
+                  <Compass className="h-4 w-4 flex-shrink-0 text-slate-500" />
+                )}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium text-ink">{item.label}</span>
                   <span className="block truncate text-xs text-ink-muted">
-                    {item.group} · {item.description}
+                    <span className="font-semibold text-slate-700">{item.group}</span> · {item.description}
                   </span>
                 </span>
                 {index === activeIndex && (

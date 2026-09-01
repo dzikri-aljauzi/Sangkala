@@ -3,6 +3,14 @@ import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+interface UserBatchInput {
+  name?: string;
+  email?: string;
+  password?: string;
+  role?: string;
+  assessmentId?: string;
+}
+
 // POST batch create users (Admin only)
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +18,7 @@ export async function POST(request: NextRequest) {
     if (error) return error;
 
     const data = await request.json();
-    const { users } = data;
+    const users: UserBatchInput[] = data.users;
 
     if (!users || !Array.isArray(users) || users.length === 0) {
       return NextResponse.json(
@@ -44,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for duplicate emails
-    const emails = users.map((u: any) => u.email);
+    const emails = users.map((u) => u.email || "");
     const uniqueEmails = new Set(emails);
     if (uniqueEmails.size !== emails.length) {
       return NextResponse.json(
@@ -72,13 +80,14 @@ export async function POST(request: NextRequest) {
     // Hash all passwords and create users
     const createdUsers = [];
     for (const user of users) {
+      if (!user.name || !user.email || !user.password || !user.role || !user.assessmentId) continue;
       const hashedPassword = await bcrypt.hash(user.password, 10);
       const created = await prisma.user.create({
         data: {
           name: user.name,
           email: user.email,
           password: hashedPassword,
-          role: user.role,
+          role: user.role as "ASESOR" | "KLIEN",
           assessmentId: user.assessmentId,
         },
         select: {

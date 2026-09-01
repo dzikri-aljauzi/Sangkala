@@ -14,9 +14,17 @@ export interface Training {
   isActive: boolean;
   requiresPayment: boolean;
   capacity: number | null;
+  createdById?: string;
+  createdBy?: {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
   createdAt: string;
 }
 
 export interface TrainingWithCount extends Training {
   _count: { registrants: number };
 }
+

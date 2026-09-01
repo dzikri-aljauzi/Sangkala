@@ -77,6 +77,7 @@ model User {
   trainings         Training[]      @relation("CreatedTrainings")
   reviewedRegistrants    TrainingRegistrant[] @relation("ReviewedRegistrants")
   updatedPaymentSettings PaymentSetting[]     @relation("UpdatedPaymentSettings")
+  auditLogs              AuditLog[]           @relation("UserAuditLogs")
 
   @@index([assessmentId])
   @@map("users")
@@ -413,5 +414,25 @@ model PaymentSetting {
   updatedBy     User?    @relation("UpdatedPaymentSettings", fields: [updatedById], references: [id], onDelete: SetNull)
 
   @@map("payment_settings")
+}
+
+// ===== Audit Log Model =====
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  entityType String   // "TRAINING", "PAYMENT_SETTING", "USER", "REGISTRANT"
+  entityId   String
+  action     String   // "CREATE", "UPDATE", "STATUS_CHANGE", "DELETE", "REVIEW_PAYMENT"
+  summary    String
+  changes    String?  // JSON diff string: { field: { old: val, new: val } }
+  userId     String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation("UserAuditLogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
 }
 

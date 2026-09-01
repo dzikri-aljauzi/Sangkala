@@ -33,7 +33,7 @@ export async function GET(
 
     // If not admin and article is not published, deny access
     if (
-      (!session || session.user.role !== "ADMIN") &&
+      (!session || (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN")) &&
       article.status !== "PUBLISHED"
     ) {
       return NextResponse.json(
