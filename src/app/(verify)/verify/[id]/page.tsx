@@ -127,15 +127,6 @@ export default async function VerifySignaturePage({
                   {certificate.programName}
                 </h1>
               </div>
-              {certificate.pdfPath && (
-                <a
-                  href={certificate.pdfPath}
-                  download
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow transition-colors whitespace-nowrap shrink-0"
-                >
-                  Unduh Dokumen Asli
-                </a>
-              )}
             </div>
 
             <div className={`grid grid-cols-1 ${certificate.maturityLevel ? "md:grid-cols-3" : "md:grid-cols-2"} gap-6 mb-8`}>
