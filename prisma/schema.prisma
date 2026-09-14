@@ -290,6 +290,8 @@ model Certificate {
   issuedDate       DateTime 
   qrCodeData       String?  // DataURL QR code
   pdfPath          String?  // Path file PDF di server
+  template         String   @default("template-1") // 'template-1' | 'template-2' (+ template baru tanpa migrasi)
+  templateData     String?  // JSON text untuk field khusus per-template, mis. {"signerRightName":"..."}
   createdById      String
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
