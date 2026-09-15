@@ -325,6 +325,7 @@ model Training {
   price           String?  // teks bebas, contoh: "Gratis", "Rp 2.500.000"
   description     String
   imagePath       String?
+  qrCodeData      String?  // DataURL QR code, redirect ke /info-pelatihan/[id]
   isActive        Boolean  @default(true) // nonaktifkan tanpa hapus data pendaftar
   requiresPayment Boolean  @default(false) // wajib upload bukti bayar saat daftar
   capacity        Int?     // kuota peserta, null = tidak terbatas. Registrant REJECTED tidak menghitung kuota.

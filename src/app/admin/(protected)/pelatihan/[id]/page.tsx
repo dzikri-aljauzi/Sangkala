@@ -91,6 +91,14 @@ const getImageUrl = (path: string | null) => {
   return path;
 };
 
+// Judul pelatihan bisa mengandung karakter yang tidak aman buat nama file
+// (spasi, "/", tanda baca) -- disederhanakan jadi slug biar unduhan tetap rapi.
+const toFileNameSlug = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "pelatihan";
+
 export default function AdminPelatihanDetailPage() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -120,6 +128,7 @@ export default function AdminPelatihanDetailPage() {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [togglingActive, setTogglingActive] = useState(false);
+  const [regeneratingQr, setRegeneratingQr] = useState(false);
   const [reviewingId, setReviewingId] = useState<string | null>(null);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectTarget, setRejectTarget] = useState<Registrant | null>(null);
@@ -287,6 +296,27 @@ export default function AdminPelatihanDetailPage() {
       toast.error("Gagal mengubah status pelatihan");
     } finally {
       setTogglingActive(false);
+    }
+  };
+
+  const handleRegenerateQr = async () => {
+    if (!canModify) return;
+    setRegeneratingQr(true);
+    try {
+      const res = await fetch(`/api/trainings/${id}/regenerate-qr`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        toast.success("QR code berhasil dibuat ulang");
+        fetchData();
+      } else {
+        toast.error("Gagal membuat ulang QR code");
+      }
+    } catch (error) {
+      console.error("Error regenerating QR code:", error);
+      toast.error("Gagal membuat ulang QR code");
+    } finally {
+      setRegeneratingQr(false);
     }
   };
 
@@ -622,6 +652,53 @@ export default function AdminPelatihanDetailPage() {
 
             <p className="text-slate-600 leading-relaxed whitespace-pre-line">{training.description}</p>
           </div>
+        </motion.div>
+
+        {/* QR Code Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-xl border border-slate-200 p-6"
+        >
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+            QR Code Pelatihan
+          </h3>
+          <div className="flex justify-center mb-4">
+            {training.qrCodeData ? (
+              <img
+                src={training.qrCodeData}
+                alt="QR Code Pelatihan"
+                width={180}
+                height={180}
+                className="rounded-xl"
+              />
+            ) : (
+              <div className="w-[180px] h-[180px] bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-xs text-center px-4">
+                Tidak Ada QR Code
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap justify-center gap-2">
+            {training.qrCodeData && (
+              <a
+                href={training.qrCodeData}
+                download={`qrcode-${toFileNameSlug(training.title)}.png`}
+                className={buttonVariants({ variant: "outline" })}
+              >
+                <Download className="w-4 h-4" />
+                Unduh QR Code
+              </a>
+            )}
+            {canModify && (
+              <Button variant="outline" onClick={handleRegenerateQr} disabled={regeneratingQr}>
+                <RotateCcw className={`w-3.5 h-3.5 ${regeneratingQr ? "animate-spin" : ""}`} />
+                {regeneratingQr ? "Membuat ulang..." : "Buat Ulang QR Code"}
+              </Button>
+            )}
+          </div>
+          <p className="text-xs text-slate-400 text-center mt-4">
+            Scan QR code untuk membuka halaman pelatihan ini di sisi user.
+          </p>
         </motion.div>
 
         {/* Tab Switcher: Pendaftar vs Riwayat */}

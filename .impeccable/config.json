@@ -8,6 +8,15 @@
         "value": "border-b-2",
         "createdAt": "2026-08-26T13:50:32.865Z",
         "reason": "verified false positive across multiple audit/critique rounds: standard Tailwind rounded-full + one-sided border-b-2 + animate-spin loading-spinner idiom, not a decorative card accent"
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "src/app/admin/(protected)/pelatihan/[id]/page.tsx"
+        ],
+        "createdAt": "2026-09-15T08:00:09.835Z",
+        "reason": "Claude: border-b-2 on rounded-full + animate-spin is the loading-spinner technique used throughout this codebase (the border creates the spinning notch), not a decorative accent border on a static card - false positive for this rule, pre-existing code unrelated to current diff"
       }
     ]
   }
