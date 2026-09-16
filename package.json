@@ -10,6 +10,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed-trainings": "tsx prisma/seed-trainings.ts",
+    "db:backfill-training-qr": "tsx prisma/backfill-training-qr.ts",
     "db:studio": "prisma studio"
   },
   "prisma": {

@@ -11,6 +11,7 @@ export interface Training {
   price: string | null;
   description: string;
   imagePath: string | null;
+  qrCodeData: string | null;
   isActive: boolean;
   requiresPayment: boolean;
   capacity: number | null;

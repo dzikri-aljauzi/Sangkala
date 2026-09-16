@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { getTrainingDateRange, isTrainingDateFilter } from "@/lib/training-filters";
 import { recordAuditLog } from "@/lib/audit";
+import { generateTrainingQrCode } from "@/lib/training-qr";
 
 // GET list pelatihan — publik (hanya isActive), admin bisa lihat semua lewat ?includeInactive=true
 // Query param opsional: ?search=judul & ?filter=minggu-ini|bulan-ini|tahun-ini (berdasarkan startDate)
@@ -94,6 +95,21 @@ export async function POST(request: NextRequest) {
         createdById: session.user.id,
       },
     });
+
+    // QR code cuma turunan dari training.id (yang tidak pernah berubah) --
+    // gagal generate di sini TIDAK boleh menggagalkan pembuatan pelatihan,
+    // qrCodeData tetap null dan bisa di-generate ulang kapan saja (backfill
+    // script atau tombol regenerate di admin).
+    try {
+      const qrCodeData = await generateTrainingQrCode(training.id);
+      await prisma.training.update({
+        where: { id: training.id },
+        data: { qrCodeData },
+      });
+      training.qrCodeData = qrCodeData;
+    } catch (qrError) {
+      console.error("Error generating training QR code:", qrError);
+    }
 
     // Catat riwayat pembuatan di AuditLog
     await recordAuditLog({
