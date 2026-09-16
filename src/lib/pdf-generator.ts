@@ -14,6 +14,13 @@ interface CertificateData {
   verifyHash: string;
 }
 
+export type { CertificateData };
+
+export interface GenerateCertificateOptions {
+  templateId?: string;
+  signerRightName?: string;
+}
+
 // ==========================================
 // KONFIGURASI TATA LETAK & UKURAN SERTIFIKAT
 // (PDF Ukuran A4 Landscape: 841.89 x 595.28)
@@ -111,8 +118,21 @@ function wrapText(text: string, maxWidth: number, font: PDFFont, fontSize: numbe
 }
 
 export async function generateCertificatePdf(
-  data: CertificateData
+  data: CertificateData,
+  opts?: GenerateCertificateOptions
 ): Promise<{ pdfPath: string; qrCodeDataUrl: string }> {
+  // Dispatcher template: template-1 = jalur lama di bawah (tidak diubah).
+  if (opts?.templateId === "template-2") {
+    const { generateTemplate2Pdf } = await import("./certificates/templates/template-2");
+    const { parseTemplateData } = await import("./certificates/registry");
+    const signerRightName =
+      opts.signerRightName ?? parseTemplateData(undefined).signerRightName ?? "";
+    if (!signerRightName.trim()) {
+      throw new Error("Nama Penandatangan Kanan wajib diisi untuk Template 2");
+    }
+    return generateTemplate2Pdf({ ...data, signerRightName: signerRightName.trim() });
+  }
+
   // 1. Generate QR Code linking to verification page
   const domain = process.env.NEXTAUTH_URL || "http://localhost:3000";
   const verifyUrl = `${domain}/verify/${data.verifyHash}`;

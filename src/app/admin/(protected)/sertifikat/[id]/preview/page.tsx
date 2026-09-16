@@ -1,5 +1,6 @@
 import React from "react";
 import { prisma } from "@/lib/prisma";
+import { getTemplate, parseTemplateData } from "@/lib/certificates/registry";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Download, ArrowLeft } from "lucide-react";
@@ -38,6 +39,8 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
   };
 
   const issuedDateShort = formatShortDate(certificate.issuedDate);
+  const templateDef = getTemplate(certificate.template);
+  const signerRightName = parseTemplateData(certificate.templateData).signerRightName;
 
   return (
     <div className="min-h-screen bg-[#f1f5f9]">
@@ -79,6 +82,10 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
 
               <div className="space-y-4">
                 <InfoRow label="KODE SERTIFIKAT" value={certificate.certCode} mono />
+                <InfoRow label="TEMPLATE" value={templateDef.label} bold />
+                {signerRightName && (
+                  <InfoRow label="PENANDATANGAN KANAN" value={signerRightName} bold />
+                )}
                 <InfoRow
                   label="NAMA PENERIMA"
                   value={certificate.recipientName}

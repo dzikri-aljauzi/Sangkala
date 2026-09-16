@@ -27,6 +27,8 @@ export interface Certificate {
   pdfPath: string | null;
   verifyHash: string;
   createdAt: string;
+  template?: string | null;
+  templateData?: string | null;
   _count?: {
     participants: number;
   };
@@ -174,7 +176,9 @@ export default function CertificateTable({
               {filteredCertificates.length > 0 ? (
                 filteredCertificates.map((cert) => (
                   <tr key={cert.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4 font-mono font-medium text-blue-600">{cert.certCode}</td>
+                    <td className="px-6 py-4 font-mono font-medium text-blue-600">
+                      {cert.certCode}
+                    </td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border ${

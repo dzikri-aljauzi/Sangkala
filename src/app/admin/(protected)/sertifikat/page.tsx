@@ -15,6 +15,8 @@ import {
 import ParticipantManager from "@/components/certificate/ParticipantManager";
 import CertificateTable, { Certificate } from "@/components/certificate/dashboard/CertificateTable";
 import CertificateForm from "@/components/certificate/dashboard/CertificateForm";
+import TemplatePicker from "@/components/certificate/dashboard/TemplatePicker";
+import { TemplateId, getTemplate, parseTemplateData, validateTemplateData } from "@/lib/certificates/registry";
 import BulkUploadCard from "@/components/certificate/dashboard/BulkUploadCard";
 import ParticipantListCard from "@/components/certificate/dashboard/ParticipantListCard";
 
@@ -38,6 +40,8 @@ export default function CertificatesPage() {
   const [description, setDescription] = useState("");
   const [issuedDate, setIssuedDate] = useState("");
   const [participants, setParticipants] = useState<string[]>([]);
+  const [templateId, setTemplateId] = useState<TemplateId>("template-1");
+  const [templateFields, setTemplateFields] = useState<Record<string, string>>({});
 
   // Participant management modal
   const [managingCert, setManagingCert] = useState<{ id: string; name: string } | null>(null);
@@ -108,6 +112,8 @@ export default function CertificatesPage() {
     setDescription(cert.description);
     setIssuedDate(new Date(cert.issuedDate).toISOString().split("T")[0]);
     setParticipants([]);
+    setTemplateId(getTemplate(cert.template).id);
+    setTemplateFields(parseTemplateData(cert.templateData));
     setView("edit");
   };
 
@@ -120,6 +126,11 @@ export default function CertificatesPage() {
     }
     if (view !== "edit" && type === "INSTANSI" && participants.length === 0) {
       showToast("error", "Mohon masukkan minimal 1 peserta untuk tipe Instansi");
+      return;
+    }
+    const fieldError = validateTemplateData(templateId, templateFields);
+    if (fieldError) {
+      showToast("error", fieldError);
       return;
     }
 
@@ -135,6 +146,8 @@ export default function CertificatesPage() {
         programName,
         description,
         issuedDate,
+        template: templateId,
+        templateData: templateFields,
       };
       if (!isEditing) {
         body.type = type;
@@ -158,6 +171,8 @@ export default function CertificatesPage() {
         setDescription("");
         setParticipants([]);
         setEditingId(null);
+        setTemplateId("template-1");
+        setTemplateFields({});
         setView("list");
         
         // Redirect to preview page
@@ -250,7 +265,11 @@ export default function CertificatesPage() {
 
           {view === "list" && (
             <button
-              onClick={() => setView("create")}
+              onClick={() => {
+                setTemplateId("template-1");
+                setTemplateFields({});
+                setView("create");
+              }}
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all"
             >
               <Plus className="w-4 h-4" />
@@ -308,7 +327,15 @@ export default function CertificatesPage() {
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Form Fields Column */}
-              <div className={view === "edit" ? "lg:col-span-3 max-w-4xl w-full" : type === "INDIVIDU" ? "lg:col-span-3 max-w-4xl w-full" : "lg:col-span-2 space-y-6"}>
+              <div className={view === "edit" ? "lg:col-span-3 max-w-4xl w-full space-y-6" : type === "INDIVIDU" ? "lg:col-span-3 max-w-4xl w-full space-y-6" : "lg:col-span-2 space-y-6"}>
+                <TemplatePicker
+                  value={templateId}
+                  onChange={setTemplateId}
+                  fields={templateFields}
+                  onFieldChange={(key, val) =>
+                    setTemplateFields((prev) => ({ ...prev, [key]: val }))
+                  }
+                />
                 <CertificateForm
                   type={type}
                   view={view}

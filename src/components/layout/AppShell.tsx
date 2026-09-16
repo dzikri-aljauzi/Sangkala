@@ -48,8 +48,6 @@ export default function AppShell({
     await signOut({ callbackUrl: isAdmin ? "/admin/login" : "/assessment-center" });
   };
 
-  const homeHref = isAdmin ? "/admin" : "/assessment-center";
-
   const Brand = (
     <div className="flex items-center gap-3 px-5 py-5">
       <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-primary">
@@ -177,25 +175,14 @@ export default function AppShell({
 
             {/* Breadcrumb */}
             <nav className="flex min-w-0 items-center gap-1.5 text-sm" aria-label="Breadcrumb">
-              <a
-                href={homeHref}
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push(homeHref);
-                }}
-                className="flex-shrink-0 text-ink-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-primary"
-              >
-                {isAdmin ? "Semua" : "Assessment"}
-              </a>
               {assessmentName && (
-                <>
-                  <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 text-ink-muted/60" />
-                  <span className="truncate font-medium text-ink">{assessmentName}</span>
-                </>
+                <span className="truncate font-medium text-ink">{assessmentName}</span>
               )}
               {title && (
                 <>
-                  <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 text-ink-muted/60" />
+                  {assessmentName && (
+                    <ChevronRight className="h-3.5 w-3.5 flex-shrink-0 text-ink-muted/60" />
+                  )}
                   <span className="hidden truncate text-ink-muted sm:inline">{title}</span>
                 </>
               )}

@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { generateCertificatePdf } from "@/lib/pdf-generator";
+import { getTemplate, parseTemplateData, validateTemplateData } from "@/lib/certificates/registry";
 import crypto from "crypto";
 
 export async function GET(request: NextRequest) {
@@ -76,6 +77,8 @@ export async function POST(request: NextRequest) {
       description,
       issuedDate,
       participants = [],
+      template = "template-1",
+      templateData = null,
     } = body;
 
     // Validation
@@ -84,6 +87,16 @@ export async function POST(request: NextRequest) {
         { error: "Missing required fields" },
         { status: 400 }
       );
+    }
+
+    const templateDef = getTemplate(template);
+    const fields =
+      templateData && typeof templateData === "object"
+        ? (templateData as Record<string, string>)
+        : parseTemplateData(typeof templateData === "string" ? templateData : null);
+    const fieldError = validateTemplateData(templateDef.id, fields);
+    if (fieldError) {
+      return NextResponse.json({ error: fieldError }, { status: 400 });
     }
 
     // Check unique certificate code
@@ -113,6 +126,9 @@ export async function POST(request: NextRequest) {
         description,
         issuedDate: issuedDateObj,
         verifyHash,
+      }, {
+        templateId: templateDef.id,
+        signerRightName: fields.signerRightName,
       });
       pdfPath = result.pdfPath;
       qrCodeDataUrl = result.qrCodeDataUrl;
@@ -142,6 +158,8 @@ export async function POST(request: NextRequest) {
           issuedDate: issuedDateObj,
           qrCodeData: qrCodeDataUrl,
           pdfPath: pdfPath,
+          template: templateDef.id,
+          templateData: templateDef.fields.length > 0 ? JSON.stringify(fields) : null,
           createdById: session.user.id,
           participants: {
             create:

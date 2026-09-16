@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { generateCertificatePdf } from "@/lib/pdf-generator";
+import { getTemplate, parseTemplateData, validateTemplateData } from "@/lib/certificates/registry";
 import fs from "fs";
 import path from "path";
 
@@ -65,6 +66,18 @@ export async function PUT(
       return NextResponse.json({ error: "Certificate not found" }, { status: 404 });
     }
 
+    // Template: default warisan dari sertifikat lama agar PDF lama tidak berubah diam-diam
+    const templateDef = getTemplate(body.template ?? existing.template);
+    const rawTemplateData = body.templateData ?? existing.templateData;
+    const fields =
+      rawTemplateData && typeof rawTemplateData === "object"
+        ? (rawTemplateData as Record<string, string>)
+        : parseTemplateData(typeof rawTemplateData === "string" ? rawTemplateData : null);
+    const fieldError = validateTemplateData(templateDef.id, fields);
+    if (fieldError) {
+      return NextResponse.json({ error: fieldError }, { status: 400 });
+    }
+
     // Delete old PDF file from disk
     if (existing.pdfPath) {
       const oldPdfPath = path.join(process.cwd(), "public", existing.pdfPath);
@@ -85,6 +98,9 @@ export async function PUT(
       description,
       issuedDate: new Date(issuedDate),
       verifyHash: existing.verifyHash,
+    }, {
+      templateId: templateDef.id,
+      signerRightName: fields.signerRightName,
     });
 
     // Update DB — sync qrCodeData and keep verifyHash
@@ -98,6 +114,8 @@ export async function PUT(
         issuedDate: new Date(issuedDate),
         pdfPath,
         qrCodeData: qrCodeDataUrl,
+        template: templateDef.id,
+        templateData: templateDef.fields.length > 0 ? JSON.stringify(fields) : null,
       },
     });
 
