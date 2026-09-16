@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
       });
 
       if (result?.error) {
-        setError("Email atau password salah, atau akun ini bukan admin.");
+        setError(result.error);
       } else {
         router.push("/admin");
       }
