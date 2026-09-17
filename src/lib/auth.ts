@@ -33,10 +33,12 @@ export const authOptions: NextAuthOptions = {
           throw new Error(lockMessage(limit.retryMinutes));
         }
 
-        // Find user by email
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
           include: { assessment: true },
+        }).catch((e) => {
+          console.error("[auth] authorize findUnique failed:", e);
+          throw new Error("Email atau password salah");
         });
 
         if (!user) {

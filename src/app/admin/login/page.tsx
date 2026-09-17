@@ -60,7 +60,11 @@ export default function AdminLoginPage() {
       });
 
       if (result?.error) {
-        setError(result.error);
+        setError(
+          result.error.startsWith("Terlalu banyak")
+            ? result.error
+            : "Email atau password salah, atau akun ini bukan admin."
+        );
       } else {
         router.push("/admin");
       }
