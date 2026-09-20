@@ -3,6 +3,13 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import {
+  checkLoginLimit,
+  getClientIp,
+  lockMessage,
+  recordLoginFail,
+  resetLoginGuard,
+} from "@/lib/login-guard";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -15,18 +22,27 @@ export const authOptions: NextAuthOptions = {
         assessmentId: { label: "Assessment ID", type: "text", optional: true },
         loginRole: { label: "Login Role", type: "text", optional: true },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Email dan password harus diisi");
         }
 
-        // Find user by email
+        const ip = req?.headers ? getClientIp(req.headers as unknown as Headers) : "unknown";
+        const limit = checkLoginLimit(credentials.email, ip);
+        if (limit.blocked) {
+          throw new Error(lockMessage(limit.retryMinutes));
+        }
+
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
           include: { assessment: true },
+        }).catch((e) => {
+          console.error("[auth] authorize findUnique failed:", e);
+          throw new Error("Email atau password salah");
         });
 
         if (!user) {
+          recordLoginFail(credentials.email, ip);
           throw new Error("Email atau password salah");
         }
 
@@ -37,6 +53,7 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!passwordMatch) {
+          recordLoginFail(credentials.email, ip);
           throw new Error("Email atau password salah");
         }
 
@@ -74,6 +91,8 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Anda tidak memiliki akses ke assessment ini. Silakan login melalui assessment yang sesuai.");
           }
         }
+
+        resetLoginGuard(credentials.email);
 
         return {
           id: user.id,
