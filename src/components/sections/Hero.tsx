@@ -1,22 +1,12 @@
 "use client";
 
-import { useRef, Suspense } from "react";
+import { useRef } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import TimeRings from "@/components/ui/time-rings";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Cog, Cpu } from "lucide-react";
-
-// Dynamic import untuk 3D cincin waktu agar tidak ikut SSR
-const TimeRings = dynamic(() => import("@/components/ui/time-rings"), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-petrol-400 border-t-transparent rounded-full animate-spin" />
-    </div>
-  ),
-});
 
 export default function Hero() {
   const { t, language } = useLanguage();
@@ -164,15 +154,7 @@ export default function Hero() {
             </motion.div>
 
             <div className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-none h-[400px] sm:h-[440px] md:h-[480px] lg:h-[520px] xl:h-[560px] flex items-center justify-center mx-auto">
-              <Suspense
-                fallback={
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-12 h-12 border-4 border-petrol-400 border-t-transparent rounded-full animate-spin" />
-                  </div>
-                }
-              >
-                <TimeRings className="h-full w-full" />
-              </Suspense>
+              <TimeRings className="h-full w-full" />
             </div>
           </motion.div>
         </div>
