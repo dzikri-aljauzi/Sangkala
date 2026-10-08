@@ -1,4 +1,4 @@
-import { Wordmark } from "@/components/brand/Wordmark";
+import { Logo } from "@/components/brand/Logo";
 import { ShieldX } from "lucide-react";
 
 export default function VerifyNotFound() {
@@ -17,7 +17,7 @@ export default function VerifyNotFound() {
           resmi Sangkala.
         </p>
         <div className="flex items-center justify-center gap-2 opacity-50">
-          <Wordmark className="text-sm" />
+          <Logo className="h-5 opacity-70" />
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Wordmark } from "@/components/brand/Wordmark";
+import { Logo } from "@/components/brand/Logo";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Globe, ChevronDown } from "lucide-react";
@@ -113,7 +113,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 sm:h-20 lg:h-20">
           {/* Logo */}
           <Link href="/" className="relative z-50 flex items-center gap-2 sm:gap-3">
-            <Wordmark className="text-lg lg:text-xl" />
+            <Logo className="h-8 lg:h-9" priority />
           </Link>
 
           {/* Desktop Navigation */}

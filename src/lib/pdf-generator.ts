@@ -26,7 +26,7 @@ export interface GenerateCertificateOptions {
 // (PDF Ukuran A4 Landscape: 841.89 x 595.28)
 // ==========================================
 const LAYOUT = {
-  // 1. Wordmark baris atas
+  // 1. Logo baris atas
   topLogos: {
     y: 465,
     height: 80,
@@ -193,17 +193,23 @@ export async function generateCertificatePdf(
     });
   }
 
-  // Wordmark teks kanan atas (logo bergambar belum ada, lihat BRAND.md)
-  const wordmarkText = "Sangkala";
-  const wordmarkSize = 30;
-  const wordmarkWidth = fontHelveticaBold.widthOfTextAtSize(wordmarkText, wordmarkSize);
-  page.drawText(wordmarkText, {
-    x: width - LAYOUT.topLogos.rightMargin - wordmarkWidth,
-    y: LAYOUT.topLogos.y + 30,
-    size: wordmarkSize,
-    font: fontHelveticaBold,
-    color: rgb(13 / 255, 92 / 255, 99 / 255), // petrol-600
-  });
+  // Logo penuh Sangkala kanan atas
+  const logoPath = path.join(process.cwd(), "public", "brand", "sangkala-logo.png");
+  if (fs.existsSync(logoPath)) {
+    const logoBytes = await sharp(fs.readFileSync(logoPath))
+      .resize({ width: 600 })
+      .png({ compressionLevel: 9 })
+      .toBuffer();
+    const logoImg = await pdfDoc.embedPng(logoBytes);
+    const logoH = 32;
+    const logoW = logoH * (933 / 209);
+    page.drawImage(logoImg, {
+      x: width - LAYOUT.topLogos.rightMargin - logoW,
+      y: LAYOUT.topLogos.y + 24,
+      width: logoW,
+      height: logoH,
+    });
+  }
 
   // Helper to format Indonesian Dates
   const formatIndonesianDate = (date: Date): string => {

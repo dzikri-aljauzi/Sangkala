@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Wordmark } from "@/components/brand/Wordmark";
+import { Logo } from "@/components/brand/Logo";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,7 +65,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-4 lg:col-span-2 mb-4 lg:mb-0">
             <Link href="/" className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <Wordmark className="text-xl" />
+              <Logo className="h-9" />
             </Link>
             <p className="text-sm sm:text-base text-stone-500 mb-5 sm:mb-6 max-w-sm">
               {language === "id"

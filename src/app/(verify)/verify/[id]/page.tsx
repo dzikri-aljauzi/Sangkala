@@ -1,4 +1,4 @@
-import { Wordmark } from "@/components/brand/Wordmark";
+import { Logo } from "@/components/brand/Logo";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ParticipantsSearch from "@/components/certificate/ParticipantsSearch";
@@ -89,7 +89,7 @@ export default async function VerifySignaturePage({
         <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden mb-6">
           <div className="p-8 sm:p-10">
             <div className="flex flex-col items-center">
-              <div className="mb-4"><Wordmark className="text-3xl" /></div>
+              <div className="mb-4"><Logo className="h-12" /></div>
               <span className="inline-block px-3 py-1 text-xs font-semibold text-petrol-600 bg-petrol-50 border border-petrol-100 rounded-md mb-2">
                 Lembaga Penerbit
               </span>
@@ -146,7 +146,7 @@ export default async function VerifySignaturePage({
         {/* Footer */}
         <div className="text-center py-12">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Wordmark className="text-sm opacity-70" />
+            <Logo className="h-5 opacity-70" />
           </div>
           <p className="text-xs text-stone-400">
             Halaman ini hanya dapat diakses untuk keperluan verifikasi keabsahan sertifikasi resmi.
