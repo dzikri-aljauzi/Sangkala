@@ -13,9 +13,9 @@ const Section = forwardRef<HTMLElement, SectionProps>(
   ({ className, variant = "default", container = true, padding = "lg", children, ...props }, ref) => {
     const variants = {
       default: "bg-white",
-      dark: "bg-slate-800 text-white",
-      gradient: "bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50",
-      light: "bg-slate-50",
+      dark: "bg-stone-800 text-white",
+      gradient: "bg-stone-50",
+      light: "bg-stone-50",
     };
 
     const paddings = {
@@ -68,14 +68,14 @@ const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
         {subtitle && (
           <span className={cn(
             "inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider mb-2 sm:mb-3",
-            light ? "text-cyan-400" : "text-cyan-600"
+            light ? "text-petrol-400" : "text-petrol-600"
           )}>
             {subtitle}
           </span>
         )}
         <h2 className={cn(
           "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4",
-          light ? "text-white" : "text-slate-800"
+          light ? "text-white" : "text-stone-800"
         )}>
           {title}
         </h2>
@@ -83,7 +83,7 @@ const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
           <p className={cn(
             "text-sm sm:text-base md:text-lg max-w-3xl leading-relaxed",
             centered && "mx-auto",
-            light ? "text-gray-300" : "text-slate-500"
+            light ? "text-stone-300" : "text-stone-500"
           )}>
             {description}
           </p>

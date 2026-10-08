@@ -13,7 +13,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     const variants = {
       default: "bg-white rounded-xl",
       glass: "bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl",
-      bordered: "bg-white border-2 border-blue-500/10 rounded-xl",
+      bordered: "bg-white border-2 border-petrol-500/10 rounded-xl",
       elevated: "bg-white rounded-xl shadow-xl",
     };
 
@@ -46,7 +46,7 @@ const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingEleme
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn("text-xl font-bold text-slate-800", className)}
+      className={cn("text-xl font-bold text-stone-800", className)}
       {...props}
     />
   )
@@ -57,7 +57,7 @@ const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLPara
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn("text-sm text-slate-500 mt-2", className)}
+      className={cn("text-sm text-stone-500 mt-2", className)}
       {...props}
     />
   )

@@ -26,7 +26,7 @@ export interface GenerateCertificateOptions {
 // (PDF Ukuran A4 Landscape: 841.89 x 595.28)
 // ==========================================
 const LAYOUT = {
-  // 1. Logo Baris Atas (LNA)
+  // 1. Wordmark baris atas
   topLogos: {
     y: 465,
     height: 80,
@@ -170,10 +170,10 @@ export async function generateCertificatePdf(
   }
 
   // Define Colors
-  const colorNavy = rgb(15 / 255, 23 / 255, 42 / 255); // slate-900
-  const colorSlate = rgb(71 / 255, 85 / 255, 105 / 255); // slate-600
+  const colorNavy = rgb(5 / 255, 42 / 255, 46 / 255); // petrol-900
+  const colorSlate = rgb(86 / 255, 92 / 255, 89 / 255); // stone-700
   const colorBlack = rgb(0, 0, 0); // black
-  const colorGold = rgb(145 / 255, 114 / 255, 36 / 255); // gold
+  const colorGold = rgb(138 / 255, 90 / 255, 43 / 255); // sogan
 
   // 3. Draw Background Template Image
   const bgTemplatePath = path.join(process.cwd(), "public", "certificate-assets", "templates", "bg-template.png");
@@ -193,26 +193,17 @@ export async function generateCertificatePdf(
     });
   }
 
-  // Load Logos
-  const logoLnaPath = path.join(process.cwd(), "public", "certificate-assets", "templates", "logo-lna.png");
-
-  let imgLna;
-  if (fs.existsSync(logoLnaPath)) {
-    const bytes = fs.readFileSync(logoLnaPath);
-    const compressed = await sharp(bytes)
-      .resize({ width: 300 })
-      .png({ compressionLevel: 9, palette: true })
-      .toBuffer();
-    imgLna = await pdfDoc.embedPng(compressed);
-  }
-
-  // Draw top row logo (LNA only)
-  const wLna = imgLna ? (LAYOUT.topLogos.height * 1.10) * 2.02 : 0;
-  const currentX = width - LAYOUT.topLogos.rightMargin - wLna;
-
-  if (imgLna) {
-    page.drawImage(imgLna, { x: currentX, y: LAYOUT.topLogos.y, width: wLna, height: LAYOUT.topLogos.height * 1.10 });
-  }
+  // Wordmark teks kanan atas (logo bergambar belum ada, lihat BRAND.md)
+  const wordmarkText = "Sangkala";
+  const wordmarkSize = 30;
+  const wordmarkWidth = fontHelveticaBold.widthOfTextAtSize(wordmarkText, wordmarkSize);
+  page.drawText(wordmarkText, {
+    x: width - LAYOUT.topLogos.rightMargin - wordmarkWidth,
+    y: LAYOUT.topLogos.y + 30,
+    size: wordmarkSize,
+    font: fontHelveticaBold,
+    color: rgb(13 / 255, 92 / 255, 99 / 255), // petrol-600
+  });
 
   // Helper to format Indonesian Dates
   const formatIndonesianDate = (date: Date): string => {
@@ -327,7 +318,7 @@ export async function generateCertificatePdf(
     color: colorBlack,
   });
 
-  const companyText = "PT. Leadership Nasional Asia";
+  const companyText = "Sangkala Technology";
   const companyWidth = fontCinzelBold.widthOfTextAtSize(companyText, LAYOUT.signature.companyFontSize);
   page.drawText(companyText, {
     x: LAYOUT.signature.columnCenter - (companyWidth / 2),
@@ -350,7 +341,7 @@ export async function generateCertificatePdf(
   });
 
   // Footer links (Dinaikkan ke y: 52 agar di atas garis border)
-  const footerText = "www.leadershipnasionalasia.com";
+  const footerText = "www.sangkala.example";
   const footerWidth = fontHelvetica.widthOfTextAtSize(footerText, LAYOUT.footer.fontSize);
 
   page.drawText(footerText, {

@@ -142,21 +142,21 @@ export default function CertificationBulkUploadCard({
 
     return (
       <div className="space-y-4">
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4">
-          <p className="text-xs font-semibold text-slate-700">
+        <div className="rounded-2xl border border-stone-200 bg-stone-50/50 p-4">
+          <p className="text-xs font-semibold text-stone-700">
             {pendingRecords.length} baris siap diimport
           </p>
           <ul className="mt-2 space-y-1">
             {previewNames.map((record, i) => (
-              <li key={i} className="text-xs text-slate-500 truncate">
+              <li key={i} className="text-xs text-stone-500 truncate">
                 {record.name || "(nama kosong)"} — {record.bsmrId || "(ID BSMR kosong)"}
               </li>
             ))}
           </ul>
           {remaining > 0 && (
-            <p className="mt-1 text-xs text-slate-400">+{remaining} baris lainnya</p>
+            <p className="mt-1 text-xs text-stone-400">+{remaining} baris lainnya</p>
           )}
-          <p className="mt-3 text-[10px] text-slate-400">
+          <p className="mt-3 text-[10px] text-stone-400">
             Data dengan ID BSMR yang sudah terdaftar akan diperbarui (bukan diduplikasi).
           </p>
         </div>
@@ -166,7 +166,7 @@ export default function CertificationBulkUploadCard({
             type="button"
             onClick={() => setPendingRecords(null)}
             disabled={importing}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors border border-slate-200 disabled:opacity-50"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl transition-colors border border-stone-200 disabled:opacity-50"
           >
             <X className="w-3.5 h-3.5" />
             Batal
@@ -178,7 +178,7 @@ export default function CertificationBulkUploadCard({
               setPendingRecords(null);
             }}
             disabled={importing}
-            className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl transition-colors disabled:opacity-50"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-petrol-600 hover:bg-petrol-700 text-white text-xs font-semibold rounded-xl transition-colors disabled:opacity-50"
           >
             {importing ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -194,7 +194,7 @@ export default function CertificationBulkUploadCard({
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-stone-500">
         Unggah berkas Excel (.xlsx, .xls) dengan kolom sesuai template untuk menambahkan banyak data sekaligus.
       </p>
 
@@ -207,10 +207,10 @@ export default function CertificationBulkUploadCard({
         role="button"
         tabIndex={0}
         aria-label="Pilih atau tarik berkas Excel untuk diimport"
-        className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+        className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrol-500 focus-visible:ring-offset-2 ${
           dragOver
-            ? "border-blue-500 bg-blue-50/50"
-            : "border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-50"
+            ? "border-petrol-500 bg-petrol-50/50"
+            : "border-stone-200 hover:border-stone-300 bg-stone-50/50 hover:bg-stone-50"
         }`}
       >
         <input
@@ -220,15 +220,15 @@ export default function CertificationBulkUploadCard({
           accept=".xlsx,.xls"
           className="hidden"
         />
-        <Upload className="w-8 h-8 text-slate-400" />
-        <span className="text-xs font-semibold text-slate-700">Pilih berkas atau tarik ke sini</span>
-        <span className="text-[10px] text-slate-400">Gunakan template resmi supaya kolom terbaca benar</span>
+        <Upload className="w-8 h-8 text-stone-400" />
+        <span className="text-xs font-semibold text-stone-700">Pilih berkas atau tarik ke sini</span>
+        <span className="text-[10px] text-stone-400">Gunakan template resmi supaya kolom terbaca benar</span>
       </div>
 
       <a
         href="/template-excel/template-reminder-sertifikat.xlsx"
         download
-        className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors border border-slate-200"
+        className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl transition-colors border border-stone-200"
       >
         <Download className="w-3.5 h-3.5" />
         <FileSpreadsheet className="w-3.5 h-3.5" />

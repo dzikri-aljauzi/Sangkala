@@ -31,8 +31,8 @@ export default function AdminLoginPage() {
   // Show loading while checking session
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-petrol-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
       </div>
     );
   }
@@ -40,8 +40,8 @@ export default function AdminLoginPage() {
   // Hide login form if already authenticated (will redirect)
   if (status === "authenticated" && (session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN")) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-petrol-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
       </div>
     );
   }
@@ -76,15 +76,15 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center p-4 pt-20 sm:pt-32">
+    <div className="min-h-screen bg-petrol-50 flex items-center justify-center p-4 pt-20 sm:pt-32">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl border border-stone-200 overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-8 sm:px-8 sm:py-10 text-center">
+          <div className="bg-petrol-600 px-6 py-8 sm:px-8 sm:py-10 text-center">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
                 <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
@@ -93,8 +93,8 @@ export default function AdminLoginPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">
               Admin Login
             </h1>
-            <p className="text-blue-100 text-sm">
-              Leadership Nasional Asia
+            <p className="text-petrol-100 text-sm">
+              Sangkala
             </p>
           </div>
 
@@ -117,19 +117,19 @@ export default function AdminLoginPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-slate-700 mb-2"
+                  className="block text-sm font-medium text-stone-700 mb-2"
                 >
                   {t("assessmentCenter.email")}
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
                   <input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent transition-all"
                     placeholder="example@example.com"
                   />
                 </div>
@@ -139,19 +139,19 @@ export default function AdminLoginPage() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-slate-700 mb-2"
+                  className="block text-sm font-medium text-stone-700 mb-2"
                 >
                   {t("assessmentCenter.password")}
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 pointer-events-none" />
                   <input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full pl-10 pr-11 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-11 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent transition-all"
                     placeholder="••••••••"
                   />
                   <PasswordToggleButton
@@ -175,10 +175,10 @@ export default function AdminLoginPage() {
             </form>
 
             {/* Footer */}
-            <div className="mt-6 pt-6 border-t border-slate-100 text-center">
+            <div className="mt-6 pt-6 border-t border-stone-100 text-center">
               <Link
                 href="/"
-                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                className="text-sm text-petrol-600 hover:text-petrol-800 transition-colors"
               >
                 ← Kembali ke Beranda
               </Link>

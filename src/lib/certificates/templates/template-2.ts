@@ -114,9 +114,9 @@ export async function generateTemplate2Pdf(
     fontCinzelBold = await pdfDoc.embedFont(fs.readFileSync(fontCinzelPath));
   }
 
-  const colorNavy = rgb(15 / 255, 23 / 255, 42 / 255);
+  const colorNavy = rgb(5 / 255, 42 / 255, 46 / 255);
   const colorBlack = rgb(0, 0, 0);
-  const colorGold = rgb(145 / 255, 114 / 255, 36 / 255);
+  const colorGold = rgb(138 / 255, 90 / 255, 43 / 255);
 
   // Background full-bleed template-2
   const bgPath = path.join(

@@ -102,7 +102,7 @@ ${formData.message}
     `.trim();
 
     // Create mailto link
-    const mailtoLink = `mailto:leadership.nasional@gmail.com?subject=${encodeURIComponent(
+    const mailtoLink = `mailto:hello@sangkala.example?subject=${encodeURIComponent(
       `[${inquiryType}] Inquiry dari ${formData.name} - ${formData.company}`
     )}&body=${encodeURIComponent(emailBody)}`;
 
@@ -119,7 +119,7 @@ ${formData.message}
   return (
     <>
       {/* Hero Section */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-stone-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -127,15 +127,15 @@ ${formData.message}
             transition={{ duration: 0.6 }}
             className="max-w-4xl"
           >
-            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-600 mb-3 sm:mb-4">
+            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-petrol-600 mb-3 sm:mb-4">
               {language === "id" ? "Hubungi Kami" : "Contact Us"}
             </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-slate-800">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-stone-800">
               {language === "id"
                 ? "Siap Membangun Kinerja Berkelanjutan?"
                 : "Ready to Build Sustainable Performance?"}
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl">
+            <p className="text-base sm:text-lg md:text-xl text-stone-600 max-w-3xl">
               {language === "id"
                 ? "Hubungi kami untuk konsultasi gratis dan diskusikan bagaimana kami dapat membantu transformasi organisasi Anda."
                 : "Contact us for a free consultation and discuss how we can help your organization's transformation."}
@@ -155,7 +155,7 @@ ${formData.message}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-stone-800 mb-4 sm:mb-6">
                 {language === "id" ? "Pilih Jenis Inquiry" : "Choose Inquiry Type"}
               </h2>
 
@@ -166,8 +166,8 @@ ${formData.message}
                     onClick={() => setSelectedType(option.value)}
                     className={`w-full p-3 sm:p-4 rounded-lg sm:rounded-xl text-left transition-all ${
                       selectedType === option.value
-                        ? "bg-blue-600 text-white"
-                        : "bg-[#f8fafc] hover:bg-blue-600/10"
+                        ? "bg-petrol-600 text-white"
+                        : "bg-[#f2f3f1] hover:bg-petrol-600/10"
                     }`}
                   >
                     <div className="flex items-start gap-2 sm:gap-3">
@@ -175,7 +175,7 @@ ${formData.message}
                         className={`w-4 h-4 sm:w-5 sm:h-5 mt-0.5 ${
                           selectedType === option.value
                             ? "text-white"
-                            : "text-blue-600"
+                            : "text-petrol-600"
                         }`}
                       />
                       <div>
@@ -184,7 +184,7 @@ ${formData.message}
                           className={`text-xs sm:text-sm mt-0.5 sm:mt-1 ${
                             selectedType === option.value
                               ? "text-white/80"
-                              : "text-slate-500"
+                              : "text-stone-500"
                           }`}
                         >
                           {option.desc[language]}
@@ -197,29 +197,29 @@ ${formData.message}
 
               {/* Contact Info */}
               <div className="space-y-3 sm:space-y-4">
-                <h3 className="font-semibold text-sm sm:text-base text-slate-800">
+                <h3 className="font-semibold text-sm sm:text-base text-stone-800">
                   {language === "id" ? "Kontak Langsung" : "Direct Contact"}
                 </h3>
                 <div className="space-y-2 sm:space-y-3">
                   <a
-                    href="mailto:leadership.nasional@gmail.com"
-                    className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-slate-500 hover:text-blue-600 transition-colors"
+                    href="mailto:hello@sangkala.example"
+                    className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-stone-500 hover:text-petrol-600 transition-colors"
                   >
                     <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
-                    <span className="break-all sm:break-normal">leadership.nasional@gmail.com</span>
+                    <span className="break-all sm:break-normal">hello@sangkala.example</span>
                   </a>
                   <a
-                    href="tel:+622129538817"
-                    className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-500 hover:text-blue-600 transition-colors"
+                    href="tel:+620000000000"
+                    className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-stone-500 hover:text-petrol-600 transition-colors"
                   >
                     <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                    <span>021-29538817</span>
+                    <span>+62 000 0000 0000</span>
                   </a>
-                  <div className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-slate-500">
+                  <div className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-stone-500">
                     <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
                     <span>
-                      Pondok Indah Office Tower 3, Lt. 17<br />
-                      Jakarta 12310
+                      Jakarta, Indonesia<br />
+                      (alamat fiktif untuk portofolio)
                     </span>
                   </div>
                 </div>
@@ -234,17 +234,17 @@ ${formData.message}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 border border-gray-100"
+              className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 border border-stone-100"
             >
               {isSubmitted ? (
                 <div className="text-center py-12">
                   <div className="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-6">
                     <CheckCircle className="w-10 h-10 text-green-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-800 mb-4">
+                  <h2 className="text-2xl font-bold text-stone-800 mb-4">
                     {language === "id" ? "Email Siap Dikirim!" : "Email Ready to Send!"}
                   </h2>
-                  <p className="text-slate-500 mb-6">
+                  <p className="text-stone-500 mb-6">
                     {language === "id"
                       ? "Aplikasi email Anda telah terbuka dengan pesan yang sudah diisi. Silakan klik 'Kirim' di aplikasi email Anda untuk menyelesaikan pengiriman."
                       : "Your email application has opened with the message pre-filled. Please click 'Send' in your email app to complete the submission."}
@@ -272,7 +272,7 @@ ${formData.message}
                   <div className="grid md:grid-cols-2 gap-6">
                     {/* Name */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-800 mb-2">
+                      <label className="block text-sm font-medium text-stone-800 mb-2">
                         {language === "id" ? "Nama Lengkap" : "Full Name"} *
                       </label>
                       <input
@@ -281,14 +281,14 @@ ${formData.message}
                         value={formData.name}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:border-petrol-500 focus:ring-2 focus:ring-petrol-500/20 outline-none transition-all"
                         placeholder={language === "id" ? "Masukkan nama Anda" : "Enter your name"}
                       />
                     </div>
 
                     {/* Email */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-800 mb-2">
+                      <label className="block text-sm font-medium text-stone-800 mb-2">
                         Email *
                       </label>
                       <input
@@ -297,14 +297,14 @@ ${formData.message}
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:border-petrol-500 focus:ring-2 focus:ring-petrol-500/20 outline-none transition-all"
                         placeholder={language === "id" ? "email@perusahaan.com" : "email@company.com"}
                       />
                     </div>
 
                     {/* Company */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-800 mb-2">
+                      <label className="block text-sm font-medium text-stone-800 mb-2">
                         {language === "id" ? "Perusahaan" : "Company"} *
                       </label>
                       <input
@@ -313,14 +313,14 @@ ${formData.message}
                         value={formData.company}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:border-petrol-500 focus:ring-2 focus:ring-petrol-500/20 outline-none transition-all"
                         placeholder={language === "id" ? "Nama perusahaan" : "Company name"}
                       />
                     </div>
 
                     {/* Job Title */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-800 mb-2">
+                      <label className="block text-sm font-medium text-stone-800 mb-2">
                         {language === "id" ? "Jabatan" : "Job Title"}
                       </label>
                       <input
@@ -328,14 +328,14 @@ ${formData.message}
                         name="jobTitle"
                         value={formData.jobTitle}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:border-petrol-500 focus:ring-2 focus:ring-petrol-500/20 outline-none transition-all"
                         placeholder={language === "id" ? "Jabatan Anda" : "Your job title"}
                       />
                     </div>
 
                     {/* Industry */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-800 mb-2">
+                      <label className="block text-sm font-medium text-stone-800 mb-2">
                         {language === "id" ? "Industri" : "Industry"} *
                       </label>
                       <select
@@ -343,7 +343,7 @@ ${formData.message}
                         value={formData.industry}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:border-petrol-500 focus:ring-2 focus:ring-petrol-500/20 outline-none transition-all"
                       >
                         <option value="">
                           {language === "id" ? "Pilih industri" : "Select industry"}
@@ -358,14 +358,14 @@ ${formData.message}
 
                     {/* Service Interest */}
                     <div>
-                      <label className="block text-sm font-medium text-slate-800 mb-2">
+                      <label className="block text-sm font-medium text-stone-800 mb-2">
                         {language === "id" ? "Layanan yang Diminati" : "Service of Interest"}
                       </label>
                       <select
                         name="service"
                         value={formData.service}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:border-petrol-500 focus:ring-2 focus:ring-petrol-500/20 outline-none transition-all"
                       >
                         <option value="">
                           {language === "id" ? "Pilih layanan" : "Select service"}
@@ -381,7 +381,7 @@ ${formData.message}
 
                   {/* Message */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-800 mb-2">
+                    <label className="block text-sm font-medium text-stone-800 mb-2">
                       {language === "id" ? "Pesan" : "Message"} *
                     </label>
                     <textarea
@@ -390,7 +390,7 @@ ${formData.message}
                       onChange={handleInputChange}
                       required
                       rows={5}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all resize-none"
+                      className="w-full px-4 py-3 rounded-lg border border-stone-200 focus:border-petrol-500 focus:ring-2 focus:ring-petrol-500/20 outline-none transition-all resize-none"
                       placeholder={
                         language === "id"
                           ? "Ceritakan kebutuhan atau tantangan yang ingin Anda diskusikan..."
@@ -401,7 +401,7 @@ ${formData.message}
 
                   {/* Submit */}
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-stone-500">
                       * {language === "id" ? "Wajib diisi" : "Required"}
                     </p>
                     <Button
@@ -435,46 +435,46 @@ ${formData.message}
         >
           <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Location Card */}
-            <div className="lg:col-span-1 bg-white rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border border-gray-100">
+            <div className="lg:col-span-1 bg-white rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border border-stone-100">
               <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-petrol-100 flex items-center justify-center">
+                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-petrol-600" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-800">
+                <h3 className="text-lg sm:text-xl font-bold text-stone-800">
                   {language === "id" ? "Lokasi Kantor" : "Office Location"}
                 </h3>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <p className="font-semibold text-slate-800 text-sm sm:text-base">
-                    Pondok Indah Office Tower 3
+                  <p className="font-semibold text-stone-800 text-sm sm:text-base">
+                    Kantor Sangkala
                   </p>
-                  <p className="text-slate-600 text-sm sm:text-base mt-1">
-                    Lt. 17, Jl. Sultan Iskandar Muda Kavling V-TA
+                  <p className="text-stone-600 text-sm sm:text-base mt-1">
+                    Jakarta, Indonesia
                   </p>
-                  <p className="text-slate-600 text-sm sm:text-base">
-                    Pondok Indah, Jakarta 12310
+                  <p className="text-stone-600 text-sm sm:text-base">
+                    Alamat fiktif untuk keperluan portofolio
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-gray-100">
-                  <p className="text-xs sm:text-sm text-slate-500 mb-2">
+                <div className="pt-4 border-t border-stone-100">
+                  <p className="text-xs sm:text-sm text-stone-500 mb-2">
                     {language === "id" ? "Jam Operasional:" : "Operating Hours:"}
                   </p>
-                  <p className="text-sm sm:text-base text-slate-700">
+                  <p className="text-sm sm:text-base text-stone-700">
                     {language === "id" ? "Senin - Jumat" : "Monday - Friday"}
                   </p>
-                  <p className="text-sm sm:text-base font-medium text-slate-800">
+                  <p className="text-sm sm:text-base font-medium text-stone-800">
                     09:00 - 17:00 WIB
                   </p>
                 </div>
 
                 <a
-                  href="https://maps.google.com/?q=Pondok+Indah+Office+Tower+3,+Jakarta"
+                  href="https://maps.google.com/?q=Jakarta"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 text-sm sm:text-base font-medium mt-2"
+                  className="inline-flex items-center gap-2 text-petrol-600 hover:text-petrol-700 text-sm sm:text-base font-medium mt-2"
                 >
                   <span>{language === "id" ? "Buka di Google Maps" : "Open in Google Maps"}</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -487,14 +487,14 @@ ${formData.message}
             {/* Google Maps Embed */}
             <div className="lg:col-span-2 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg h-[300px] sm:h-[350px] lg:h-full min-h-[350px]">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.0099389410207!2d106.77933897627865!3d-6.262420211312796!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f1a621ebcdf3%3A0xf845eec1cd1fad0!2sMarquee%20-%20Pondok%20Indah%20Office%20Tower%203!5e0!3m2!1sen!2sid!4v1771821017592!5m2!1sen!2sid"
+                src="https://www.google.com/maps?q=Jakarta&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="LNA Office Location"
+                title="Sangkala Office Location"
               />
             </div>
           </div>

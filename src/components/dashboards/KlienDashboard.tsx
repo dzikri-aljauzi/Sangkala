@@ -102,17 +102,17 @@ export default function KlienDashboard({ assessmentId, embedded, initialTab }: K
   if (loading || !assessment) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600"></div>
       </div>
     );
   }
 
   const header = (
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
+      <div className="bg-white border-b border-stone-200 sticky top-0 z-30">
         <div className="px-8 py-6">
           <div className="flex items-center gap-4">
             {assessment.clientLogo && (
-              <div className="w-16 h-16 rounded-lg bg-white border border-slate-200 p-2 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-lg bg-white border border-stone-200 p-2 flex items-center justify-center">
                 <img
                   src={assessment.clientLogo}
                   alt={assessment.clientName}
@@ -121,13 +121,13 @@ export default function KlienDashboard({ assessmentId, embedded, initialTab }: K
               </div>
             )}
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">
+              <h1 className="text-2xl font-bold text-stone-900">
                 {activeTab === "overview" && "Dashboard"}
                 {activeTab === "resumes" && t("assessmentCenter.resumes")}
                 {activeTab === "documentations" && t("assessmentCenter.documentations")}
                 {activeTab === "progress" && "Progress Pelaksanaan"}
               </h1>
-              <p className="text-sm text-slate-600 mt-1">
+              <p className="text-sm text-stone-600 mt-1">
                 {activeTab === "overview" && "Selamat datang di portal assessment Anda"}
                 {activeTab === "resumes" && "Resume dan laporan assessment"}
                 {activeTab === "documentations" && "Dokumentasi dan file pendukung"}
@@ -147,12 +147,12 @@ export default function KlienDashboard({ assessmentId, embedded, initialTab }: K
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-8 mb-8 text-white"
+              className="bg-petrol-600 rounded-xl p-8 mb-8 text-white"
             >
               <h2 className="text-2xl font-bold mb-2">
                 {t("assessmentCenter.welcome")}, {session?.user?.name}!
               </h2>
-              <p className="text-blue-100">
+              <p className="text-petrol-100">
                 Berikut adalah dokumen-dokumen assessment Anda yang telah disiapkan
                 oleh tim kami. Anda dapat mengunduh dan melihat dokumen-dokumen
                 tersebut.
@@ -164,17 +164,17 @@ export default function KlienDashboard({ assessmentId, embedded, initialTab }: K
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl border border-slate-200 p-6"
+                className="bg-white rounded-xl border border-stone-200 p-6"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-petrol-500 flex items-center justify-center">
                     <FileText className="w-6 h-6 text-white" />
                   </div>
                 </div>
-                <p className="text-3xl font-bold text-slate-900">
+                <p className="text-3xl font-bold text-stone-900">
                   {assessment.resumes.length}
                 </p>
-                <p className="text-sm text-slate-600 mt-1">
+                <p className="text-sm text-stone-600 mt-1">
                   {t("assessmentCenter.resumes")}
                 </p>
               </motion.div>
@@ -183,17 +183,17 @@ export default function KlienDashboard({ assessmentId, embedded, initialTab }: K
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-xl border border-slate-200 p-6"
+                className="bg-white rounded-xl border border-stone-200 p-6"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-green-500 flex items-center justify-center">
                     <ImageIcon className="w-6 h-6 text-white" />
                   </div>
                 </div>
-                <p className="text-3xl font-bold text-slate-900">
+                <p className="text-3xl font-bold text-stone-900">
                   {assessment.documentations.length}
                 </p>
-                <p className="text-sm text-slate-600 mt-1">
+                <p className="text-sm text-stone-600 mt-1">
                   {t("assessmentCenter.documentations")}
                 </p>
               </motion.div>
@@ -259,13 +259,13 @@ function FilesList({
 
   const colorClasses: any = {
     blue: {
-      gradient: "from-blue-500 to-cyan-500",
-      bg: "bg-blue-100",
-      text: "text-blue-600",
-      hover: "hover:bg-blue-200",
+      gradient: "bg-petrol-500",
+      bg: "bg-petrol-100",
+      text: "text-petrol-600",
+      hover: "hover:bg-petrol-200",
     },
     green: {
-      gradient: "from-green-500 to-emerald-500",
+      gradient: "bg-green-500",
       bg: "bg-green-100",
       text: "text-green-600",
       hover: "hover:bg-green-200",
@@ -285,11 +285,11 @@ function FilesList({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white rounded-xl border border-slate-200 p-12 text-center"
+        className="bg-white rounded-xl border border-stone-200 p-12 text-center"
       >
-        <Icon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-        <p className="text-slate-500 text-lg">{emptyMessage}</p>
-        <p className="text-sm text-slate-400 mt-2">
+        <Icon className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+        <p className="text-stone-500 text-lg">{emptyMessage}</p>
+        <p className="text-sm text-stone-400 mt-2">
           Dokumen akan muncul di sini ketika sudah diupload oleh admin
         </p>
       </motion.div>
@@ -298,7 +298,7 @@ function FilesList({
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-slate-900 mb-6">{title}</h2>
+      <h2 className="text-xl font-bold text-stone-900 mb-6">{title}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {files.map((file, index) => {
           const isImage = isImageFile(file.fileName);
@@ -309,12 +309,12 @@ function FilesList({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all group"
+              className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-xl transition-all group"
             >
               {/* Header — Image Preview or Gradient */}
               {isImage ? (
                 <div
-                  className="relative h-48 bg-slate-100 cursor-pointer overflow-hidden"
+                  className="relative h-48 bg-stone-100 cursor-pointer overflow-hidden"
                   onClick={() => setLightboxImage(file.filePath)}
                 >
                   <img
@@ -324,13 +324,13 @@ function FilesList({
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all flex items-center justify-center">
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg">
-                      <ImageIcon className="w-5 h-5 text-slate-700" />
+                      <ImageIcon className="w-5 h-5 text-stone-700" />
                     </div>
                   </div>
                 </div>
               ) : (
                 <div
-                  className={`bg-gradient-to-br ${colors.gradient} p-6 flex items-center justify-center`}
+                  className={`${colors.gradient} p-6 flex items-center justify-center`}
                 >
                   <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                     <Icon className="w-8 h-8 text-white" />
@@ -340,23 +340,23 @@ function FilesList({
 
               {/* Content */}
               <div className="p-6">
-                <h3 className="font-bold text-slate-900 mb-2 text-lg group-hover:text-blue-600 transition-colors">
+                <h3 className="font-bold text-stone-900 mb-2 text-lg group-hover:text-petrol-600 transition-colors">
                   {file.title}
                 </h3>
 
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                  <div className="flex items-center gap-2 text-sm text-stone-600">
                     <File className="w-4 h-4" />
                     <span className="truncate">{file.fileName}</span>
                   </div>
 
                   {file.uploadedBy && (
-                    <div className="text-xs text-slate-500">
+                    <div className="text-xs text-stone-500">
                       Uploaded by: {file.uploadedBy.name}
                     </div>
                   )}
 
-                  <div className="text-xs text-slate-400">
+                  <div className="text-xs text-stone-400">
                     {new Date(file.createdAt).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "long",
@@ -370,7 +370,7 @@ function FilesList({
                   {isImage && (
                     <button
                       onClick={() => setLightboxImage(file.filePath)}
-                      className={`flex items-center justify-center gap-2 flex-1 py-3 px-4 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium transition-all text-sm`}
+                      className={`flex items-center justify-center gap-2 flex-1 py-3 px-4 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 font-medium transition-all text-sm`}
                     >
                       <ImageIcon className="w-4 h-4" />
                       Lihat
@@ -405,7 +405,7 @@ function FilesList({
           >
             <button
               onClick={() => setLightboxImage(null)}
-              className="absolute -top-12 right-0 text-white hover:text-slate-300 transition-colors"
+              className="absolute -top-12 right-0 text-white hover:text-stone-300 transition-colors"
             >
               <X className="w-8 h-8" />
             </button>
@@ -418,7 +418,7 @@ function FilesList({
               <a
                 href={lightboxImage}
                 download
-                className="inline-flex items-center gap-2 px-6 py-2 bg-white text-slate-800 rounded-lg font-medium hover:bg-slate-100 transition-colors text-sm"
+                className="inline-flex items-center gap-2 px-6 py-2 bg-white text-stone-800 rounded-lg font-medium hover:bg-stone-100 transition-colors text-sm"
               >
                 <Download className="w-4 h-4" />
                 Download
@@ -539,25 +539,25 @@ function ResumeFolderView({
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors">
+          <button onClick={goBack} className="flex items-center gap-2 text-stone-600 hover:text-petrol-600 transition-colors">
             <ArrowLeft className="w-5 h-5" />
             Kembali
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-              <FileText className="w-4 h-4 text-blue-600" />
+            <div className="w-8 h-8 bg-petrol-100 rounded-lg flex items-center justify-center">
+              <FileText className="w-4 h-4 text-petrol-600" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Umum</h2>
-              <p className="text-xs text-slate-500">{batch?.name}</p>
+              <h2 className="text-lg font-semibold text-stone-900">Hasil Keseluruhan - Umum</h2>
+              <p className="text-xs text-stone-500">{batch?.name}</p>
             </div>
           </div>
         </div>
 
         {batchUmum.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Belum ada resume umum di batch ini</p>
+          <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+            <FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+            <p className="text-stone-500">Belum ada resume umum di batch ini</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -594,7 +594,7 @@ function ResumeFolderView({
       return (
         <div className="space-y-6">
           <div className="flex items-center gap-4">
-            <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors">
+            <button onClick={goBack} className="flex items-center gap-2 text-stone-600 hover:text-purple-600 transition-colors">
               <ArrowLeft className="w-5 h-5" />
               Kembali
             </button>
@@ -603,16 +603,16 @@ function ResumeFolderView({
                 <Layers className="w-4 h-4 text-purple-600" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Per Eselon</h2>
-                <p className="text-xs text-slate-500">{batch?.name}</p>
+                <h2 className="text-lg font-semibold text-stone-900">Hasil Keseluruhan - Per Eselon</h2>
+                <p className="text-xs text-stone-500">{batch?.name}</p>
               </div>
             </div>
           </div>
 
           {echelons.length === 0 ? (
-            <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-              <Layers className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-500">Belum ada kategori eselon</p>
+            <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+              <Layers className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+              <p className="text-stone-500">Belum ada kategori eselon</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -622,15 +622,15 @@ function ResumeFolderView({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   onClick={() => setSelectedEchelonId(echelon.id)}
-                  className="bg-white rounded-xl border border-slate-200 p-6 text-left hover:shadow-lg hover:border-purple-300 transition-all group"
+                  className="bg-white rounded-xl border border-stone-200 p-6 text-left hover:shadow-lg hover:border-purple-300 transition-all group"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
                       <Layers className="w-6 h-6 text-purple-600" />
                     </div>
                     <div>
-                      <p className="font-semibold text-slate-900">{echelon.name}</p>
-                      <p className="text-sm text-slate-500">{echelon.resumes.length} file</p>
+                      <p className="font-semibold text-stone-900">{echelon.name}</p>
+                      <p className="text-sm text-stone-500">{echelon.resumes.length} file</p>
                     </div>
                   </div>
                 </motion.button>
@@ -648,7 +648,7 @@ function ResumeFolderView({
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors">
+          <button onClick={goBack} className="flex items-center gap-2 text-stone-600 hover:text-purple-600 transition-colors">
             <ArrowLeft className="w-5 h-5" />
             Kembali
           </button>
@@ -656,14 +656,14 @@ function ResumeFolderView({
             <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
               <Layers className="w-4 h-4 text-purple-600" />
             </div>
-            <h2 className="text-lg font-semibold text-slate-900">{selectedEchelonObj?.name}</h2>
+            <h2 className="text-lg font-semibold text-stone-900">{selectedEchelonObj?.name}</h2>
           </div>
         </div>
 
         {!selectedEchelonObj || selectedEchelonObj.resumes.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Belum ada resume untuk eselon ini</p>
+          <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+            <FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+            <p className="text-stone-500">Belum ada resume untuk eselon ini</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -716,7 +716,7 @@ function ResumeFolderView({
                 setSearchQuery("");
                 setPage(1);
               }}
-              className="flex items-center gap-2 text-slate-600 hover:text-green-600 transition-colors"
+              className="flex items-center gap-2 text-stone-600 hover:text-green-600 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               Kembali
@@ -726,8 +726,8 @@ function ResumeFolderView({
                 <User className="w-4 h-4 text-green-600" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">Hasil Per Individu</h2>
-                <p className="text-xs text-slate-500">{batch?.name}</p>
+                <h2 className="text-lg font-semibold text-stone-900">Hasil Per Individu</h2>
+                <p className="text-xs text-stone-500">{batch?.name}</p>
               </div>
             </div>
           </div>
@@ -736,7 +736,7 @@ function ResumeFolderView({
             <div className="flex items-center gap-3 w-full md:w-auto">
               <button
                 onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                className="flex items-center gap-2 px-3 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors text-sm text-slate-600"
+                className="flex items-center gap-2 px-3 py-2 border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors text-sm text-stone-600"
                 title={sortOrder === "asc" ? "Urutkan: Terlama ke Terbaru" : "Urutkan: Terbaru ke Terlama"}
               >
                 {sortOrder === "asc" ? (
@@ -747,16 +747,16 @@ function ResumeFolderView({
               </button>
 
               <div className="relative flex-1 md:w-72">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                 <input
                   type="text"
                   placeholder="Cari nama kandidat..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                  className="w-full pl-10 pr-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                 />
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600">
                     <X className="w-4 h-4" />
                   </button>
                 )}
@@ -766,14 +766,14 @@ function ResumeFolderView({
         </div>
 
         {batchIndividu.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <User className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Belum ada resume per individu di batch ini</p>
+          <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+            <User className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+            <p className="text-stone-500">Belum ada resume per individu di batch ini</p>
           </div>
         ) : filteredResumes.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <Search className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Tidak ditemukan kandidat dengan nama "{searchQuery}"</p>
+          <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+            <Search className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+            <p className="text-stone-500">Tidak ditemukan kandidat dengan nama "{searchQuery}"</p>
             <button onClick={() => setSearchQuery("")} className="mt-3 text-green-600 hover:text-green-700 text-sm font-medium">
               Reset pencarian
             </button>
@@ -781,7 +781,7 @@ function ResumeFolderView({
         ) : (
           <>
             {(searchQuery || filteredResumes.length !== batchIndividu.length) && (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-stone-500">
                 Menampilkan {filteredResumes.length} dari {batchIndividu.length} kandidat
               </p>
             )}
@@ -800,7 +800,7 @@ function ResumeFolderView({
                 >
                   Sebelumnya
                 </Button>
-                <span className="text-sm text-slate-600">
+                <span className="text-sm text-stone-600">
                   {page} / {totalPages}
                 </span>
                 <Button
@@ -828,9 +828,9 @@ function ResumeFileCard({ file, color }: { file: any; color: "blue" | "purple" |
 
   const colorClasses = {
     blue: {
-      bg: "bg-blue-50",
-      icon: "bg-blue-100 text-blue-600",
-      button: "bg-blue-600 hover:bg-blue-700",
+      bg: "bg-petrol-50",
+      icon: "bg-petrol-100 text-petrol-600",
+      button: "bg-petrol-600 hover:bg-petrol-700",
     },
     purple: {
       bg: "bg-purple-50",
@@ -857,8 +857,8 @@ function ResumeFileCard({ file, color }: { file: any; color: "blue" | "purple" |
           <FileText className="w-6 h-6" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-900 truncate">{file.title}</h4>
-          <p className="text-sm text-slate-500 truncate">{file.fileName}</p>
+          <h4 className="font-semibold text-stone-900 truncate">{file.title}</h4>
+          <p className="text-sm text-stone-500 truncate">{file.fileName}</p>
         </div>
       </div>
       <div className="mt-4">

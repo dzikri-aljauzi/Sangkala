@@ -94,7 +94,7 @@ export default function InfoPelatihanPage() {
       {/* Search + Filter */}
       <div className="notranslate flex flex-col sm:flex-row sm:items-center gap-3 mb-10 max-w-4xl mx-auto">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 z-10" />
           <Input
             type="text"
             value={searchQuery}
@@ -126,10 +126,10 @@ export default function InfoPelatihanPage() {
       {/* Loading */}
       {loading ? (
         <div className="notranslate flex justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
         </div>
       ) : trainings.length === 0 ? (
-        <div className="notranslate text-center py-16 text-slate-400 bg-white rounded-xl border border-slate-200">
+        <div className="notranslate text-center py-16 text-stone-400 bg-white rounded-xl border border-stone-200">
           Tidak ada pelatihan yang cocok dengan pencarian/filter saat ini.
         </div>
       ) : (
@@ -142,8 +142,8 @@ export default function InfoPelatihanPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card hover className="h-full overflow-hidden border border-slate-200 flex flex-col">
-                <Link href={`/info-pelatihan/${training.id}`} className="relative h-44 bg-slate-100 flex items-center justify-center block">
+              <Card hover className="h-full overflow-hidden border border-stone-200 flex flex-col">
+                <Link href={`/info-pelatihan/${training.id}`} className="relative h-44 bg-stone-100 flex items-center justify-center block">
                   {training.imagePath ? (
                     <Image
                       src={getImageUrl(training.imagePath) ?? ""}
@@ -153,31 +153,31 @@ export default function InfoPelatihanPage() {
                       className="object-cover"
                     />
                   ) : (
-                    <ImageIcon className="w-10 h-10 text-slate-300" />
+                    <ImageIcon className="w-10 h-10 text-stone-300" />
                   )}
                   {training.price && (
-                    <Badge className="notranslate absolute top-3 right-3 bg-white/90 text-blue-700 border border-blue-100 backdrop-blur">
+                    <Badge className="notranslate absolute top-3 right-3 bg-white/90 text-petrol-700 border border-petrol-100 backdrop-blur">
                       {formatRupiah(training.price)}
                     </Badge>
                   )}
                 </Link>
                 <CardContent className="p-5 flex flex-col flex-1">
                   <Link href={`/info-pelatihan/${training.id}`}>
-                    <h3 className="font-semibold text-slate-900 line-clamp-2 mb-3 hover:text-blue-600 transition-colors">
+                    <h3 className="font-semibold text-stone-900 line-clamp-2 mb-3 hover:text-petrol-600 transition-colors">
                       {training.title}
                     </h3>
                   </Link>
                   <div className="notranslate space-y-1.5 mb-4">
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <div className="flex items-center gap-2 text-xs text-stone-500">
                       <MapPin className="w-3.5 h-3.5 shrink-0" />
                       <span className="line-clamp-1">{training.location}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                    <div className="flex items-center gap-2 text-xs text-stone-500">
                       <Calendar className="w-3.5 h-3.5 shrink-0" />
                       {formatTrainingDateRange(training.startDate, training.endDate, language === "en" ? "en-US" : "id-ID")}
                     </div>
                   </div>
-                  <p className="text-sm text-slate-500 line-clamp-3 mb-5">
+                  <p className="text-sm text-stone-500 line-clamp-3 mb-5">
                     {training.description}
                   </p>
                   <div className="notranslate mt-auto">

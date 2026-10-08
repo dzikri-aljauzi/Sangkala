@@ -1,13 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import SessionProvider from "@/components/providers/SessionProvider";
 import { Toaster } from "@/components/ui/sonner";
 
-const inter = Inter({
+const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-plex-sans",
+  display: "swap",
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-plex-mono",
   display: "swap",
 });
 
@@ -18,7 +26,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Leadership Nasional Asia | Sustainable Performance through Integrated People, Process, Technology Excellence",
+  title: "Sangkala | Sustainable Performance through Integrated People, Process, Technology Excellence",
   description:
     "Konsultan dan pelatihan spesialis untuk lembaga keuangan, perbankan, dan BUMN. People · Process · Technology – Engineered for Resilient Growth.",
   keywords: [
@@ -32,21 +40,16 @@ export const metadata: Metadata = {
     "risk management",
     "leadership training",
   ],
-  authors: [{ name: "Leadership Nasional Asia" }],
-  icons: {
-    icon: "/lna.png",
-    shortcut: "/lna.png",
-    apple: "/lna.png",
-  },
+  authors: [{ name: "Sangkala" }],
   openGraph: {
-    title: "Leadership Nasional Asia",
+    title: "Sangkala",
     description:
       "Sustainable Performance through Integrated People, Process, Technology Excellence. People · Process · Technology – Engineered for Resilient Growth.",
-    url: "https://lna.co.id",
-    siteName: "Leadership Nasional Asia",
+    url: "https://sangkala.example",
+    siteName: "Sangkala",
     locale: "id_ID",
     type: "website",
-    images: ["/lna.jpeg"],
+    images: ["/og-sangkala.png"],
   },
 };
 
@@ -56,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`scroll-smooth ${inter.variable}`}>
+    <html lang="id" className={`scroll-smooth ${plexSans.variable} ${plexMono.variable}`}>
       <body className="antialiased font-sans">
         <SessionProvider>
           <LanguageProvider>{children}</LanguageProvider>

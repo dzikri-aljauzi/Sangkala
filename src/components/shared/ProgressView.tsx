@@ -40,11 +40,11 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white rounded-xl border border-slate-200 p-12 text-center"
+        className="bg-white rounded-xl border border-stone-200 p-12 text-center"
       >
-        <BarChart3 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-        <p className="text-slate-500 text-lg">Belum ada progress yang tersedia</p>
-        <p className="text-sm text-slate-400 mt-2">
+        <BarChart3 className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+        <p className="text-stone-500 text-lg">Belum ada progress yang tersedia</p>
+        <p className="text-sm text-stone-400 mt-2">
           Progress akan muncul di sini ketika sudah diupdate oleh admin
         </p>
       </motion.div>
@@ -60,13 +60,13 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 rounded-2xl p-8 text-white shadow-lg"
+            className="bg-petrol-600 rounded-2xl p-8 text-white shadow-lg"
           >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div>
-                <h3 className="text-lg font-medium text-blue-100 mb-1">Progress Keseluruhan</h3>
+                <h3 className="text-lg font-medium text-petrol-100 mb-1">Progress Keseluruhan</h3>
                 <p className="text-4xl font-bold">{overallProgress}%</p>
-                <p className="text-blue-100 text-sm mt-2">
+                <p className="text-petrol-100 text-sm mt-2">
                   {completedCount} dari {progresses.length} kegiatan selesai
                 </p>
               </div>
@@ -120,15 +120,15 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-xl border border-slate-200 p-5"
+              className="bg-white rounded-xl border border-stone-200 p-5"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
                   <CheckCircle2 className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-900">{completedCount}</p>
-                  <p className="text-sm text-slate-500">Selesai</p>
+                  <p className="text-2xl font-bold text-stone-900">{completedCount}</p>
+                  <p className="text-sm text-stone-500">Selesai</p>
                 </div>
               </div>
             </motion.div>
@@ -137,15 +137,15 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white rounded-xl border border-slate-200 p-5"
+              className="bg-white rounded-xl border border-stone-200 p-5"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 rounded-lg bg-petrol-100 flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-petrol-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-900">{inProgressCount}</p>
-                  <p className="text-sm text-slate-500">Sedang Berjalan</p>
+                  <p className="text-2xl font-bold text-stone-900">{inProgressCount}</p>
+                  <p className="text-sm text-stone-500">Sedang Berjalan</p>
                 </div>
               </div>
             </motion.div>
@@ -154,15 +154,15 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white rounded-xl border border-slate-200 p-5"
+              className="bg-white rounded-xl border border-stone-200 p-5"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-slate-600" />
+                <div className="w-10 h-10 rounded-lg bg-stone-100 flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-stone-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-slate-900">{notStartedCount}</p>
-                  <p className="text-sm text-slate-500">Belum Dimulai</p>
+                  <p className="text-2xl font-bold text-stone-900">{notStartedCount}</p>
+                  <p className="text-sm text-stone-500">Belum Dimulai</p>
                 </div>
               </div>
             </motion.div>
@@ -173,19 +173,19 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-xl border border-slate-200 overflow-hidden"
+            className="bg-white rounded-xl border border-stone-200 overflow-hidden"
           >
-            <div className="px-6 py-4 border-b border-slate-200">
-              <h3 className="text-lg font-semibold text-slate-900">Detail Kegiatan</h3>
+            <div className="px-6 py-4 border-b border-stone-200">
+              <h3 className="text-lg font-semibold text-stone-900">Detail Kegiatan</h3>
             </div>
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-stone-100">
               {progresses.map((progress, index) => (
                 <motion.div
                   key={progress.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 * index }}
-                  className="p-6 hover:bg-slate-50 transition-colors"
+                  className="p-6 hover:bg-stone-50 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -193,15 +193,15 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
                         progress.percentage === 100
                           ? "bg-green-100 text-green-700"
                           : progress.percentage > 0
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-slate-100 text-slate-600"
+                          ? "bg-petrol-100 text-petrol-700"
+                          : "bg-stone-100 text-stone-600"
                       }`}>
                         {index + 1}
                       </div>
                       <div>
-                        <h4 className="font-medium text-slate-900">{progress.activityName}</h4>
+                        <h4 className="font-medium text-stone-900">{progress.activityName}</h4>
                         {progress.description && (
-                          <p className="text-sm text-slate-500 mt-0.5">{progress.description}</p>
+                          <p className="text-sm text-stone-500 mt-0.5">{progress.description}</p>
                         )}
                       </div>
                     </div>
@@ -213,8 +213,8 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
                         progress.percentage === 100
                           ? "text-green-600"
                           : progress.percentage > 0
-                          ? "text-blue-600"
-                          : "text-slate-400"
+                          ? "text-petrol-600"
+                          : "text-stone-400"
                       }`}>
                         {progress.percentage}%
                       </span>
@@ -222,19 +222,19 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
                   </div>
 
                   {/* Progress Bar */}
-                  <div className="w-full bg-slate-200 rounded-full h-3">
+                  <div className="w-full bg-stone-200 rounded-full h-3">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${progress.percentage}%` }}
                       transition={{ duration: 0.8, delay: 0.1 * index, ease: "easeOut" }}
                       className={`h-3 rounded-full ${
                         progress.percentage === 100
-                          ? "bg-gradient-to-r from-green-500 to-emerald-500"
+                          ? "bg-green-500"
                           : progress.percentage >= 50
-                          ? "bg-gradient-to-r from-blue-500 to-cyan-500"
+                          ? "bg-petrol-500"
                           : progress.percentage > 0
-                          ? "bg-gradient-to-r from-orange-400 to-yellow-400"
-                          : "bg-slate-300"
+                          ? "bg-orange-400"
+                          : "bg-stone-300"
                       }`}
                     />
                   </div>
@@ -251,29 +251,29 @@ export default function ProgressView({ progresses, attendances }: { progresses: 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white rounded-xl border border-slate-200 overflow-hidden"
+          className="bg-white rounded-xl border border-stone-200 overflow-hidden"
         >
-          <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-orange-50 to-amber-50">
+          <div className="px-6 py-4 border-b border-stone-200 bg-orange-50">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
                 <ClipboardList className="w-5 h-5 text-orange-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">File Absensi</h3>
-                <p className="text-sm text-slate-500">Dokumen absensi yang tersedia</p>
+                <h3 className="text-lg font-semibold text-stone-900">File Absensi</h3>
+                <p className="text-sm text-stone-500">Dokumen absensi yang tersedia</p>
               </div>
             </div>
           </div>
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-stone-100">
             {attendances.map((attendance) => (
-              <div key={attendance.id} className="p-4 hover:bg-slate-50 flex items-center justify-between gap-4">
+              <div key={attendance.id} className="p-4 hover:bg-stone-50 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
                     <FileText className="w-5 h-5 text-orange-600" />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-900 truncate">{attendance.title}</p>
-                    <p className="text-sm text-slate-500 truncate">{attendance.fileName}</p>
+                    <p className="font-medium text-stone-900 truncate">{attendance.title}</p>
+                    <p className="text-sm text-stone-500 truncate">{attendance.fileName}</p>
                   </div>
                 </div>
                 <a

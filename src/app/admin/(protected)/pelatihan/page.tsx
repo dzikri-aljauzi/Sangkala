@@ -169,7 +169,7 @@ export default function AdminPelatihanPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
         <span className="sr-only">Memuat data pelatihan...</span>
       </div>
     );
@@ -186,8 +186,8 @@ export default function AdminPelatihanPage() {
         >
           <div className="flex items-center gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Data Pelatihan</h1>
-              <p className="text-slate-500 mt-1">Kelola daftar pelatihan yang tampil di /info-pelatihan</p>
+              <h1 className="text-2xl font-bold text-stone-900">Data Pelatihan</h1>
+              <p className="text-stone-500 mt-1">Kelola daftar pelatihan yang tampil di /info-pelatihan</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -211,14 +211,14 @@ export default function AdminPelatihanPage() {
         {/* Search + Filter */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
           <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 z-10" />
             <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari pelatihan..."
               aria-label="Cari judul atau lokasi pelatihan"
-              className="pl-10 h-10 rounded-xl bg-white border border-slate-200 text-sm shadow-xs"
+              className="pl-10 h-10 rounded-xl bg-white border border-stone-200 text-sm shadow-xs"
             />
           </div>
           <ToggleGroup
@@ -234,7 +234,7 @@ export default function AdminPelatihanPage() {
           >
             <ToggleGroupItem
               value="semua"
-              className="rounded-full border-slate-200 px-3 text-xs font-medium data-[state=on]:bg-blue-600 data-[state=on]:text-white data-[state=on]:border-blue-600"
+              className="rounded-full border-stone-200 px-3 text-xs font-medium data-[state=on]:bg-petrol-600 data-[state=on]:text-white data-[state=on]:border-petrol-600"
             >
               Semua
             </ToggleGroupItem>
@@ -242,7 +242,7 @@ export default function AdminPelatihanPage() {
               <ToggleGroupItem
                 key={f.value}
                 value={f.value}
-                className="rounded-full border-slate-200 px-3 text-xs font-medium data-[state=on]:bg-blue-600 data-[state=on]:text-white data-[state=on]:border-blue-600"
+                className="rounded-full border-stone-200 px-3 text-xs font-medium data-[state=on]:bg-petrol-600 data-[state=on]:text-white data-[state=on]:border-petrol-600"
               >
                 {f.label}
               </ToggleGroupItem>
@@ -252,7 +252,7 @@ export default function AdminPelatihanPage() {
 
         {/* Cards */}
         {filteredTrainings.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 bg-white rounded-xl border border-slate-200">
+          <div className="text-center py-16 text-stone-400 bg-white rounded-xl border border-stone-200">
             {trainings.length === 0
               ? <>Belum ada pelatihan. Klik &quot;Tambah Pelatihan&quot; untuk membuat yang pertama.</>
               : <>Tidak ada pelatihan yang cocok dengan pencarian/filter saat ini.</>}
@@ -263,9 +263,9 @@ export default function AdminPelatihanPage() {
               <Link
                 key={training.id}
                 href={`/admin/pelatihan/${training.id}`}
-                className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md hover:border-blue-200 transition-all"
+                className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-md hover:border-petrol-200 transition-all"
               >
-                <div className="relative h-40 bg-slate-100 flex items-center justify-center">
+                <div className="relative h-40 bg-stone-100 flex items-center justify-center">
                   {training.imagePath ? (
                     <Image
                       src={getImageUrl(training.imagePath) || ""}
@@ -274,38 +274,38 @@ export default function AdminPelatihanPage() {
                       className="object-cover"
                     />
                   ) : (
-                    <ImageIcon className="w-10 h-10 text-slate-300" />
+                    <ImageIcon className="w-10 h-10 text-stone-300" />
                   )}
                   {!training.isActive && (
-                    <span className="absolute top-2 right-2 px-2 py-1 text-xs font-semibold bg-slate-800/80 text-white rounded-md">
+                    <span className="absolute top-2 right-2 px-2 py-1 text-xs font-semibold bg-stone-800/80 text-white rounded-md">
                       Nonaktif
                     </span>
                   )}
                   {training.requiresPayment && (
-                    <Badge className="absolute top-2 left-2 bg-blue-600 text-white border-transparent">
+                    <Badge className="absolute top-2 left-2 bg-petrol-600 text-white border-transparent">
                       Berbayar
                     </Badge>
                   )}
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-slate-900 line-clamp-2 mb-2">{training.title}</h3>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
+                  <h3 className="font-semibold text-stone-900 line-clamp-2 mb-2">{training.title}</h3>
+                  <div className="flex items-center gap-1.5 text-xs text-stone-500 mb-1">
                     <MapPin className="w-3.5 h-3.5 shrink-0" />
                     <span className="line-clamp-1">{training.location}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
+                  <div className="flex items-center gap-1.5 text-xs text-stone-500 mb-1">
                     <Calendar className="w-3.5 h-3.5 shrink-0" />
                     {formatTrainingDateRange(training.startDate, training.endDate)}
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
+                  <div className="flex items-center gap-1.5 text-xs text-stone-500 mb-2">
                     <Users className="w-3.5 h-3.5 shrink-0" />
                     {training._count.registrants}
                     {training.capacity !== null ? ` / ${training.capacity}` : ""} pendaftar
                   </div>
                   {training.createdBy && (
-                    <div className="text-[11px] text-slate-400 pt-2 border-t border-slate-100 flex items-center justify-between">
-                      <span>Oleh: <strong className="text-slate-600 font-medium">{training.createdBy.name}</strong></span>
-                      <span className="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px]">
+                    <div className="text-[11px] text-stone-400 pt-2 border-t border-stone-100 flex items-center justify-between">
+                      <span>Oleh: <strong className="text-stone-600 font-medium">{training.createdBy.name}</strong></span>
+                      <span className="bg-stone-100 text-stone-500 px-1.5 py-0.5 rounded text-[10px]">
                         {training.createdBy.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
                       </span>
                     </div>
@@ -367,7 +367,7 @@ export default function AdminPelatihanPage() {
             <div className="space-y-1.5">
               <Label htmlFor="price">Harga</Label>
               <div className="relative flex items-center">
-                <span className="absolute left-3 text-slate-500 text-sm font-medium select-none pointer-events-none">
+                <span className="absolute left-3 text-stone-500 text-sm font-medium select-none pointer-events-none">
                   Rp
                 </span>
                 <Input
@@ -411,11 +411,11 @@ export default function AdminPelatihanPage() {
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
-                className="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 file:text-sm file:font-medium hover:file:bg-blue-100"
+                className="w-full text-sm text-stone-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-petrol-50 file:text-petrol-600 file:text-sm file:font-medium hover:file:bg-petrol-100"
               />
-              {uploading && <p className="text-xs text-slate-400 mt-1">Mengunggah...</p>}
+              {uploading && <p className="text-xs text-stone-400 mt-1">Mengunggah...</p>}
               {formData.imagePath && (
-                <div className="relative w-full h-36 mt-2 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 group">
+                <div className="relative w-full h-36 mt-2 rounded-lg overflow-hidden bg-stone-100 border border-stone-200 group">
                   <Image src={getImageUrl(formData.imagePath) || ""} alt="Preview" fill className="object-cover" />
                   <Button
                     type="button"
@@ -449,7 +449,7 @@ export default function AdminPelatihanPage() {
             <DialogTitle>Preview Gambar Pelatihan</DialogTitle>
           </DialogHeader>
           {previewImageUrl && (
-            <div className="relative w-full flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden mt-2">
+            <div className="relative w-full flex items-center justify-center bg-stone-50 rounded-xl overflow-hidden mt-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewImageUrl}

@@ -33,7 +33,7 @@ export default function DashboardWrapper({
   }, [onTabChange]);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-stone-50">
       <DashboardSidebar
         assessmentName={assessmentName}
         assessmentId={assessmentId}

@@ -7,5 +7,5 @@ export default function DashboardLayout({
 }) {
   // Layout khusus untuk dashboard - tanpa navbar/footer dari parent
   // Dashboard components sudah include DashboardWrapper dengan sidebar sendiri
-  return <div className="min-h-screen bg-slate-50">{children}</div>;
+  return <div className="min-h-screen bg-stone-50">{children}</div>;
 }

@@ -54,8 +54,8 @@ export default function AppShell({
         <Shield className="h-4.5 w-4.5 text-white" />
       </div>
       <div className="min-w-0">
-        <p className="text-base font-semibold leading-tight text-ink">LNA</p>
-        <p className="truncate text-[11px] text-ink-muted">Leadership Nasional Asia</p>
+        <p className="text-base font-medium leading-tight text-petrol-600">Sangkala</p>
+        <p className="truncate text-[11px] text-ink-muted">Assessment Center</p>
       </div>
     </div>
   );

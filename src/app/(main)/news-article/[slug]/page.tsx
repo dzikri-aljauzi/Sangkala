@@ -98,14 +98,14 @@ export default function ArticleDetailPage() {
       .map((paragraph, index) => {
         if (paragraph.startsWith("## ")) {
           return (
-            <h2 key={index} className="text-xl sm:text-2xl font-bold text-slate-800 mt-8 mb-4">
+            <h2 key={index} className="text-xl sm:text-2xl font-bold text-stone-800 mt-8 mb-4">
               {paragraph.replace("## ", "")}
             </h2>
           );
         }
         if (paragraph.startsWith("### ")) {
           return (
-            <h3 key={index} className="text-lg sm:text-xl font-semibold text-slate-800 mt-6 mb-3">
+            <h3 key={index} className="text-lg sm:text-xl font-semibold text-stone-800 mt-6 mb-3">
               {paragraph.replace("### ", "")}
             </h3>
           );
@@ -114,7 +114,7 @@ export default function ArticleDetailPage() {
         if (paragraph.includes("\n- ")) {
           const items = paragraph.split("\n- ").filter(Boolean);
           return (
-            <ul key={index} className="list-disc list-inside space-y-2 my-4 text-slate-700">
+            <ul key={index} className="list-disc list-inside space-y-2 my-4 text-stone-700">
               {items.map((item, i) => (
                 <li key={i}>{formatInlineText(item.replace(/^- /, ""))}</li>
               ))}
@@ -123,7 +123,7 @@ export default function ArticleDetailPage() {
         }
 
         return (
-          <p key={index} className="text-slate-700 leading-relaxed mb-4">
+          <p key={index} className="text-stone-700 leading-relaxed mb-4">
             {formatInlineText(paragraph)}
           </p>
         );
@@ -146,7 +146,7 @@ export default function ArticleDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600"></div>
       </div>
     );
   }
@@ -154,11 +154,11 @@ export default function ArticleDetailPage() {
   if (error || !article) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center pt-24">
-        <FileText className="w-16 h-16 text-slate-300 mb-4" />
-        <h1 className="text-2xl font-bold text-slate-800 mb-2">
+        <FileText className="w-16 h-16 text-stone-300 mb-4" />
+        <h1 className="text-2xl font-bold text-stone-800 mb-2">
           {language === "id" ? "Artikel Tidak Ditemukan" : "Article Not Found"}
         </h1>
-        <p className="text-slate-500 mb-6">
+        <p className="text-stone-500 mb-6">
           {language === "id"
             ? "Artikel yang Anda cari tidak tersedia."
             : "The article you're looking for is not available."}
@@ -180,11 +180,11 @@ export default function ArticleDetailPage() {
   return (
     <>
       {/* Hero/Header */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-8 sm:pb-12 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <section className="pt-24 sm:pt-28 md:pt-32 pb-8 sm:pb-12 bg-stone-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/news-article"
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-blue-600 mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-stone-600 hover:text-petrol-600 mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">{language === "id" ? "Kembali ke News & Article" : "Back to News & Article"}</span>
@@ -197,14 +197,14 @@ export default function ArticleDetailPage() {
             className="max-w-4xl"
           >
             <div className="flex flex-wrap items-center gap-3 mb-4">
-              <span className="px-3 py-1 bg-blue-600/10 text-blue-600 text-sm font-medium rounded-full">
+              <span className="px-3 py-1 bg-petrol-600/10 text-petrol-600 text-sm font-medium rounded-full">
                 {categoryLabel}
               </span>
-              <span className="text-sm text-slate-500 flex items-center gap-1">
+              <span className="text-sm text-stone-500 flex items-center gap-1">
                 <Clock className="w-4 h-4" />
                 {getReadTime(content)}
               </span>
-              <span className="text-sm text-slate-500 flex items-center gap-1">
+              <span className="text-sm text-stone-500 flex items-center gap-1">
                 <Calendar className="w-4 h-4" />
                 {new Date(article.publishedAt || article.createdAt).toLocaleDateString(
                   language === "id" ? "id-ID" : "en-US",
@@ -213,15 +213,15 @@ export default function ArticleDetailPage() {
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-6">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-stone-800 mb-6">
               {title}
             </h1>
 
-            <p className="text-slate-600">
-              <span className="text-slate-500">{language === "id" ? "Oleh:" : "By:"}</span>{" "}
-              <span className="font-semibold text-slate-800">{article.authorName}</span>
+            <p className="text-stone-600">
+              <span className="text-stone-500">{language === "id" ? "Oleh:" : "By:"}</span>{" "}
+              <span className="font-semibold text-stone-800">{article.authorName}</span>
               {article.authorPosition && (
-                <span className="text-slate-600"> – {article.authorPosition}</span>
+                <span className="text-stone-600"> – {article.authorPosition}</span>
               )}
             </p>
           </motion.div>
@@ -311,11 +311,11 @@ export default function ArticleDetailPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-12 pt-8 border-t border-slate-200"
+            className="mt-12 pt-8 border-t border-stone-200"
           >
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <span className="text-sm text-slate-500">
+                <span className="text-sm text-stone-500">
                   {language === "id" ? "Bagikan artikel ini:" : "Share this article:"}
                 </span>
                 <div className="flex items-center gap-2">
@@ -324,9 +324,9 @@ export default function ArticleDetailPage() {
                       navigator.clipboard.writeText(window.location.href);
                       alert(language === "id" ? "Link disalin!" : "Link copied!");
                     }}
-                    className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
+                    className="p-2 rounded-full bg-stone-100 hover:bg-stone-200 transition-colors"
                   >
-                    <Share2 className="w-4 h-4 text-slate-600" />
+                    <Share2 className="w-4 h-4 text-stone-600" />
                   </button>
                 </div>
               </div>

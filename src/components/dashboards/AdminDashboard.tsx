@@ -259,7 +259,7 @@ export default function AdminDashboard({
   if (loading || !assessment) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600"></div>
       </div>
     );
   }
@@ -275,9 +275,9 @@ export default function AdminDashboard({
         );
 
   const header = (
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
+      <div className="bg-white border-b border-stone-200 sticky top-0 z-30">
         <div className="px-8 py-6">
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-stone-900">
             {activeTab === "overview" && "Overview"}
             {activeTab === "users" && t("assessmentCenter.manageUsers")}
             {activeTab === "documents" && t("assessmentCenter.allDocuments")}
@@ -286,7 +286,7 @@ export default function AdminDashboard({
             {activeTab === "progress" && "Progress Pelaksanaan"}
             {activeTab === "echelons" && "Kelola Eselon"}
           </h1>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-sm text-stone-600 mt-1">
             {activeTab === "overview" && "Dashboard overview dan statistik"}
             {activeTab === "users" && "Kelola user asesor dan klien"}
             {activeTab === "documents" && "Semua dokumen dari asesor"}
@@ -334,7 +334,7 @@ export default function AdminDashboard({
             {/* All Assessments Section */}
             <div className="mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                <h2 className="text-lg font-bold text-slate-900">
+                <h2 className="text-lg font-bold text-stone-900">
                   Semua Assessment
                 </h2>
                 <Button
@@ -355,14 +355,14 @@ export default function AdminDashboard({
                     animate={{ opacity: 1, y: 0 }}
                     className={`bg-white rounded-xl border p-5 hover:shadow-lg transition-all ${
                       a.id === assessmentId
-                        ? "border-blue-300 ring-2 ring-blue-100"
-                        : "border-slate-200"
+                        ? "border-petrol-300 ring-2 ring-petrol-100"
+                        : "border-stone-200"
                     }`}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         {a.clientLogo ? (
-                          <div className="w-12 h-12 rounded-lg bg-white border border-slate-200 p-1.5 flex-shrink-0">
+                          <div className="w-12 h-12 rounded-lg bg-white border border-stone-200 p-1.5 flex-shrink-0">
                             <img
                               src={a.clientLogo}
                               alt={a.clientName}
@@ -370,30 +370,30 @@ export default function AdminDashboard({
                             />
                           </div>
                         ) : (
-                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                          <div className="w-12 h-12 rounded-lg bg-petrol-500 flex items-center justify-center flex-shrink-0">
                             <span className="text-white text-lg font-bold">
                               {a.clientName.charAt(0)}
                             </span>
                           </div>
                         )}
                         <div>
-                          <h3 className="font-semibold text-slate-900 text-sm">
+                          <h3 className="font-semibold text-stone-900 text-sm">
                             {a.name}
                           </h3>
-                          <p className="text-xs text-slate-500">{a.clientName}</p>
+                          <p className="text-xs text-stone-500">{a.clientName}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setEditingAssessment(a)}
-                          className="text-slate-400 hover:text-blue-600 transition-colors"
+                          className="text-stone-400 hover:text-petrol-600 transition-colors"
                           title="Edit assessment"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteAssessment(a.id)}
-                          className="text-slate-400 hover:text-red-600 transition-colors"
+                          className="text-stone-400 hover:text-red-600 transition-colors"
                           title="Hapus assessment"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -402,28 +402,28 @@ export default function AdminDashboard({
                     </div>
 
                     <div className="grid grid-cols-4 gap-2 mb-3">
-                      <div className="bg-slate-50 rounded-lg p-2 text-center">
-                        <p className="text-lg font-bold text-slate-800">{a._count.users}</p>
-                        <p className="text-[10px] text-slate-500">Users</p>
+                      <div className="bg-stone-50 rounded-lg p-2 text-center">
+                        <p className="text-lg font-bold text-stone-800">{a._count.users}</p>
+                        <p className="text-[10px] text-stone-500">Users</p>
                       </div>
-                      <div className="bg-slate-50 rounded-lg p-2 text-center">
-                        <p className="text-lg font-bold text-slate-800">{a._count.documents}</p>
-                        <p className="text-[10px] text-slate-500">Docs</p>
+                      <div className="bg-stone-50 rounded-lg p-2 text-center">
+                        <p className="text-lg font-bold text-stone-800">{a._count.documents}</p>
+                        <p className="text-[10px] text-stone-500">Docs</p>
                       </div>
-                      <div className="bg-slate-50 rounded-lg p-2 text-center">
-                        <p className="text-lg font-bold text-slate-800">{a._count.resumes}</p>
-                        <p className="text-[10px] text-slate-500">Resume</p>
+                      <div className="bg-stone-50 rounded-lg p-2 text-center">
+                        <p className="text-lg font-bold text-stone-800">{a._count.resumes}</p>
+                        <p className="text-[10px] text-stone-500">Resume</p>
                       </div>
-                      <div className="bg-slate-50 rounded-lg p-2 text-center">
-                        <p className="text-lg font-bold text-slate-800">{a._count.documentations}</p>
-                        <p className="text-[10px] text-slate-500">Foto</p>
+                      <div className="bg-stone-50 rounded-lg p-2 text-center">
+                        <p className="text-lg font-bold text-stone-800">{a._count.documentations}</p>
+                        <p className="text-[10px] text-stone-500">Foto</p>
                       </div>
                     </div>
 
                     {a.id !== assessmentId ? (
                       <button
                         onClick={() => router.push(`/assessment-center/${a.id}/overview`)}
-                        className="w-full py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                        className="w-full py-2 text-sm font-medium text-petrol-600 bg-petrol-50 hover:bg-petrol-100 rounded-lg transition-colors"
                       >
                         Buka Dashboard →
                       </button>
@@ -451,11 +451,11 @@ export default function AdminDashboard({
           <div>
             {/* Filter */}
             <div className="mb-6 flex items-center gap-4">
-              <Filter className="w-5 h-5 text-slate-600" />
+              <Filter className="w-5 h-5 text-stone-600" />
               <select
                 value={selectedAsesor}
                 onChange={(e) => setSelectedAsesor(e.target.value)}
-                className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
               >
                 <option value="all">Semua Asesor</option>
                 {asesors.map((asesor) => (
@@ -619,27 +619,27 @@ function StatsCard({
   color: string;
 }) {
   const colors: Record<string, string> = {
-    blue: "from-blue-500 to-cyan-500",
-    green: "from-green-500 to-emerald-500",
-    purple: "from-purple-500 to-pink-500",
-    orange: "from-orange-500 to-yellow-500",
+    blue: "bg-petrol-500",
+    green: "bg-green-500",
+    purple: "bg-purple-500",
+    orange: "bg-orange-500",
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow"
+      className="bg-white rounded-xl border border-stone-200 p-6 hover:shadow-lg transition-shadow"
     >
       <div className="flex items-center justify-between mb-4">
         <div
-          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colors[color]} flex items-center justify-center`}
+          className={`w-12 h-12 rounded-lg ${colors[color]} flex items-center justify-center`}
         >
           <Icon className="w-6 h-6 text-white" />
         </div>
       </div>
-      <p className="text-3xl font-bold text-slate-900">{value}</p>
-      <p className="text-sm text-slate-600 mt-1">{title}</p>
+      <p className="text-3xl font-bold text-stone-900">{value}</p>
+      <p className="text-sm text-stone-600 mt-1">{title}</p>
     </motion.div>
   );
 }
@@ -697,43 +697,43 @@ function UserManagement({
         </Button>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
+      <div className="bg-white rounded-xl border border-stone-200 overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-50 border-b border-slate-200">
+          <thead className="bg-stone-50 border-b border-stone-200">
             <tr>
-              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-stone-600 uppercase">
                 {t("assessmentCenter.userName")}
               </th>
-              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-stone-600 uppercase">
                 Email
               </th>
-              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-stone-600 uppercase">
                 Role
               </th>
-              <th className="px-4 sm:px-6 py-3 text-center text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-center text-xs font-medium text-stone-600 uppercase">
                 Status
               </th>
-              <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase">
+              <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-stone-600 uppercase">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200">
+          <tbody className="divide-y divide-stone-200">
             {users.map((user) => {
               const isActive = user.isActive !== false;
               return (
-                <tr key={user.id} className={`hover:bg-slate-50 ${!isActive ? 'opacity-60' : ''}`}>
-                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-900">
+                <tr key={user.id} className={`hover:bg-stone-50 ${!isActive ? 'opacity-60' : ''}`}>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-stone-900">
                     {user.name}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-600">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-stone-600">
                     {user.email}
                   </td>
                   <td className="px-4 sm:px-6 py-4">
                     <span
                       className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                         user.role === "ASESOR"
-                          ? "bg-blue-100 text-blue-700"
+                          ? "bg-petrol-100 text-petrol-700"
                           : user.role === "STAFF_KLIEN"
                           ? "bg-orange-100 text-orange-700"
                           : "bg-green-100 text-green-700"
@@ -769,7 +769,7 @@ function UserManagement({
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setEditingUser(user)}
-                        className="text-slate-400 hover:text-blue-600 transition-colors"
+                        className="text-stone-400 hover:text-petrol-600 transition-colors"
                         title="Edit user"
                       >
                         <Edit className="w-4 h-4" />
@@ -785,7 +785,7 @@ function UserManagement({
                             onRefresh();
                           }
                         }}
-                        className="text-slate-300 hover:text-red-600 transition-colors"
+                        className="text-stone-300 hover:text-red-600 transition-colors"
                         title="Hapus permanen user"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -897,9 +897,9 @@ function DocumentList({
 
   if (documents.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-        <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-        <p className="text-slate-500">Belum ada file</p>
+      <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+        <FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+        <p className="text-stone-500">Belum ada file</p>
       </div>
     );
   }
@@ -907,11 +907,11 @@ function DocumentList({
   return (
     <div>
       {canDelete && (
-        <div className="mb-4 flex items-center justify-between bg-white p-3 rounded-lg border border-slate-200">
-          <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700">
+        <div className="mb-4 flex items-center justify-between bg-white p-3 rounded-lg border border-stone-200">
+          <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-stone-700">
             <input
               type="checkbox"
-              className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+              className="w-4 h-4 rounded border-stone-300 text-petrol-600 focus:ring-petrol-500 cursor-pointer"
               checked={selectedDocs.length === sortedDocuments.length && sortedDocuments.length > 0}
               onChange={handleSelectAll}
             />
@@ -947,14 +947,14 @@ function DocumentList({
           <div
             key={doc.id}
             className={`bg-white rounded-lg border ${
-              selectedDocs.includes(doc.id) ? "border-blue-400 ring-1 ring-blue-400" : "border-slate-200"
+              selectedDocs.includes(doc.id) ? "border-petrol-400 ring-1 ring-petrol-400" : "border-stone-200"
             } p-4 hover:shadow-md transition-all relative group`}
           >
             {canDelete && (
               <div className="absolute top-4 left-4 z-10">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  className="w-4 h-4 rounded border-stone-300 text-petrol-600 focus:ring-petrol-500 cursor-pointer"
                   checked={selectedDocs.includes(doc.id)}
                   onChange={() => handleToggleSelect(doc.id)}
                 />
@@ -962,7 +962,7 @@ function DocumentList({
             )}
             
             <div className={`relative z-10 flex items-start justify-between mb-3 ${canDelete ? "ml-8" : ""}`}>
-              <FileText className={`w-8 h-8 ${selectedDocs.includes(doc.id) ? "text-blue-600" : "text-blue-500"}`} />
+              <FileText className={`w-8 h-8 ${selectedDocs.includes(doc.id) ? "text-petrol-600" : "text-petrol-500"}`} />
               {canDelete && (
                 <button
                   onClick={async (e) => {
@@ -975,7 +975,7 @@ function DocumentList({
                     }
                   }}
                   disabled={isDeleting}
-                  className="text-slate-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="text-stone-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                   title="Hapus file"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -984,17 +984,17 @@ function DocumentList({
             </div>
             
             <div className={`relative z-10 ${canDelete ? "ml-8" : ""}`}>
-              <h3 className="font-medium text-slate-900 mb-1 line-clamp-1" title={doc.title}>{doc.title}</h3>
-              <p className="text-xs text-slate-600 mb-2 truncate" title={doc.fileName}>{doc.fileName}</p>
+              <h3 className="font-medium text-stone-900 mb-1 line-clamp-1" title={doc.title}>{doc.title}</h3>
+              <p className="text-xs text-stone-600 mb-2 truncate" title={doc.fileName}>{doc.fileName}</p>
               {doc.uploadedBy && (
-                <p className="text-xs text-slate-500 mb-3">
+                <p className="text-xs text-stone-500 mb-3">
                   By: {doc.uploadedBy.name}
                 </p>
               )}
               <a
                 href={`${doc.filePath.startsWith('/api/files') ? doc.filePath : `/api/files${doc.filePath.replace('/uploads/', '/')}`}?filename=${encodeURIComponent(doc.fileName)}`}
                 download={doc.fileName}
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium inline-block"
+                className="text-sm text-petrol-600 hover:text-petrol-800 font-medium inline-block"
                 onClick={(e) => e.stopPropagation()}
               >
                 {t("assessmentCenter.download")} →
@@ -1133,12 +1133,12 @@ function CreateUserModal({
         animate={{ opacity: 1, scale: 1 }}
         className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
       >
-        <div className="sticky top-0 bg-white border-b border-slate-200 px-4 sm:px-6 py-4 flex items-center justify-between rounded-t-xl">
-          <h2 className="text-xl font-bold text-slate-900">
+        <div className="sticky top-0 bg-white border-b border-stone-200 px-4 sm:px-6 py-4 flex items-center justify-between rounded-t-xl">
+          <h2 className="text-xl font-bold text-stone-900">
             {t("assessmentCenter.createUser")}
           </h2>
           <button onClick={onClose}>
-            <X className="w-5 h-5 text-slate-400" />
+            <X className="w-5 h-5 text-stone-400" />
           </button>
         </div>
 
@@ -1151,7 +1151,7 @@ function CreateUserModal({
 
           {/* Role Selection */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Role
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -1160,8 +1160,8 @@ function CreateUserModal({
                 onClick={() => setRole("ASESOR")}
                 className={`py-3 px-4 rounded-lg border-2 text-sm font-medium transition-all ${
                   role === "ASESOR"
-                    ? "border-blue-500 bg-blue-50 text-blue-700"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300"
+                    ? "border-petrol-500 bg-petrol-50 text-petrol-700"
+                    : "border-stone-200 text-stone-600 hover:border-stone-300"
                 }`}
               >
                 Asesor
@@ -1172,7 +1172,7 @@ function CreateUserModal({
                 className={`py-3 px-4 rounded-lg border-2 text-sm font-medium transition-all ${
                   role === "KLIEN"
                     ? "border-green-500 bg-green-50 text-green-700"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300"
+                    : "border-stone-200 text-stone-600 hover:border-stone-300"
                 }`}
               >
                 Klien
@@ -1183,7 +1183,7 @@ function CreateUserModal({
                 className={`py-3 px-4 rounded-lg border-2 text-sm font-medium transition-all ${
                   role === "STAFF_KLIEN"
                     ? "border-orange-500 bg-orange-50 text-orange-700"
-                    : "border-slate-200 text-slate-600 hover:border-slate-300"
+                    : "border-stone-200 text-stone-600 hover:border-stone-300"
                 }`}
               >
                 Staff Klien
@@ -1195,7 +1195,7 @@ function CreateUserModal({
           {(role === "ASESOR" || role === "STAFF_KLIEN") && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-stone-700 mb-2">
                   Nama
                 </label>
                 <input
@@ -1205,12 +1205,12 @@ function CreateUserModal({
                   onChange={(e) =>
                     setSingleUser({ ...singleUser, name: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                   placeholder={role === "ASESOR" ? "Nama asesor" : "Nama staff klien"}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-stone-700 mb-2">
                   Email
                 </label>
                 <input
@@ -1220,12 +1220,12 @@ function CreateUserModal({
                   onChange={(e) =>
                     setSingleUser({ ...singleUser, email: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                   placeholder="email@contoh.com"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-stone-700 mb-2">
                   Password
                 </label>
                 <input
@@ -1235,7 +1235,7 @@ function CreateUserModal({
                   onChange={(e) =>
                     setSingleUser({ ...singleUser, password: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                   placeholder="Password"
                 />
               </div>
@@ -1246,13 +1246,13 @@ function CreateUserModal({
           {role === "KLIEN" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-700">
+                <p className="text-sm font-medium text-stone-700">
                   Anggota Klien ({klienMembers.length})
                 </p>
                 <button
                   type="button"
                   onClick={addKlienMember}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                  className="text-sm text-petrol-600 hover:text-petrol-800 font-medium flex items-center gap-1"
                 >
                   <UserPlus className="w-4 h-4" />
                   Tambah Anggota
@@ -1262,10 +1262,10 @@ function CreateUserModal({
               {klienMembers.map((member, index) => (
                 <div
                   key={index}
-                  className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3"
+                  className="bg-stone-50 rounded-lg p-4 border border-stone-200 space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-slate-500">
+                    <span className="text-xs font-medium text-stone-500">
                       Anggota #{index + 1}
                     </span>
                     {klienMembers.length > 1 && (
@@ -1285,7 +1285,7 @@ function CreateUserModal({
                     onChange={(e) =>
                       updateKlienMember(index, "name", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                   <input
                     type="email"
@@ -1294,7 +1294,7 @@ function CreateUserModal({
                     onChange={(e) =>
                       updateKlienMember(index, "email", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                   <input
                     type="password"
@@ -1303,7 +1303,7 @@ function CreateUserModal({
                     onChange={(e) =>
                       updateKlienMember(index, "password", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
               ))}
@@ -1421,11 +1421,11 @@ function CreateAssessmentModal({
         className="bg-white rounded-xl max-w-md w-full p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-xl font-bold text-stone-900">
             Buat Assessment Baru
           </h2>
           <button onClick={onClose}>
-            <X className="w-5 h-5 text-slate-400" />
+            <X className="w-5 h-5 text-stone-400" />
           </button>
         </div>
 
@@ -1437,7 +1437,7 @@ function CreateAssessmentModal({
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Nama Assessment
             </label>
             <input
@@ -1447,13 +1447,13 @@ function CreateAssessmentModal({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
               placeholder="Contoh: Assessment Center 2024"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Nama Klien
             </label>
             <input
@@ -1463,13 +1463,13 @@ function CreateAssessmentModal({
               onChange={(e) =>
                 setFormData({ ...formData, clientName: e.target.value })
               }
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
               placeholder="Contoh: Bank Kaltimtara"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Deskripsi (Opsional)
             </label>
             <textarea
@@ -1478,18 +1478,18 @@ function CreateAssessmentModal({
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={3}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent resize-none"
               placeholder="Deskripsi assessment..."
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Logo Klien (Opsional)
             </label>
             <div className="flex items-center gap-4">
               {logoPreview ? (
-                <div className="w-16 h-16 rounded-lg border border-slate-300 p-2 flex items-center justify-center bg-white">
+                <div className="w-16 h-16 rounded-lg border border-stone-300 p-2 flex items-center justify-center bg-white">
                   <img
                     src={logoPreview}
                     alt="Preview"
@@ -1497,8 +1497,8 @@ function CreateAssessmentModal({
                   />
                 </div>
               ) : (
-                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center bg-slate-50">
-                  <ImageIcon className="w-6 h-6 text-slate-400" />
+                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-stone-300 flex items-center justify-center bg-stone-50">
+                  <ImageIcon className="w-6 h-6 text-stone-400" />
                 </div>
               )}
               <div className="flex-1">
@@ -1506,9 +1506,9 @@ function CreateAssessmentModal({
                   type="file"
                   accept="image/*"
                   onChange={handleLogoChange}
-                  className="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-medium hover:file:bg-blue-100"
+                  className="w-full text-sm text-stone-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-petrol-50 file:text-petrol-700 file:font-medium hover:file:bg-petrol-100"
                 />
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-stone-500 mt-1">
                   Format: JPG, PNG, SVG
                 </p>
               </div>
@@ -1629,13 +1629,13 @@ function UploadModal({
     type === "resume" && category === "ESELON" && !selectedEchelonId;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50 backdrop-blur-sm">
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-100 shrink-0">
-          <h2 className="text-xl font-bold text-slate-800">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-stone-100 shrink-0">
+          <h2 className="text-xl font-bold text-stone-800">
             {type === "resume" ? t("assessmentCenter.uploadResume") : t("assessmentCenter.uploadDocumentation")}
           </h2>
-          <button onClick={onClose} className="p-2 text-slate-400 transition-colors rounded-full hover:bg-slate-100 hover:text-slate-600">
+          <button onClick={onClose} className="p-2 text-stone-400 transition-colors rounded-full hover:bg-stone-100 hover:text-stone-600">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -1648,7 +1648,7 @@ function UploadModal({
 
             {type === "resume" && (
               <div className="space-y-3">
-                <label className="block text-sm font-semibold text-slate-700">Kategori Resume</label>
+                <label className="block text-sm font-semibold text-stone-700">Kategori Resume</label>
                 <div className="space-y-2">
                   {[
                     { id: "UMUM", title: "Hasil Keseluruhan - Umum", desc: "Resume hasil secara umum", icon: FolderOpen },
@@ -1661,14 +1661,14 @@ function UploadModal({
                       <div
                         key={cat.id}
                         onClick={() => { setCategory(cat.id as typeof category); if (cat.id !== "ESELON") setSelectedEchelonId(""); }}
-                        className={`flex items-center p-3 transition-all border rounded-xl cursor-pointer ${isSelected ? "border-blue-500 bg-blue-50/50 ring-1 ring-blue-500" : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"}`}
+                        className={`flex items-center p-3 transition-all border rounded-xl cursor-pointer ${isSelected ? "border-petrol-500 bg-petrol-50/50 ring-1 ring-petrol-500" : "border-stone-200 hover:border-stone-300 hover:bg-stone-50"}`}
                       >
-                        <div className={`p-2 rounded-lg ${isSelected ? "bg-blue-500 text-white" : "bg-slate-100 text-slate-500"}`}>
+                        <div className={`p-2 rounded-lg ${isSelected ? "bg-petrol-500 text-white" : "bg-stone-100 text-stone-500"}`}>
                           <Icon className="w-5 h-5" />
                         </div>
                         <div className="ml-4">
-                          <h3 className={`text-sm font-medium ${isSelected ? "text-blue-700" : "text-slate-700"}`}>{cat.title}</h3>
-                          <p className="text-xs text-slate-500">{cat.desc}</p>
+                          <h3 className={`text-sm font-medium ${isSelected ? "text-petrol-700" : "text-stone-700"}`}>{cat.title}</h3>
+                          <p className="text-xs text-stone-500">{cat.desc}</p>
                         </div>
                       </div>
                     );
@@ -1677,9 +1677,9 @@ function UploadModal({
 
                 {/* Batch Selection */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-slate-700">Batch</label>
+                  <label className="block text-sm font-semibold text-stone-700">Batch</label>
                   {showCreateBatch ? (
-                    <div className="flex items-center space-x-2 p-1.5 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="flex items-center space-x-2 p-1.5 bg-stone-50 rounded-lg border border-stone-200">
                       <input
                         type="text"
                         autoFocus
@@ -1687,18 +1687,18 @@ function UploadModal({
                         value={newBatchName}
                         onChange={(e) => setNewBatchName(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && handleCreateBatch()}
-                        className="flex-1 px-3 py-2 text-sm bg-transparent border-none focus:outline-none focus:ring-0 text-slate-800 placeholder:text-slate-400"
+                        className="flex-1 px-3 py-2 text-sm bg-transparent border-none focus:outline-none focus:ring-0 text-stone-800 placeholder:text-stone-400"
                       />
-                      <button type="button" onClick={() => { setShowCreateBatch(false); setNewBatchName(""); }} className="p-2 text-slate-500 transition-colors rounded-md hover:bg-slate-200 hover:text-slate-700"><X className="w-4 h-4" /></button>
-                      <button type="button" onClick={handleCreateBatch} disabled={!newBatchName.trim()} className="flex items-center px-3 py-2 text-sm font-medium text-white transition-colors bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"><Plus className="w-4 h-4 mr-1" />Simpan</button>
+                      <button type="button" onClick={() => { setShowCreateBatch(false); setNewBatchName(""); }} className="p-2 text-stone-500 transition-colors rounded-md hover:bg-stone-200 hover:text-stone-700"><X className="w-4 h-4" /></button>
+                      <button type="button" onClick={handleCreateBatch} disabled={!newBatchName.trim()} className="flex items-center px-3 py-2 text-sm font-medium text-white transition-colors bg-petrol-600 rounded-md hover:bg-petrol-700 disabled:opacity-50 disabled:cursor-not-allowed"><Plus className="w-4 h-4 mr-1" />Simpan</button>
                     </div>
                   ) : (
                     <div className="flex space-x-2">
-                      <select value={selectedBatchId} onChange={(e) => setSelectedBatchId(e.target.value)} className="flex-1 w-full px-3 py-2.5 text-sm border rounded-lg border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-700 bg-white cursor-pointer">
+                      <select value={selectedBatchId} onChange={(e) => setSelectedBatchId(e.target.value)} className="flex-1 w-full px-3 py-2.5 text-sm border rounded-lg border-stone-300 focus:outline-none focus:ring-2 focus:ring-petrol-500/20 focus:border-petrol-500 text-stone-700 bg-white cursor-pointer">
                         {resumeBatches.length === 0 && <option value="">Pilih batch</option>}
                         {resumeBatches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
                       </select>
-                      <button type="button" onClick={() => setShowCreateBatch(true)} className="flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-600 transition-colors border border-blue-200 rounded-lg bg-blue-50 hover:bg-blue-100">
+                      <button type="button" onClick={() => setShowCreateBatch(true)} className="flex items-center justify-center px-4 py-2 text-sm font-medium text-petrol-600 transition-colors border border-petrol-200 rounded-lg bg-petrol-50 hover:bg-petrol-100">
                         <Plus className="w-4 h-4 mr-1.5" />Baru
                       </button>
                     </div>
@@ -1707,11 +1707,11 @@ function UploadModal({
 
                 {category === "ESELON" && (
                   <div className="mt-3 pl-4 border-l-2 border-purple-200">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Pilih Eselon</label>
+                    <label className="block text-sm font-medium text-stone-700 mb-2">Pilih Eselon</label>
                     {echelons.length > 0 ? (
                       <div className="grid grid-cols-2 gap-2">
                         {echelons.map((ec) => (
-                          <button key={ec.id} type="button" onClick={() => setSelectedEchelonId(ec.id)} className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${selectedEchelonId === ec.id ? "border-purple-500 bg-purple-100 text-purple-700" : "border-slate-200 text-slate-600 hover:border-purple-300"}`}>{ec.name}</button>
+                          <button key={ec.id} type="button" onClick={() => setSelectedEchelonId(ec.id)} className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${selectedEchelonId === ec.id ? "border-purple-500 bg-purple-100 text-purple-700" : "border-stone-200 text-stone-600 hover:border-purple-300"}`}>{ec.name}</button>
                         ))}
                       </div>
                     ) : (
@@ -1724,35 +1724,35 @@ function UploadModal({
 
             {!(type === "resume" && category === "INDIVIDU") && (
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-slate-700">Title</label>
+                <label className="block text-sm font-semibold text-stone-700">Title</label>
                 <input
                   type="text"
                   required
                   placeholder="Judul dokumen"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border rounded-lg border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-slate-400 text-slate-700"
+                  className="w-full px-3 py-2.5 text-sm border rounded-lg border-stone-300 focus:outline-none focus:ring-2 focus:ring-petrol-500/20 focus:border-petrol-500 placeholder:text-stone-400 text-stone-700"
                 />
               </div>
             )}
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="block text-sm font-semibold text-slate-700">File Dokumen</label>
-                <span className="text-xs text-slate-500">Bisa pilih lebih dari satu file</span>
+                <label className="block text-sm font-semibold text-stone-700">File Dokumen</label>
+                <span className="text-xs text-stone-500">Bisa pilih lebih dari satu file</span>
               </div>
 
               <div
                 onClick={() => document.getElementById("upload-file-input")?.click()}
                 onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
                 onDrop={(e) => { e.preventDefault(); e.stopPropagation(); filterFiles(e.dataTransfer.files); }}
-                className="flex flex-col items-center justify-center p-6 transition-colors border-2 border-dashed rounded-xl cursor-pointer border-slate-300 bg-slate-50 hover:bg-blue-50 hover:border-blue-400 group"
+                className="flex flex-col items-center justify-center p-6 transition-colors border-2 border-dashed rounded-xl cursor-pointer border-stone-300 bg-stone-50 hover:bg-petrol-50 hover:border-petrol-400 group"
               >
                 <div className="p-3 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform mb-3">
-                  <UploadCloud className="w-6 h-6 text-blue-500" />
+                  <UploadCloud className="w-6 h-6 text-petrol-500" />
                 </div>
-                <p className="text-sm font-medium text-slate-700">Klik untuk browse atau seret file ke sini</p>
-                <p className="text-xs text-slate-500 mt-1">PDF, DOCX, (Max 10MB)</p>
+                <p className="text-sm font-medium text-stone-700">Klik untuk browse atau seret file ke sini</p>
+                <p className="text-xs text-stone-500 mt-1">PDF, DOCX, (Max 10MB)</p>
                 <input
                   id="upload-file-input"
                   type="file"
@@ -1766,15 +1766,15 @@ function UploadModal({
               {files.length > 0 && (
                 <div className="mt-3 space-y-2 max-h-40 overflow-y-auto pr-1">
                   {files.map((f, idx) => (
-                    <div key={`${f.name}-${idx}`} className="flex items-center p-3 transition-colors border rounded-lg border-slate-200 bg-white group hover:border-slate-300 shadow-sm">
-                      <div className="p-1.5 mr-3 bg-blue-50 rounded-md text-blue-600 shrink-0">
+                    <div key={`${f.name}-${idx}`} className="flex items-center p-3 transition-colors border rounded-lg border-stone-200 bg-white group hover:border-stone-300 shadow-sm">
+                      <div className="p-1.5 mr-3 bg-petrol-50 rounded-md text-petrol-600 shrink-0">
                         <FileText className="w-4 h-4" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate text-slate-700">{f.name}</p>
-                        <p className="text-xs text-slate-500">{formatFileSize(f.size)}</p>
+                        <p className="text-sm font-medium truncate text-stone-700">{f.name}</p>
+                        <p className="text-xs text-stone-500">{formatFileSize(f.size)}</p>
                       </div>
-                      <button type="button" onClick={() => removeFile(idx)} className="p-1.5 text-slate-400 transition-colors rounded-md opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-600 shrink-0">
+                      <button type="button" onClick={() => removeFile(idx)} className="p-1.5 text-stone-400 transition-colors rounded-md opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-600 shrink-0">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -1784,14 +1784,14 @@ function UploadModal({
             </div>
           </div>
 
-          <div className="flex items-center justify-end px-4 sm:px-6 py-4 space-x-3 border-t bg-slate-50/50 border-slate-100 rounded-b-2xl shrink-0">
-            <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-medium transition-colors border rounded-lg text-slate-700 border-slate-300 bg-white hover:bg-slate-50">
+          <div className="flex items-center justify-end px-4 sm:px-6 py-4 space-x-3 border-t bg-stone-50/50 border-stone-100 rounded-b-2xl shrink-0">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-medium transition-colors border rounded-lg text-stone-700 border-stone-300 bg-white hover:bg-stone-50">
               {t("assessmentCenter.cancel")}
             </button>
             <button
               type="submit"
               disabled={isDisabled || loading}
-              className="px-5 py-2.5 text-sm font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-sm"
+              className="px-5 py-2.5 text-sm font-medium text-white transition-colors bg-petrol-600 rounded-lg hover:bg-petrol-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center shadow-sm"
             >
               {loading ? (
                 <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>Upload...</>
@@ -1877,19 +1877,19 @@ function ResumeBatchAdminView({
   };
 
   const renderCard = (doc: ResumeItem) => (
-    <div key={doc.id} className={`bg-white rounded-lg border ${selectedDocs.includes(doc.id) ? "border-blue-400 ring-1 ring-blue-400" : "border-slate-200"} p-4 hover:shadow-md transition-all relative group w-full`}>
+    <div key={doc.id} className={`bg-white rounded-lg border ${selectedDocs.includes(doc.id) ? "border-petrol-400 ring-1 ring-petrol-400" : "border-stone-200"} p-4 hover:shadow-md transition-all relative group w-full`}>
       <div className="absolute top-4 left-4 z-10">
-        <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" checked={selectedDocs.includes(doc.id)} onChange={() => handleToggleSelect(doc.id)} />
+        <input type="checkbox" className="w-4 h-4 rounded border-stone-300 text-petrol-600 focus:ring-petrol-500 cursor-pointer" checked={selectedDocs.includes(doc.id)} onChange={() => handleToggleSelect(doc.id)} />
       </div>
       <div className="flex items-start justify-between mb-3 ml-8">
-        <FileText className="w-8 h-8 text-blue-500" />
-        <button onClick={() => handleDeleteSingle(doc.id)} className="text-slate-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4" /></button>
+        <FileText className="w-8 h-8 text-petrol-500" />
+        <button onClick={() => handleDeleteSingle(doc.id)} className="text-stone-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-4 h-4" /></button>
       </div>
       <div className="ml-8">
-        <h3 className="font-medium text-slate-900 mb-1 line-clamp-1" title={doc.title}>{doc.title}</h3>
-        <p className="text-xs text-slate-600 mb-2 truncate" title={doc.fileName}>{doc.fileName}</p>
-        {doc.uploadedBy && <p className="text-xs text-slate-500 mb-3">By: {doc.uploadedBy.name}</p>}
-        <a href={`/api/files${doc.filePath.replace('/uploads/', '/')}?filename=${encodeURIComponent(doc.fileName)}`} download={doc.fileName} className="text-sm text-blue-600 hover:text-blue-800 font-medium inline-block" onClick={(e) => e.stopPropagation()}>
+        <h3 className="font-medium text-stone-900 mb-1 line-clamp-1" title={doc.title}>{doc.title}</h3>
+        <p className="text-xs text-stone-600 mb-2 truncate" title={doc.fileName}>{doc.fileName}</p>
+        {doc.uploadedBy && <p className="text-xs text-stone-500 mb-3">By: {doc.uploadedBy.name}</p>}
+        <a href={`/api/files${doc.filePath.replace('/uploads/', '/')}?filename=${encodeURIComponent(doc.fileName)}`} download={doc.fileName} className="text-sm text-petrol-600 hover:text-petrol-800 font-medium inline-block" onClick={(e) => e.stopPropagation()}>
           {t("assessmentCenter.download")} →
         </a>
       </div>
@@ -1926,11 +1926,11 @@ function ResumeBatchAdminView({
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
-          <div className="flex items-center gap-2"><div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"><FileText className="w-4 h-4 text-blue-600" /></div><div><h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Umum</h2><p className="text-xs text-slate-500">{batch?.name}</p></div></div>
+          <button onClick={goBack} className="flex items-center gap-2 text-stone-600 hover:text-petrol-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
+          <div className="flex items-center gap-2"><div className="w-8 h-8 bg-petrol-100 rounded-lg flex items-center justify-center"><FileText className="w-4 h-4 text-petrol-600" /></div><div><h2 className="text-lg font-semibold text-stone-900">Hasil Keseluruhan - Umum</h2><p className="text-xs text-stone-500">{batch?.name}</p></div></div>
         </div>
         {batchUmum.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Belum ada resume umum di batch ini</p></div>
+          <div className="bg-white rounded-xl border border-stone-200 p-12 text-center"><FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" /><p className="text-stone-500">Belum ada resume umum di batch ini</p></div>
         ) : (
           <AdminFileGrid ids={ids} selectedDocs={selectedDocs} handleSelectAll={handleSelectAll} handleBulkDelete={handleBulkDelete} isDeleting={isDeleting}>
             {batchUmum.map((doc: ResumeItem) => renderCard(doc))}
@@ -1950,13 +1950,13 @@ function ResumeBatchAdminView({
       return (
         <div className="space-y-6">
           <div className="flex items-center gap-4">
-            <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
-            <div className="flex items-center gap-2"><div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><Layers className="w-4 h-4 text-purple-600" /></div><div><h2 className="text-lg font-semibold text-slate-900">Hasil Keseluruhan - Per Eselon</h2><p className="text-xs text-slate-500">{batch?.name}</p></div></div>
+            <button onClick={goBack} className="flex items-center gap-2 text-stone-600 hover:text-purple-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
+            <div className="flex items-center gap-2"><div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><Layers className="w-4 h-4 text-purple-600" /></div><div><h2 className="text-lg font-semibold text-stone-900">Hasil Keseluruhan - Per Eselon</h2><p className="text-xs text-stone-500">{batch?.name}</p></div></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {batchEselonGrouped.map((eg) => (
-              <motion.button key={eg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => setSelectedEchelonId(eg.id)} className="bg-white rounded-xl border border-slate-200 p-6 text-left hover:shadow-lg hover:border-purple-300 transition-all group">
-                <div className="flex items-center gap-4"><div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors"><Layers className="w-6 h-6 text-purple-600" /></div><div><p className="font-semibold text-slate-900">{eg.name}</p><p className="text-sm text-slate-500">{eg.resumes.length} file</p></div></div>
+              <motion.button key={eg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => setSelectedEchelonId(eg.id)} className="bg-white rounded-xl border border-stone-200 p-6 text-left hover:shadow-lg hover:border-purple-300 transition-all group">
+                <div className="flex items-center gap-4"><div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors"><Layers className="w-6 h-6 text-purple-600" /></div><div><p className="font-semibold text-stone-900">{eg.name}</p><p className="text-sm text-stone-500">{eg.resumes.length} file</p></div></div>
               </motion.button>
             ))}
           </div>
@@ -1968,11 +1968,11 @@ function ResumeBatchAdminView({
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-purple-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
-          <div className="flex items-center gap-2"><div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><Layers className="w-4 h-4 text-purple-600" /></div><h2 className="text-lg font-semibold text-slate-900">{selectedEchelonObj?.name}</h2></div>
+          <button onClick={goBack} className="flex items-center gap-2 text-stone-600 hover:text-purple-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
+          <div className="flex items-center gap-2"><div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><Layers className="w-4 h-4 text-purple-600" /></div><h2 className="text-lg font-semibold text-stone-900">{selectedEchelonObj?.name}</h2></div>
         </div>
         {!selectedEchelonObj || selectedEchelonObj.resumes.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Belum ada resume untuk eselon ini</p></div>
+          <div className="bg-white rounded-xl border border-stone-200 p-12 text-center"><FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" /><p className="text-stone-500">Belum ada resume untuk eselon ini</p></div>
         ) : (
           <AdminFileGrid ids={ids} selectedDocs={selectedDocs} handleSelectAll={handleSelectAll} handleBulkDelete={handleBulkDelete} isDeleting={isDeleting}>
             {selectedEchelonObj.resumes.map((doc: ResumeItem) => renderCard(doc))}
@@ -1997,36 +1997,36 @@ function ResumeBatchAdminView({
       <div className="space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
-            <button onClick={goBack} className="flex items-center gap-2 text-slate-600 hover:text-green-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
-            <div className="flex items-center gap-2"><div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"><User className="w-4 h-4 text-green-600" /></div><div><h2 className="text-lg font-semibold text-slate-900">Hasil Per Individu</h2><p className="text-xs text-slate-500">{batch?.name}</p></div></div>
+            <button onClick={goBack} className="flex items-center gap-2 text-stone-600 hover:text-green-600 transition-colors"><ArrowLeft className="w-5 h-5" />Kembali</button>
+            <div className="flex items-center gap-2"><div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"><User className="w-4 h-4 text-green-600" /></div><div><h2 className="text-lg font-semibold text-stone-900">Hasil Per Individu</h2><p className="text-xs text-stone-500">{batch?.name}</p></div></div>
           </div>
           {batchIndividu.length > 0 && (
             <div className="flex items-center gap-3 w-full md:w-auto">
-              <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")} className="flex items-center gap-2 px-3 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors text-sm text-slate-600">
+              <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")} className="flex items-center gap-2 px-3 py-2 border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors text-sm text-stone-600">
                 {sortOrder === "asc" ? <><ArrowUp className="w-4 h-4" /><span className="hidden sm:inline">Terlama</span></> : <><ArrowDown className="w-4 h-4" /><span className="hidden sm:inline">Terbaru</span></>}
               </button>
               <div className="relative flex-1 md:w-72">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input type="text" placeholder="Cari nama kandidat..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm" />
-                {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>}
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <input type="text" placeholder="Cari nama kandidat..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm" />
+                {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"><X className="w-4 h-4" /></button>}
               </div>
             </div>
           )}
         </div>
         {batchIndividu.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><User className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Belum ada resume per individu di batch ini</p></div>
+          <div className="bg-white rounded-xl border border-stone-200 p-12 text-center"><User className="w-16 h-16 text-stone-300 mx-auto mb-4" /><p className="text-stone-500">Belum ada resume per individu di batch ini</p></div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center"><Search className="w-16 h-16 text-slate-300 mx-auto mb-4" /><p className="text-slate-500">Tidak ditemukan kandidat dengan nama &quot;{searchQuery}&quot;</p><button onClick={() => setSearchQuery("")} className="mt-3 text-green-600 hover:text-green-700 text-sm font-medium">Reset pencarian</button></div>
+          <div className="bg-white rounded-xl border border-stone-200 p-12 text-center"><Search className="w-16 h-16 text-stone-300 mx-auto mb-4" /><p className="text-stone-500">Tidak ditemukan kandidat dengan nama &quot;{searchQuery}&quot;</p><button onClick={() => setSearchQuery("")} className="mt-3 text-green-600 hover:text-green-700 text-sm font-medium">Reset pencarian</button></div>
         ) : (
           <>
-            {(searchQuery || filtered.length !== batchIndividu.length) && <p className="text-sm text-slate-500">Menampilkan {filtered.length} dari {batchIndividu.length} kandidat</p>}
+            {(searchQuery || filtered.length !== batchIndividu.length) && <p className="text-sm text-stone-500">Menampilkan {filtered.length} dari {batchIndividu.length} kandidat</p>}
             <AdminFileGrid ids={ids} selectedDocs={selectedDocs} handleSelectAll={handleSelectAll} handleBulkDelete={handleBulkDelete} isDeleting={isDeleting}>
               {paginated.map((doc: ResumeItem) => renderCard(doc))}
             </AdminFileGrid>
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-3 mt-6">
                 <Button variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} size="sm">Sebelumnya</Button>
-                <span className="text-sm text-slate-600">{page} / {totalPages}</span>
+                <span className="text-sm text-stone-600">{page} / {totalPages}</span>
                 <Button variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} size="sm">Selanjutnya</Button>
               </div>
             )}
@@ -2042,8 +2042,8 @@ function AdminFileGrid({ ids, selectedDocs, handleSelectAll, handleBulkDelete, i
   return (
     <div>
       <div className="flex items-center gap-3 mb-3">
-        <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
-          <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600" checked={ids.length > 0 && ids.every((id) => selectedDocs.includes(id))} onChange={() => handleSelectAll(ids)} />Pilih semua ({ids.length})
+        <label className="flex items-center gap-2 text-xs text-stone-600 cursor-pointer">
+          <input type="checkbox" className="w-3.5 h-3.5 rounded border-stone-300 text-petrol-600" checked={ids.length > 0 && ids.every((id) => selectedDocs.includes(id))} onChange={() => handleSelectAll(ids)} />Pilih semua ({ids.length})
         </label>
         {selectedDocs.filter((id) => ids.includes(id)).length > 0 && (
           <button onClick={handleBulkDelete} disabled={isDeleting} className="text-xs text-red-600 hover:text-red-700 font-medium">Hapus terpilih</button>
@@ -2145,9 +2145,9 @@ function EditAssessmentModal({
         className="bg-white rounded-xl max-w-md w-full p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900">Edit Assessment</h2>
+          <h2 className="text-xl font-bold text-stone-900">Edit Assessment</h2>
           <button onClick={onClose}>
-            <X className="w-5 h-5 text-slate-400" />
+            <X className="w-5 h-5 text-stone-400" />
           </button>
         </div>
 
@@ -2159,7 +2159,7 @@ function EditAssessmentModal({
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Nama Assessment
             </label>
             <input
@@ -2169,12 +2169,12 @@ function EditAssessmentModal({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Nama Klien
             </label>
             <input
@@ -2184,12 +2184,12 @@ function EditAssessmentModal({
               onChange={(e) =>
                 setFormData({ ...formData, clientName: e.target.value })
               }
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Deskripsi (Opsional)
             </label>
             <textarea
@@ -2198,17 +2198,17 @@ function EditAssessmentModal({
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={3}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Logo Klien
             </label>
             <div className="flex items-center gap-4">
               {logoPreview ? (
-                <div className="w-16 h-16 rounded-lg border border-slate-300 p-2 flex items-center justify-center bg-white">
+                <div className="w-16 h-16 rounded-lg border border-stone-300 p-2 flex items-center justify-center bg-white">
                   <img
                     src={logoPreview}
                     alt="Preview"
@@ -2216,8 +2216,8 @@ function EditAssessmentModal({
                   />
                 </div>
               ) : (
-                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center bg-slate-50">
-                  <ImageIcon className="w-6 h-6 text-slate-400" />
+                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-stone-300 flex items-center justify-center bg-stone-50">
+                  <ImageIcon className="w-6 h-6 text-stone-400" />
                 </div>
               )}
               <div className="flex-1">
@@ -2225,7 +2225,7 @@ function EditAssessmentModal({
                   type="file"
                   accept="image/*"
                   onChange={handleLogoChange}
-                  className="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-medium hover:file:bg-blue-100"
+                  className="w-full text-sm text-stone-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-petrol-50 file:text-petrol-700 file:font-medium hover:file:bg-petrol-100"
                 />
               </div>
             </div>
@@ -2336,9 +2336,9 @@ function EditUserModal({
         className="bg-white rounded-xl max-w-md w-full p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900">Edit User</h2>
+          <h2 className="text-xl font-bold text-stone-900">Edit User</h2>
           <button onClick={onClose}>
-            <X className="w-5 h-5 text-slate-400" />
+            <X className="w-5 h-5 text-stone-400" />
           </button>
         </div>
 
@@ -2351,11 +2351,11 @@ function EditUserModal({
 
           {/* Role Badge */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-600">Role:</span>
+            <span className="text-sm text-stone-600">Role:</span>
             <span
               className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                 user.role === "ASESOR"
-                  ? "bg-blue-100 text-blue-700"
+                  ? "bg-petrol-100 text-petrol-700"
                   : user.role === "STAFF_KLIEN"
                   ? "bg-orange-100 text-orange-700"
                   : "bg-green-100 text-green-700"
@@ -2366,7 +2366,7 @@ function EditUserModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Nama
             </label>
             <input
@@ -2376,12 +2376,12 @@ function EditUserModal({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Email
             </label>
             <input
@@ -2391,12 +2391,12 @@ function EditUserModal({
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Password Baru
             </label>
             <input
@@ -2406,9 +2406,9 @@ function EditUserModal({
                 setFormData({ ...formData, password: e.target.value })
               }
               placeholder="Kosongkan jika tidak ingin mengubah"
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
             />
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-stone-500 mt-1">
               Kosongkan jika tidak ingin mengubah password
             </p>
           </div>
@@ -2540,11 +2540,11 @@ function ProgressManagement({
   return (
     <div className="space-y-8">
       {/* Overall Progress Card */}
-      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl p-6 mb-6 text-white">
+      <div className="bg-petrol-600 rounded-xl p-6 mb-6 text-white">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg font-semibold">Progress Keseluruhan</h3>
-            <p className="text-blue-100 text-sm">Rata-rata dari semua kegiatan</p>
+            <p className="text-petrol-100 text-sm">Rata-rata dari semua kegiatan</p>
           </div>
           <div className="text-4xl font-bold">{overallProgress}%</div>
         </div>
@@ -2570,80 +2570,80 @@ function ProgressManagement({
 
       {/* Progress Table */}
       {progresses.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <BarChart3 className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <p className="text-slate-500">Belum ada progress kegiatan</p>
-          <p className="text-sm text-slate-400 mt-1">
+        <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+          <BarChart3 className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+          <p className="text-stone-500">Belum ada progress kegiatan</p>
+          <p className="text-sm text-stone-400 mt-1">
             Klik tombol &quot;Tambah Kegiatan&quot; untuk menambahkan
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
+        <div className="bg-white rounded-xl border border-stone-200 overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-stone-50 border-b border-stone-200">
               <tr>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase w-12">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-stone-600 uppercase w-12">
                   #
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-stone-600 uppercase">
                   Nama Kegiatan
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase w-48">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-stone-600 uppercase w-48">
                   Progress
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-stone-600 uppercase">
                   Deskripsi
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase w-24">
+                <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-stone-600 uppercase w-24">
                   Aksi
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-stone-200">
               {progresses.map((progress, index) => (
-                <tr key={progress.id} className="hover:bg-slate-50">
-                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-500">
+                <tr key={progress.id} className="hover:bg-stone-50">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-stone-500">
                     {index + 1}
                   </td>
                   <td className="px-4 sm:px-6 py-4">
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm font-medium text-stone-900">
                       {progress.activityName}
                     </p>
                   </td>
                   <td className="px-4 sm:px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex-1 bg-slate-200 rounded-full h-2">
+                      <div className="flex-1 bg-stone-200 rounded-full h-2">
                         <div
                           className={`h-2 rounded-full transition-all ${
                             progress.percentage === 100
                               ? "bg-green-500"
                               : progress.percentage >= 50
-                              ? "bg-blue-500"
+                              ? "bg-petrol-500"
                               : "bg-orange-500"
                           }`}
                           style={{ width: `${progress.percentage}%` }}
                         />
                       </div>
-                      <span className="text-sm font-medium text-slate-700 w-12 text-right">
+                      <span className="text-sm font-medium text-stone-700 w-12 text-right">
                         {progress.percentage}%
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-600">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-stone-600">
                     {progress.description || "-"}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setEditingProgress(progress)}
-                        className="text-slate-400 hover:text-blue-600 transition-colors p-1"
+                        className="text-stone-400 hover:text-petrol-600 transition-colors p-1"
                         title="Edit"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(progress.id)}
-                        className="text-slate-400 hover:text-red-600 transition-colors p-1"
+                        className="text-stone-400 hover:text-red-600 transition-colors p-1"
                         title="Hapus"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -2658,32 +2658,32 @@ function ProgressManagement({
       )}
 
       {/* Attendance Section */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="px-4 sm:px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-orange-50 to-amber-50">
+      <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
+        <div className="px-4 sm:px-6 py-4 border-b border-stone-200 bg-orange-50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
               <ClipboardList className="w-5 h-5 text-orange-600" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">File Absensi</h3>
-              <p className="text-sm text-slate-500">Upload file absensi (PDF/Word)</p>
+              <h3 className="text-lg font-semibold text-stone-900">File Absensi</h3>
+              <p className="text-sm text-stone-500">Upload file absensi (PDF/Word)</p>
             </div>
           </div>
         </div>
 
         {/* Upload Form */}
-        <div className="p-6 border-b border-slate-200 bg-slate-50">
+        <div className="p-6 border-b border-stone-200 bg-stone-50">
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
               value={attendanceTitle}
               onChange={(e) => setAttendanceTitle(e.target.value)}
               placeholder="Judul absensi (contoh: Absensi Hari 1)"
-              className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
             <label className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium cursor-pointer transition-colors ${
               uploadingAttendance || !attendanceTitle.trim()
-                ? "bg-slate-200 text-slate-500 cursor-not-allowed"
+                ? "bg-stone-200 text-stone-500 cursor-not-allowed"
                 : "bg-orange-600 text-white hover:bg-orange-700"
             }`}>
               <Upload className="w-4 h-4" />
@@ -2702,34 +2702,34 @@ function ProgressManagement({
         {/* Attendance List */}
         {attendances.length === 0 ? (
           <div className="p-8 text-center">
-            <ClipboardList className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500">Belum ada file absensi</p>
+            <ClipboardList className="w-12 h-12 text-stone-300 mx-auto mb-3" />
+            <p className="text-stone-500">Belum ada file absensi</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-stone-100">
             {attendances.map((attendance) => (
-              <div key={attendance.id} className="p-4 hover:bg-slate-50 flex items-center justify-between gap-4">
+              <div key={attendance.id} className="p-4 hover:bg-stone-50 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
                     <FileText className="w-5 h-5 text-orange-600" />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-900 truncate">{attendance.title}</p>
-                    <p className="text-sm text-slate-500 truncate">{attendance.fileName}</p>
+                    <p className="font-medium text-stone-900 truncate">{attendance.title}</p>
+                    <p className="text-sm text-stone-500 truncate">{attendance.fileName}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <a
                     href={`/api/files${attendance.filePath.replace('/uploads/', '/')}?filename=${encodeURIComponent(attendance.fileName)}`}
                     download={attendance.fileName}
-                    className="p-2 text-slate-400 hover:text-blue-600 transition-colors"
+                    className="p-2 text-stone-400 hover:text-petrol-600 transition-colors"
                     title="Download"
                   >
                     <Download className="w-4 h-4" />
                   </a>
                   <button
                     onClick={() => handleDeleteAttendance(attendance.id)}
-                    className="p-2 text-slate-400 hover:text-red-600 transition-colors"
+                    className="p-2 text-stone-400 hover:text-red-600 transition-colors"
                     title="Hapus"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -2830,11 +2830,11 @@ function ProgressModal({
         className="bg-white rounded-xl max-w-md w-full p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-xl font-bold text-stone-900">
             {isEdit ? "Edit Kegiatan" : "Tambah Kegiatan"}
           </h2>
           <button onClick={onClose}>
-            <X className="w-5 h-5 text-slate-400" />
+            <X className="w-5 h-5 text-stone-400" />
           </button>
         </div>
 
@@ -2846,7 +2846,7 @@ function ProgressModal({
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Nama Kegiatan
             </label>
             <input
@@ -2856,13 +2856,13 @@ function ProgressModal({
               onChange={(e) =>
                 setFormData({ ...formData, activityName: e.target.value })
               }
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
               placeholder="Contoh: Pelaksanaan In-Tray"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Progress (%)
             </label>
             <div className="flex items-center gap-4">
@@ -2874,7 +2874,7 @@ function ProgressModal({
                 onChange={(e) =>
                   setFormData({ ...formData, percentage: parseInt(e.target.value) })
                 }
-                className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                className="flex-1 h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-petrol-600"
               />
               <div className="w-16 relative">
                 <input
@@ -2888,20 +2888,20 @@ function ProgressModal({
                       percentage: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)),
                     })
                   }
-                  className="w-full px-2 py-1 border border-slate-300 rounded-lg text-center text-sm"
+                  className="w-full px-2 py-1 border border-stone-300 rounded-lg text-center text-sm"
                 />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 text-sm">
                   %
                 </span>
               </div>
             </div>
-            <div className="mt-2 w-full bg-slate-200 rounded-full h-2">
+            <div className="mt-2 w-full bg-stone-200 rounded-full h-2">
               <div
                 className={`h-2 rounded-full transition-all ${
                   formData.percentage === 100
                     ? "bg-green-500"
                     : formData.percentage >= 50
-                    ? "bg-blue-500"
+                    ? "bg-petrol-500"
                     : "bg-orange-500"
                 }`}
                 style={{ width: `${formData.percentage}%` }}
@@ -2910,7 +2910,7 @@ function ProgressModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Deskripsi (Opsional)
             </label>
             <textarea
@@ -2919,7 +2919,7 @@ function ProgressModal({
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={3}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent resize-none"
               placeholder="Deskripsi kegiatan..."
             />
           </div>
@@ -2976,7 +2976,7 @@ function EchelonManagement({
   return (
     <div>
       {/* Info Card */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 mb-6 text-white">
+      <div className="bg-purple-600 rounded-xl p-6 mb-6 text-white">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
             <Layers className="w-6 h-6" />
@@ -3004,33 +3004,33 @@ function EchelonManagement({
 
       {/* Echelon List */}
       {echelons.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <Layers className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <p className="text-slate-500">Belum ada kategori eselon</p>
-          <p className="text-sm text-slate-400 mt-1">
+        <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+          <Layers className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+          <p className="text-stone-500">Belum ada kategori eselon</p>
+          <p className="text-sm text-stone-400 mt-1">
             Klik tombol &quot;Tambah Eselon&quot; untuk menambahkan
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-x-auto">
+        <div className="bg-white rounded-xl border border-stone-200 overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-stone-50 border-b border-stone-200">
               <tr>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase w-16">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-stone-600 uppercase w-16">
                   #
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase">
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-stone-600 uppercase">
                   Nama Eselon
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase w-24">
+                <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-stone-600 uppercase w-24">
                   Aksi
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-stone-200">
               {echelons.map((echelon, index) => (
-                <tr key={echelon.id} className="hover:bg-slate-50">
-                  <td className="px-4 sm:px-6 py-4 text-sm text-slate-500">
+                <tr key={echelon.id} className="hover:bg-stone-50">
+                  <td className="px-4 sm:px-6 py-4 text-sm text-stone-500">
                     {index + 1}
                   </td>
                   <td className="px-4 sm:px-6 py-4">
@@ -3038,7 +3038,7 @@ function EchelonManagement({
                       <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
                         <Layers className="w-4 h-4 text-purple-600" />
                       </div>
-                      <p className="text-sm font-medium text-slate-900">
+                      <p className="text-sm font-medium text-stone-900">
                         {echelon.name}
                       </p>
                     </div>
@@ -3047,14 +3047,14 @@ function EchelonManagement({
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setEditingEchelon(echelon)}
-                        className="text-slate-400 hover:text-blue-600 transition-colors p-1"
+                        className="text-stone-400 hover:text-petrol-600 transition-colors p-1"
                         title="Edit"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(echelon.id)}
-                        className="text-slate-400 hover:text-red-600 transition-colors p-1"
+                        className="text-stone-400 hover:text-red-600 transition-colors p-1"
                         title="Hapus"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -3153,11 +3153,11 @@ function EchelonModal({
         className="bg-white rounded-xl max-w-md w-full p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-xl font-bold text-stone-900">
             {isEdit ? "Edit Eselon" : "Tambah Eselon"}
           </h2>
           <button onClick={onClose}>
-            <X className="w-5 h-5 text-slate-400" />
+            <X className="w-5 h-5 text-stone-400" />
           </button>
         </div>
 
@@ -3169,7 +3169,7 @@ function EchelonModal({
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Nama Eselon
             </label>
             <input
@@ -3177,7 +3177,7 @@ function EchelonModal({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               placeholder="Contoh: Eselon 2, Eselon 3, etc"
             />
           </div>

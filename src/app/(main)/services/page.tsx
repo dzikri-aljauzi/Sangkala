@@ -139,25 +139,25 @@ const services = {
 
 const colorMap = {
   blue: {
-    gradient: "from-blue-500 to-blue-600",
-    bg: "bg-blue-50",
-    border: "border-blue-200",
-    text: "text-blue-600",
-    iconBg: "bg-blue-100",
+    gradient: "bg-petrol-500",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    text: "text-petrol-600",
+    iconBg: "bg-petrol-100",
   },
   teal: {
-    gradient: "from-teal-500 to-teal-600",
-    bg: "bg-teal-50",
-    border: "border-teal-200",
-    text: "text-teal-600",
-    iconBg: "bg-teal-100",
+    gradient: "bg-petrol-500",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    text: "text-petrol-600",
+    iconBg: "bg-petrol-100",
   },
   cyan: {
-    gradient: "from-cyan-500 to-cyan-600",
-    bg: "bg-cyan-50",
-    border: "border-cyan-200",
-    text: "text-cyan-600",
-    iconBg: "bg-cyan-100",
+    gradient: "bg-petrol-500",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    text: "text-petrol-600",
+    iconBg: "bg-petrol-100",
   },
 };
 
@@ -167,7 +167,7 @@ export default function ServicesPage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-stone-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -175,13 +175,13 @@ export default function ServicesPage() {
             transition={{ duration: 0.6 }}
             className="max-w-4xl"
           >
-            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-600 mb-3 sm:mb-4">
+            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-petrol-600 mb-3 sm:mb-4">
               {language === "id" ? "Layanan Kami" : "Our Services"}
             </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-slate-800">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-stone-800">
               The Integrated People, Process, Technology Framework
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl">
+            <p className="text-base sm:text-lg md:text-xl text-stone-600 max-w-3xl">
               {language === "id"
                 ? "Arsitektur layanan berbasis matriks People, Process, Technology untuk transformasi organisasi yang holistik dan berkelanjutan."
                 : "People, Process, Technology matrix-based service architecture for holistic and sustainable organizational transformation."}
@@ -210,15 +210,15 @@ export default function ServicesPage() {
               className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-8 sm:mb-10 md:mb-12"
             >
               <div
-                className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center flex-shrink-0`}
+                className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl ${colors.gradient} flex items-center justify-center flex-shrink-0`}
               >
                 <service.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800">
+                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-stone-800">
                   {service.title[language]}
                 </h2>
-                <p className="text-sm sm:text-base text-slate-500">{service.desc[language]}</p>
+                <p className="text-sm sm:text-base text-stone-500">{service.desc[language]}</p>
               </div>
             </motion.div>
 
@@ -240,10 +240,10 @@ export default function ServicesPage() {
                       <item.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${colors.text}`} />
                     </div>
                     <div>
-                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 mb-1 sm:mb-2">
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-stone-800 mb-1 sm:mb-2">
                         {item.title[language]}
                       </h3>
-                      <p className="text-xs sm:text-sm md:text-base text-slate-500">{item.desc[language]}</p>
+                      <p className="text-xs sm:text-sm md:text-base text-stone-500">{item.desc[language]}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -265,7 +265,7 @@ export default function ServicesPage() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
               {language === "id" ? "Integrasi 3P" : "3P Integration"}
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-8 sm:mb-10 md:mb-12">
+            <p className="text-sm sm:text-base md:text-lg text-stone-300 mb-8 sm:mb-10 md:mb-12">
               {language === "id"
                 ? "Kekuatan framework kami terletak pada integrasi ketiga pilar yang menciptakan sinergi dan dampak transformasi yang holistik."
                 : "The strength of our framework lies in the integration of all three pillars creating synergy and holistic transformation impact."}
@@ -295,7 +295,7 @@ export default function ServicesPage() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/10"
                 >
-                  <div className="text-cyan-400 font-semibold text-sm sm:text-base mb-1 sm:mb-2">{item.pillars}</div>
+                  <div className="text-petrol-400 font-semibold text-sm sm:text-base mb-1 sm:mb-2">{item.pillars}</div>
                   <div className="text-white text-sm sm:text-base md:text-lg">{item.result[language]}</div>
                 </motion.div>
               ))}

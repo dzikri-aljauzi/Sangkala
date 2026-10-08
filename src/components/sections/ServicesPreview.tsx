@@ -58,22 +58,22 @@ const services = [
 
 const colorMap = {
   blue: {
-    bg: "bg-blue-50",
-    border: "border-blue-200",
-    iconBg: "bg-gradient-to-br from-blue-500 to-blue-600",
-    text: "text-blue-600",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    iconBg: "bg-petrol-500",
+    text: "text-petrol-600",
   },
   teal: {
-    bg: "bg-teal-50",
-    border: "border-teal-200",
-    iconBg: "bg-gradient-to-br from-teal-500 to-teal-600",
-    text: "text-teal-600",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    iconBg: "bg-petrol-500",
+    text: "text-petrol-600",
   },
   cyan: {
-    bg: "bg-cyan-50",
-    border: "border-cyan-200",
-    iconBg: "bg-gradient-to-br from-cyan-500 to-cyan-600",
-    text: "text-cyan-600",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    iconBg: "bg-petrol-500",
+    text: "text-petrol-600",
   },
 };
 
@@ -123,10 +123,10 @@ export default function ServicesPreview() {
                     <div className="flex items-start gap-2.5 sm:gap-3">
                       <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${colors.text} mt-0.5 flex-shrink-0`} />
                       <div>
-                        <h4 className="font-semibold text-slate-800 text-xs sm:text-sm mb-0.5 sm:mb-1">
+                        <h4 className="font-semibold text-stone-800 text-xs sm:text-sm mb-0.5 sm:mb-1">
                           {t(item.titleKey)}
                         </h4>
-                        <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
+                        <p className="text-[11px] sm:text-xs text-stone-500 leading-relaxed">
                           {t(item.descKey)}
                         </p>
                       </div>
