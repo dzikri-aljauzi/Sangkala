@@ -464,7 +464,7 @@ export default function AdminUsersPage() {
       case "KLIEN":
         return <Badge className="bg-status-warning-bg text-status-warning border-status-warning-border">Klien</Badge>;
       case "STAFF_KLIEN":
-        return <Badge className="bg-slate-100 text-slate-800 border-slate-200">Staff Klien</Badge>;
+        return <Badge className="bg-stone-100 text-stone-800 border-stone-200">Staff Klien</Badge>;
       default:
         return <Badge variant="secondary">{role}</Badge>;
     }
@@ -473,7 +473,7 @@ export default function AdminUsersPage() {
   if (loading && users.length === 0) {
     return (
       <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
         <span className="sr-only">Memuat data pengguna...</span>
       </div>
     );
@@ -488,11 +488,11 @@ export default function AdminUsersPage() {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2.5">
-            <Users className="w-7 h-7 text-blue-600" />
+          <h1 className="text-2xl font-bold text-stone-900 flex items-center gap-2.5">
+            <Users className="w-7 h-7 text-petrol-600" />
             Manajemen Pengguna
           </h1>
-          <p className="text-slate-500 mt-1">
+          <p className="text-stone-500 mt-1">
             Kelola seluruh akun Super Admin, Sub Admin, Asesor, Klien, dan hak akses sistem
           </p>
         </div>
@@ -501,7 +501,7 @@ export default function AdminUsersPage() {
             setCreateForm({ name: "", email: "", password: "", role: "ADMIN", assessmentId: "" });
             setShowCreateModal(true);
           }}
-          className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+          className="gap-2 bg-petrol-600 hover:bg-petrol-700 text-white shrink-0"
         >
           <UserPlus className="w-4 h-4" />
           Tambah Pengguna Baru
@@ -512,20 +512,20 @@ export default function AdminUsersPage() {
       <div className="flex flex-col lg:flex-row lg:items-center gap-3">
         {/* Search Input */}
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 z-10" />
           <Input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari nama atau email..."
             aria-label="Cari nama atau email pengguna"
-            className="pl-9 pr-8 h-10 rounded-xl text-sm bg-white border-slate-200 shadow-xs"
+            className="pl-9 pr-8 h-10 rounded-xl text-sm bg-white border-stone-200 shadow-xs"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
               aria-label="Hapus teks pencarian"
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-0.5"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -538,10 +538,10 @@ export default function AdminUsersPage() {
             value={selectedAssessment}
             onValueChange={(val) => setSelectedAssessment(val)}
           >
-            <SelectTrigger className="w-full h-9.5 rounded-xl border-slate-200 text-xs bg-white">
+            <SelectTrigger className="w-full h-9.5 rounded-xl border-stone-200 text-xs bg-white">
               <SelectValue placeholder="Semua Proyek Assessment" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl border-slate-200 text-xs font-sans max-h-64">
+            <SelectContent className="rounded-xl border-stone-200 text-xs font-sans max-h-64">
               <SelectItem value="ALL">Semua Proyek Assessment</SelectItem>
               <SelectItem value="NONE">Tanpa Assessment (Global Admin)</SelectItem>
               {assessments.map((a) => (
@@ -561,8 +561,8 @@ export default function AdminUsersPage() {
               onClick={() => setSelectedRole(r.value)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
                 selectedRole === r.value
-                  ? "bg-blue-600 text-white shadow-xs"
-                  : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                  ? "bg-petrol-600 text-white shadow-xs"
+                  : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
               }`}
             >
               {r.label}
@@ -576,7 +576,7 @@ export default function AdminUsersPage() {
             variant="ghost"
             size="sm"
             onClick={resetFilters}
-            className="h-9 px-2.5 text-xs text-slate-500 hover:text-slate-800 gap-1 shrink-0"
+            className="h-9 px-2.5 text-xs text-stone-500 hover:text-stone-800 gap-1 shrink-0"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Reset
@@ -589,11 +589,11 @@ export default function AdminUsersPage() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs"
+        className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-xs"
       >
         {selectedIds.size > 0 ? (
-          <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-blue-50/60">
-            <p className="text-sm font-semibold text-blue-900">
+          <div className="p-4 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-petrol-50/60">
+            <p className="text-sm font-semibold text-petrol-900">
               {selectedIds.size} akun dipilih
             </p>
             <div className="flex items-center gap-2">
@@ -622,16 +622,16 @@ export default function AdminUsersPage() {
                 size="sm"
                 onClick={() => setSelectedIds(new Set())}
                 disabled={bulkSubmitting}
-                className="h-8 text-xs text-slate-500"
+                className="h-8 text-xs text-stone-500"
               >
                 Batal
               </Button>
             </div>
           </div>
         ) : (
-          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-            <p className="text-sm font-semibold text-slate-800">
-              Total Pengguna: <span className="text-blue-600">{totalItems}</span>
+          <div className="p-4 border-b border-stone-100 flex items-center justify-between">
+            <p className="text-sm font-semibold text-stone-800">
+              Total Pengguna: <span className="text-petrol-600">{totalItems}</span>
             </p>
             <Button
               variant="ghost"
@@ -639,7 +639,7 @@ export default function AdminUsersPage() {
               onClick={fetchUsers}
               disabled={loading}
               aria-label="Muat ulang daftar pengguna"
-              className="gap-1.5 text-xs text-slate-500"
+              className="gap-1.5 text-xs text-stone-500"
             >
               <RotateCcw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
               Muat Ulang
@@ -648,13 +648,13 @@ export default function AdminUsersPage() {
         )}
 
         {users.length === 0 ? (
-          <div className="text-center py-16 text-slate-400 text-sm">
+          <div className="text-center py-16 text-stone-400 text-sm">
             Tidak ada pengguna yang cocok dengan pencarian / filter yang dipilih.
           </div>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50 hover:bg-slate-50">
+              <TableRow className="bg-stone-50 hover:bg-stone-50">
                 <TableHead className="px-4 py-3 w-10">
                   <input
                     type="checkbox"
@@ -665,15 +665,15 @@ export default function AdminUsersPage() {
                     onChange={toggleSelectAll}
                     disabled={selectableUsers.length === 0}
                     aria-label="Pilih semua pengguna di halaman ini"
-                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                    className="w-4 h-4 rounded border-stone-300 text-petrol-600 focus:ring-petrol-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
                   />
                 </TableHead>
-                <TableHead className="px-4 py-3 text-slate-600 text-xs">Pengguna</TableHead>
-                <TableHead className="px-4 py-3 text-slate-600 text-xs">Role</TableHead>
-                <TableHead className="px-4 py-3 text-slate-600 text-xs">Proyek Assessment</TableHead>
-                <TableHead className="px-4 py-3 text-slate-600 text-xs">Status Akun</TableHead>
-                <TableHead className="px-4 py-3 text-slate-600 text-xs">Aktivitas & Data</TableHead>
-                <TableHead className="px-4 py-3 text-slate-600 text-xs text-right">Aksi</TableHead>
+                <TableHead className="px-4 py-3 text-stone-600 text-xs">Pengguna</TableHead>
+                <TableHead className="px-4 py-3 text-stone-600 text-xs">Role</TableHead>
+                <TableHead className="px-4 py-3 text-stone-600 text-xs">Proyek Assessment</TableHead>
+                <TableHead className="px-4 py-3 text-stone-600 text-xs">Status Akun</TableHead>
+                <TableHead className="px-4 py-3 text-stone-600 text-xs">Aktivitas & Data</TableHead>
+                <TableHead className="px-4 py-3 text-stone-600 text-xs text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -681,7 +681,7 @@ export default function AdminUsersPage() {
                 const isCurrentSelf = isSelfUser(user);
 
                 return (
-                  <TableRow key={user.id} className="hover:bg-slate-50/70">
+                  <TableRow key={user.id} className="hover:bg-stone-50/70">
                     <TableCell className="px-4 py-3.5">
                       {!isCurrentSelf && (
                         <input
@@ -689,25 +689,25 @@ export default function AdminUsersPage() {
                           checked={selectedIds.has(user.id)}
                           onChange={() => toggleSelectOne(user.id)}
                           aria-label={`Pilih ${user.name}`}
-                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          className="w-4 h-4 rounded border-stone-300 text-petrol-600 focus:ring-petrol-500 cursor-pointer"
                         />
                       )}
                     </TableCell>
                     <TableCell className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-petrol-100 text-petrol-700 flex items-center justify-center font-bold text-sm shrink-0">
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <span className="font-semibold text-slate-900 text-sm">{user.name}</span>
+                            <span className="font-semibold text-stone-900 text-sm">{user.name}</span>
                             {isCurrentSelf && (
                               <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-medium">
                                 Anda
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                          <p className="text-xs text-stone-500 truncate">{user.email}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -723,7 +723,7 @@ export default function AdminUsersPage() {
                             ? "bg-status-success-bg text-status-success border border-status-success-border"
                             : user.role === "KLIEN"
                             ? "bg-status-warning-bg text-status-warning border border-status-warning-border"
-                            : "bg-slate-100 text-slate-800 border border-slate-200"
+                            : "bg-stone-100 text-stone-800 border border-stone-200"
                         }`}
                       >
                         {user.role === "SUPER_ADMIN"
@@ -743,18 +743,18 @@ export default function AdminUsersPage() {
                         <Link
                           href={`/assessment-center/${user.assessment.id}/dashboard`}
                           target="_blank"
-                          className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 hover:underline font-medium group"
+                          className="inline-flex items-center gap-1.5 text-xs text-petrol-600 hover:text-petrol-700 hover:underline font-medium group"
                           title={`${user.assessment.clientName} - ${user.assessment.name}`}
                           aria-label={`Buka dashboard assessment ${user.assessment.clientName} - ${user.assessment.name}`}
                         >
-                          <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0 group-hover:text-blue-600" />
+                          <Building2 className="w-3.5 h-3.5 text-stone-400 shrink-0 group-hover:text-petrol-600" />
                           <span className="truncate max-w-[200px]">
                             {user.assessment.clientName} - {user.assessment.name}
                           </span>
-                          <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-blue-600 shrink-0 opacity-70" />
+                          <ExternalLink className="w-3 h-3 text-stone-400 group-hover:text-petrol-600 shrink-0 opacity-70" />
                         </Link>
                       ) : (
-                        <span className="text-xs text-slate-400">-</span>
+                        <span className="text-xs text-stone-400">-</span>
                       )}
                     </TableCell>
 
@@ -794,15 +794,15 @@ export default function AdminUsersPage() {
                       </div>
                     </TableCell>
 
-                    <TableCell className="px-4 py-3.5 text-xs text-slate-600">
+                    <TableCell className="px-4 py-3.5 text-xs text-stone-600">
                       <div className="space-y-0.5">
                         {user.role === "ADMIN" || user.role === "SUPER_ADMIN" ? (
                           <>
                             <p>{user._count?.trainings || 0} pelatihan dibuat</p>
-                            <p className="text-slate-400">{user._count?.auditLogs || 0} aksi tercatat</p>
+                            <p className="text-stone-400">{user._count?.auditLogs || 0} aksi tercatat</p>
                           </>
                         ) : (
-                          <span className="text-slate-400">-</span>
+                          <span className="text-stone-400">-</span>
                         )}
                       </div>
                     </TableCell>
@@ -823,7 +823,7 @@ export default function AdminUsersPage() {
                             });
                             setShowEditModal(true);
                           }}
-                          className="h-8 w-8 p-0 text-slate-600 hover:text-slate-900"
+                          className="h-8 w-8 p-0 text-stone-600 hover:text-stone-900"
                           title="Edit Profil/Role/Assessment"
                           aria-label={`Edit profil ${user.name}`}
                         >
@@ -871,19 +871,19 @@ export default function AdminUsersPage() {
 
         {/* Pagination Bar */}
         {totalItems > 0 && (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4 border-t border-stone-100 bg-stone-50/50">
             {/* Left: Summary text with bigger font */}
             <div className="flex items-center gap-2">
-              <p className="text-sm text-slate-600 font-medium">
-                Menampilkan <strong className="text-slate-900 font-semibold">{Math.min(totalItems, (page - 1) * pageSize + 1)}</strong> -{" "}
-                <strong className="text-slate-900 font-semibold">{Math.min(totalItems, page * pageSize)}</strong> dari{" "}
-                <strong className="text-slate-900 font-semibold">{totalItems}</strong> pengguna
+              <p className="text-sm text-stone-600 font-medium">
+                Menampilkan <strong className="text-stone-900 font-semibold">{Math.min(totalItems, (page - 1) * pageSize + 1)}</strong> -{" "}
+                <strong className="text-stone-900 font-semibold">{Math.min(totalItems, page * pageSize)}</strong> dari{" "}
+                <strong className="text-stone-900 font-semibold">{totalItems}</strong> pengguna
               </p>
             </div>
 
             {/* Right: Baris selector + Prev / Next Controls */}
             <div className="flex items-center gap-4 self-end sm:self-auto">
-              <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
+              <div className="flex items-center gap-2 text-sm text-stone-600 font-medium">
                 <span>Baris:</span>
                 <select
                   value={pageSize}
@@ -891,7 +891,7 @@ export default function AdminUsersPage() {
                     setPageSize(Number(e.target.value));
                     setPage(1);
                   }}
-                  className="bg-white border border-slate-200 text-sm font-medium text-slate-800 rounded-lg px-2.5 py-1.5 outline-none focus:border-blue-500 shadow-xs cursor-pointer"
+                  className="bg-white border border-stone-200 text-sm font-medium text-stone-800 rounded-lg px-2.5 py-1.5 outline-none focus:border-petrol-500 shadow-xs cursor-pointer"
                 >
                   <option value={10}>10</option>
                   <option value={25}>25</option>
@@ -911,7 +911,7 @@ export default function AdminUsersPage() {
                   <ChevronLeft className="w-4 h-4" />
                   Sebelumnya
                 </Button>
-                <span className="text-sm text-slate-700 px-2 font-semibold">
+                <span className="text-sm text-stone-700 px-2 font-semibold">
                   {page} / {totalPages}
                 </span>
                 <Button
@@ -936,7 +936,7 @@ export default function AdminUsersPage() {
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="w-5 h-5 text-blue-600" />
+              <UserPlus className="w-5 h-5 text-petrol-600" />
               Tambah Pengguna Baru
             </DialogTitle>
           </DialogHeader>
@@ -971,7 +971,7 @@ export default function AdminUsersPage() {
                     setCreateForm((prev) => ({ ...prev, password: generateSecurePassword() }));
                     setShowCreatePassword(true);
                   }}
-                  className="text-xs text-blue-600 hover:underline font-medium"
+                  className="text-xs text-petrol-600 hover:underline font-medium"
                 >
                   Buat Otomatis
                 </button>
@@ -1000,10 +1000,10 @@ export default function AdminUsersPage() {
                 value={createForm.role}
                 onValueChange={(val) => setCreateForm((prev) => ({ ...prev, role: val }))}
               >
-                <SelectTrigger id="create-role" className="w-full h-10 rounded-md border-slate-200 text-sm bg-white">
+                <SelectTrigger id="create-role" className="w-full h-10 rounded-md border-stone-200 text-sm bg-white">
                   <SelectValue placeholder="Pilih Role" />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-200 text-sm font-sans">
+                <SelectContent className="rounded-xl border-stone-200 text-sm font-sans">
                   <SelectItem value="ADMIN">Sub Admin (Hanya Kelola Pelatihan Sendiri)</SelectItem>
                   <SelectItem value="SUPER_ADMIN">Super Admin (Akses Penuh Semua Modul)</SelectItem>
                   <SelectItem value="ASESOR">Asesor (Assessment Center)</SelectItem>
@@ -1030,11 +1030,11 @@ export default function AdminUsersPage() {
                 >
                   <SelectTrigger
                     id="create-assessment"
-                    className="w-full min-w-0 max-w-full h-10 rounded-md border-slate-200 text-sm bg-white overflow-hidden"
+                    className="w-full min-w-0 max-w-full h-10 rounded-md border-stone-200 text-sm bg-white overflow-hidden"
                   >
                     <SelectValue placeholder="Pilih Proyek Assessment" className="truncate text-left" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-200 text-sm font-sans max-h-60 max-w-sm sm:max-w-md">
+                  <SelectContent className="rounded-xl border-stone-200 text-sm font-sans max-h-60 max-w-sm sm:max-w-md">
                     <SelectItem value="NONE">-- Tidak Terkait Assessment --</SelectItem>
                     {assessments.map((a) => (
                       <SelectItem key={a.id} value={a.id} className="truncate">
@@ -1050,7 +1050,7 @@ export default function AdminUsersPage() {
               <Button type="button" variant="outline" onClick={() => setShowCreateModal(false)}>
                 Batal
               </Button>
-              <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" disabled={submitting} className="bg-petrol-600 hover:bg-petrol-700 text-white">
                 {submitting ? "Menyimpan..." : "Buat Akun"}
               </Button>
             </DialogFooter>
@@ -1095,8 +1095,8 @@ export default function AdminUsersPage() {
                 <div className="space-y-1.5 min-w-0 w-full">
                   <Label htmlFor="edit-role">Role Pengguna</Label>
                   {isEditingSelf ? (
-                    <div className="w-full h-10 px-3 py-2 rounded-md border border-slate-200 text-sm bg-slate-100 text-slate-700 flex items-center justify-between cursor-not-allowed select-none">
-                      <span className="font-semibold text-slate-800">Super Admin (Akses Penuh)</span>
+                    <div className="w-full h-10 px-3 py-2 rounded-md border border-stone-200 text-sm bg-stone-100 text-stone-700 flex items-center justify-between cursor-not-allowed select-none">
+                      <span className="font-semibold text-stone-800">Super Admin (Akses Penuh)</span>
                       <span className="text-[11px] bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.5 rounded font-medium">
                         Terkunci
                       </span>
@@ -1108,11 +1108,11 @@ export default function AdminUsersPage() {
                     >
                       <SelectTrigger
                         id="edit-role"
-                        className="w-full min-w-0 max-w-full h-10 rounded-md border-slate-200 text-sm bg-white overflow-hidden"
+                        className="w-full min-w-0 max-w-full h-10 rounded-md border-stone-200 text-sm bg-white overflow-hidden"
                       >
                         <SelectValue placeholder="Pilih Role" className="truncate text-left" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-xl border-slate-200 text-sm font-sans max-w-sm sm:max-w-md">
+                      <SelectContent className="rounded-xl border-stone-200 text-sm font-sans max-w-sm sm:max-w-md">
                         <SelectItem value="ADMIN">Sub Admin</SelectItem>
                         <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
                         <SelectItem value="ASESOR">Asesor</SelectItem>
@@ -1122,7 +1122,7 @@ export default function AdminUsersPage() {
                     </Select>
                   )}
                   {isEditingSelf && (
-                    <p className="text-[11px] text-slate-500 mt-1">
+                    <p className="text-[11px] text-stone-500 mt-1">
                       Untuk mencegah penguncian akses sistem, Anda tidak dapat mengubah role akun Super Admin Anda sendiri.
                     </p>
                   )}
@@ -1147,11 +1147,11 @@ export default function AdminUsersPage() {
                 >
                   <SelectTrigger
                     id="edit-assessment"
-                    className="w-full min-w-0 max-w-full h-10 rounded-md border-slate-200 text-sm bg-white overflow-hidden"
+                    className="w-full min-w-0 max-w-full h-10 rounded-md border-stone-200 text-sm bg-white overflow-hidden"
                   >
                     <SelectValue placeholder="Pilih Proyek Assessment" className="truncate text-left" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-200 text-sm font-sans max-h-60 max-w-sm sm:max-w-md">
+                  <SelectContent className="rounded-xl border-stone-200 text-sm font-sans max-h-60 max-w-sm sm:max-w-md">
                     <SelectItem value="NONE">-- Tidak Terkait Assessment --</SelectItem>
                     {assessments.map((a) => (
                       <SelectItem key={a.id} value={a.id} className="truncate">
@@ -1167,7 +1167,7 @@ export default function AdminUsersPage() {
               <Button type="button" variant="outline" onClick={() => setShowEditModal(false)}>
                 Batal
               </Button>
-              <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button type="submit" disabled={submitting} className="bg-petrol-600 hover:bg-petrol-700 text-white">
                 {submitting ? "Menyimpan..." : "Simpan Perubahan"}
               </Button>
             </DialogFooter>
@@ -1185,7 +1185,7 @@ export default function AdminUsersPage() {
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleResetPasswordSubmit} className="space-y-4 pt-2">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-stone-500">
               Masukkan password baru untuk pengguna <strong>{activeUser?.email}</strong>.
             </p>
             <div className="space-y-1.5">
@@ -1197,7 +1197,7 @@ export default function AdminUsersPage() {
                     setResetPasswordValue(generateSecurePassword());
                     setShowResetPassword(true);
                   }}
-                  className="text-xs text-blue-600 hover:underline font-medium"
+                  className="text-xs text-petrol-600 hover:underline font-medium"
                 >
                   Buat Otomatis
                 </button>
@@ -1236,12 +1236,12 @@ export default function AdminUsersPage() {
       <Dialog open={showConfirmEditModal} onOpenChange={setShowConfirmEditModal}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-blue-600">
-              <AlertTriangle className="w-5 h-5 text-blue-600" />
+            <DialogTitle className="flex items-center gap-2 text-petrol-600">
+              <AlertTriangle className="w-5 h-5 text-petrol-600" />
               Konfirmasi Perubahan Profil
             </DialogTitle>
           </DialogHeader>
-          <div className="py-3 text-sm text-slate-600 space-y-3">
+          <div className="py-3 text-sm text-stone-600 space-y-3">
             <p>
               Apakah Anda yakin ingin menyimpan perubahan pada akun <strong>{activeUser?.name}</strong>?
             </p>
@@ -1249,7 +1249,7 @@ export default function AdminUsersPage() {
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-900 space-y-1">
                 <p className="font-semibold">Perubahan Alamat Email:</p>
                 <p className="font-mono">
-                  {activeUser.email} → <strong className="text-blue-700">{editForm.email}</strong>
+                  {activeUser.email} → <strong className="text-petrol-700">{editForm.email}</strong>
                 </p>
                 <p className="text-[11px] text-amber-700">
                   User akan menggunakan email baru ini untuk login berikutnya.
@@ -1257,12 +1257,12 @@ export default function AdminUsersPage() {
               </div>
             )}
             {activeUser && editForm.name.trim() !== activeUser.name.trim() && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-stone-500">
                 Nama lengkap akan diubah menjadi: <strong>{editForm.name}</strong>
               </p>
             )}
             {activeUser && editForm.role !== activeUser.role && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-stone-500">
                 Role pengguna akan diubah menjadi: <strong>{editForm.role}</strong>
               </p>
             )}
@@ -1272,7 +1272,7 @@ export default function AdminUsersPage() {
               Batal
             </Button>
             <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-petrol-600 hover:bg-petrol-700 text-white"
               onClick={executeEditSubmit}
               disabled={submitting}
             >
@@ -1291,11 +1291,11 @@ export default function AdminUsersPage() {
               Konfirmasi Reset Password
             </DialogTitle>
           </DialogHeader>
-          <div className="py-3 text-sm text-slate-600 space-y-2">
+          <div className="py-3 text-sm text-stone-600 space-y-2">
             <p>
               Apakah Anda yakin ingin mengganti password untuk akun <strong>{activeUser?.name}</strong> ({activeUser?.email})?
             </p>
-            <p className="text-xs text-slate-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+            <p className="text-xs text-stone-500 bg-stone-50 p-2.5 rounded-lg border border-stone-200">
               Password lama tidak akan dapat digunakan lagi setelah reset dikonfirmasi.
             </p>
           </div>
@@ -1323,7 +1323,7 @@ export default function AdminUsersPage() {
               Konfirmasi Status Akun
             </DialogTitle>
           </DialogHeader>
-          <div className="py-3 text-sm text-slate-600 space-y-2">
+          <div className="py-3 text-sm text-stone-600 space-y-2">
             <p>
               Apakah Anda yakin ingin{" "}
               <strong>{confirmToggleUser?.isActive ? "menonaktifkan" : "mengaktifkan kembali"}</strong> akun{" "}
@@ -1371,7 +1371,7 @@ export default function AdminUsersPage() {
               Konfirmasi Aksi Massal
             </DialogTitle>
           </DialogHeader>
-          <div className="py-3 text-sm text-slate-600 space-y-2">
+          <div className="py-3 text-sm text-stone-600 space-y-2">
             <p>
               Apakah Anda yakin ingin{" "}
               <strong>{bulkConfirmActive ? "mengaktifkan kembali" : "menonaktifkan"}</strong>{" "}
@@ -1415,7 +1415,7 @@ export default function AdminUsersPage() {
               Hapus Akun Pengguna
             </DialogTitle>
           </DialogHeader>
-          <div className="py-3 text-sm text-slate-600 space-y-2">
+          <div className="py-3 text-sm text-stone-600 space-y-2">
             <p>
               Apakah Anda yakin ingin menghapus akun <strong>{activeUser?.name}</strong> ({activeUser?.email})?
             </p>

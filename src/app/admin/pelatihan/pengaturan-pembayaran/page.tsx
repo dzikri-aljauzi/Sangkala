@@ -91,8 +91,8 @@ export default function PengaturanPembayaranPage() {
 
   if (status === "loading" || (status === "authenticated" && loading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
       </div>
     );
   }
@@ -100,30 +100,30 @@ export default function PengaturanPembayaranPage() {
   if (!session) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-stone-50">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-40">
+      <div className="bg-white border-b border-stone-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-linear-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-petrol-600 rounded-lg flex items-center justify-center">
                 <Shield className="w-4 h-4 text-white" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-900">Admin Dashboard</p>
-                <p className="text-xs text-slate-500">Leadership Nasional Asia</p>
+                <p className="text-sm font-semibold text-stone-900">Admin Dashboard</p>
+                <p className="text-xs text-stone-500">Sangkala</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-slate-700">{session.user?.name}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-sm font-medium text-stone-700">{session.user?.name}</p>
+                <p className="text-xs text-stone-500">
                   {session.user?.email} ({isSuperAdmin ? "Super Admin" : "Sub Admin"})
                 </p>
               </div>
               <button
                 onClick={() => signOut({ callbackUrl: "/admin/login" })}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-stone-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 <span className="hidden sm:inline">Logout</span>
@@ -141,13 +141,13 @@ export default function PengaturanPembayaranPage() {
         >
           <Link
             href="/admin/pelatihan"
-            className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors shadow-sm shrink-0"
+            className="w-10 h-10 bg-white border border-stone-200 rounded-xl flex items-center justify-center text-stone-600 hover:bg-stone-50 transition-colors shadow-sm shrink-0"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Pengaturan Rekening</h1>
-            <p className="text-slate-500 mt-1">Info rekening ini ditampilkan di form pendaftaran training berbayar</p>
+            <h1 className="text-2xl font-bold text-stone-900">Pengaturan Rekening</h1>
+            <p className="text-stone-500 mt-1">Info rekening ini ditampilkan di form pendaftaran training berbayar</p>
           </div>
         </motion.div>
 
@@ -155,14 +155,14 @@ export default function PengaturanPembayaranPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           onSubmit={handleSubmit}
-          className="bg-white rounded-xl border border-slate-200 p-6 space-y-4"
+          className="bg-white rounded-xl border border-stone-200 p-6 space-y-4"
         >
           <div className="space-y-1.5">
             <Label htmlFor="bankName">Nama Bank</Label>
             <Input
               id="bankName"
               required
-              placeholder="Contoh: Bank Mandiri"
+              placeholder="Contoh: Bank Contoh"
               value={formData.bankName}
               onChange={(e) => setFormData((prev) => ({ ...prev, bankName: e.target.value }))}
             />
@@ -181,7 +181,7 @@ export default function PengaturanPembayaranPage() {
             <Input
               id="accountHolder"
               required
-              placeholder="Contoh: PT Leadership Nasional Asia"
+              placeholder="Contoh: Sangkala Technology"
               value={formData.accountHolder}
               onChange={(e) => setFormData((prev) => ({ ...prev, accountHolder: e.target.value }))}
             />
@@ -197,7 +197,7 @@ export default function PengaturanPembayaranPage() {
             />
           </div>
           <div className="flex justify-end pt-2">
-            <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button type="submit" disabled={saving} className="bg-petrol-600 hover:bg-petrol-700 text-white">
               <Save className="w-4 h-4" />
               {saving ? "Menyimpan..." : "Simpan Pengaturan"}
             </Button>

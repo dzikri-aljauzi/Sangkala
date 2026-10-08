@@ -83,7 +83,7 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
   if (loading || !assessment) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600"></div>
       </div>
     );
   }
@@ -96,11 +96,11 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
   const inProgressCount = progresses.filter(p => p.percentage > 0 && p.percentage < 100).length;
 
   const header = (
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
+      <div className="bg-white border-b border-stone-200 sticky top-0 z-30">
         <div className="px-8 py-6">
           <div className="flex items-center gap-4">
             {assessment.clientLogo && (
-              <div className="w-16 h-16 rounded-lg bg-white border border-slate-200 p-2 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-lg bg-white border border-stone-200 p-2 flex items-center justify-center">
                 <img
                   src={assessment.clientLogo}
                   alt={assessment.clientName}
@@ -109,11 +109,11 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
               </div>
             )}
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">
+              <h1 className="text-2xl font-bold text-stone-900">
                 {activeTab === "overview" && "Dashboard"}
                 {activeTab === "progress" && "Progress Pelaksanaan"}
               </h1>
-              <p className="text-sm text-slate-600 mt-1">
+              <p className="text-sm text-stone-600 mt-1">
                 {activeTab === "overview" && "Selamat datang di portal assessment"}
                 {activeTab === "progress" && "Pantau progress pelaksanaan assessment"}
               </p>
@@ -131,12 +131,12 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-8 mb-8 text-white"
+              className="bg-petrol-600 rounded-xl p-8 mb-8 text-white"
             >
               <h2 className="text-2xl font-bold mb-2">
                 {t("assessmentCenter.welcome")}, {session?.user?.name}!
               </h2>
-              <p className="text-blue-100">
+              <p className="text-petrol-100">
                 Anda dapat memantau progress pelaksanaan assessment di halaman ini.
               </p>
             </motion.div>
@@ -146,15 +146,15 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl border border-slate-200 p-6"
+                className="bg-white rounded-xl border border-stone-200 p-6"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-petrol-500 flex items-center justify-center">
                     <BarChart3 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-3xl font-bold text-slate-900">{overallProgress}%</p>
-                    <p className="text-sm text-slate-600">Progress Keseluruhan</p>
+                    <p className="text-3xl font-bold text-stone-900">{overallProgress}%</p>
+                    <p className="text-sm text-stone-600">Progress Keseluruhan</p>
                   </div>
                 </div>
               </motion.div>
@@ -163,15 +163,15 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-xl border border-slate-200 p-6"
+                className="bg-white rounded-xl border border-stone-200 p-6"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-green-500 flex items-center justify-center">
                     <CheckCircle2 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-3xl font-bold text-slate-900">{completedCount}</p>
-                    <p className="text-sm text-slate-600">Kegiatan Selesai</p>
+                    <p className="text-3xl font-bold text-stone-900">{completedCount}</p>
+                    <p className="text-sm text-stone-600">Kegiatan Selesai</p>
                   </div>
                 </div>
               </motion.div>
@@ -180,15 +180,15 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white rounded-xl border border-slate-200 p-6"
+                className="bg-white rounded-xl border border-stone-200 p-6"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-500 to-yellow-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-orange-500 flex items-center justify-center">
                     <Clock className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-3xl font-bold text-slate-900">{inProgressCount}</p>
-                    <p className="text-sm text-slate-600">Sedang Berjalan</p>
+                    <p className="text-3xl font-bold text-stone-900">{inProgressCount}</p>
+                    <p className="text-sm text-stone-600">Sedang Berjalan</p>
                   </div>
                 </div>
               </motion.div>
@@ -199,20 +199,20 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white rounded-xl border border-slate-200 p-6"
+              className="bg-white rounded-xl border border-stone-200 p-6"
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">Progress Terkini</h3>
+                <h3 className="text-lg font-semibold text-stone-900">Progress Terkini</h3>
                 <button
                   onClick={() => setActiveTab("progress")}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  className="text-sm text-petrol-600 hover:text-petrol-800 font-medium"
                 >
                   Lihat Detail →
                 </button>
               </div>
 
               {progresses.length === 0 ? (
-                <p className="text-slate-500 text-center py-8">
+                <p className="text-stone-500 text-center py-8">
                   Belum ada progress yang tersedia
                 </p>
               ) : (
@@ -220,23 +220,23 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
                   {progresses.slice(0, 5).map((progress) => (
                     <div key={progress.id} className="flex items-center gap-4">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate">
+                        <p className="text-sm font-medium text-stone-900 truncate">
                           {progress.activityName}
                         </p>
-                        <div className="mt-1 w-full bg-slate-200 rounded-full h-2">
+                        <div className="mt-1 w-full bg-stone-200 rounded-full h-2">
                           <div
                             className={`h-2 rounded-full transition-all ${
                               progress.percentage === 100
                                 ? "bg-green-500"
                                 : progress.percentage >= 50
-                                ? "bg-blue-500"
+                                ? "bg-petrol-500"
                                 : "bg-orange-500"
                             }`}
                             style={{ width: `${progress.percentage}%` }}
                           />
                         </div>
                       </div>
-                      <span className="text-sm font-medium text-slate-600 w-12 text-right">
+                      <span className="text-sm font-medium text-stone-600 w-12 text-right">
                         {progress.percentage}%
                       </span>
                     </div>

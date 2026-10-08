@@ -192,7 +192,7 @@ function Marker({
       <mesh position={lineCenter} quaternion={lineQuaternion}>
         <cylinderGeometry args={[0.008, 0.008, lineHeight, 8]} />
         <meshBasicMaterial
-          color={hovered ? "#ffffff" : "#94a3b8"}
+          color={hovered ? "#ffffff" : "#9aa09c"}
           transparent
           opacity={hovered ? 0.9 : 0.6}
         />
@@ -201,7 +201,7 @@ function Marker({
       {/* Pin point at the surface */}
       <mesh position={surfacePosition} quaternion={lineQuaternion}>
         <coneGeometry args={[0.03, 0.06, 8]} />
-        <meshBasicMaterial color={hovered ? "#f97316" : markerColor} />
+        <meshBasicMaterial color={hovered ? "#fcfcfb" : markerColor} />
       </mesh>
 
       {/* Marker dot at the top */}
@@ -220,7 +220,7 @@ function Marker({
           >
             <div
               className={cn(
-                "cursor-pointer overflow-hidden rounded-full bg-neutral-900 shadow-lg transition-transform duration-200",
+                "cursor-pointer overflow-hidden rounded-full bg-stone-900 shadow-lg transition-transform duration-200",
                 hovered && "scale-125 shadow-xl ring-1 ring-white/50"
               )}
               style={{
@@ -247,7 +247,7 @@ function Marker({
           >
             <sphereGeometry args={[0.05, 16, 16]} />
             <meshBasicMaterial
-              color={hovered ? "#f97316" : markerColor}
+              color={hovered ? "#fcfcfb" : markerColor}
               transparent
               opacity={isVisible ? 1 : 0}
             />
@@ -264,7 +264,7 @@ function Marker({
               whiteSpace: "nowrap",
             }}
           >
-            <div className="px-2 py-1 bg-slate-700/90 text-white text-xs rounded-md backdrop-blur-sm border border-white/10">
+            <div className="px-2 py-1 bg-stone-700/90 text-white text-xs rounded-md backdrop-blur-sm border border-white/10">
               {marker.label}
             </div>
           </Html>
@@ -446,7 +446,7 @@ function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
       <directionalLight
         position={[-config.radius * 3, config.radius, -config.radius * 2]}
         intensity={config.pointLightIntensity * 0.3}
-        color="#88ccff"
+        color="#85babd"
       />
 
       {/* Rotating Globe with Markers */}
@@ -493,8 +493,8 @@ function LoadingFallback() {
   return (
     <Html center>
       <div className="flex shrink-0 flex-col items-center gap-3">
-        <div className="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-        <span className="inline-block shrink-0 text-sm text-neutral-400">
+        <div className="w-12 h-12 border-4 border-petrol-400 border-t-transparent rounded-full animate-spin" />
+        <span className="inline-block shrink-0 text-sm text-stone-400">
           Loading globe...
         </span>
       </div>
@@ -508,11 +508,11 @@ function LoadingFallback() {
 
 const defaultConfig: Required<Globe3DConfig> = {
   radius: 2,
-  globeColor: "#1a1a2e",
+  globeColor: "#052a2e",
   textureUrl: DEFAULT_EARTH_TEXTURE,
   bumpMapUrl: DEFAULT_BUMP_TEXTURE,
   showAtmosphere: true,
-  atmosphereColor: "#93c5fd", // Light blue - brighter
+  atmosphereColor: "#85babd", // Light blue - brighter
   atmosphereIntensity: 0.7,
   atmosphereBlur: 2,
   bumpScale: 1,
@@ -524,11 +524,11 @@ const defaultConfig: Required<Globe3DConfig> = {
   initialRotation: { x: 0, y: 0 },
   markerSize: 0.06,
   showWireframe: true,
-  wireframeColor: "#93c5fd", // Light blue - brighter
+  wireframeColor: "#85babd", // Light blue - brighter
   ambientIntensity: 1.2, // Brighter ambient
   pointLightIntensity: 1.8, // Brighter lighting
   backgroundColor: null,
-  markerColor: "#fbbf24", // Bright amber
+  markerColor: "#e2cdb0", // Bright amber
 };
 
 export function Globe3D({

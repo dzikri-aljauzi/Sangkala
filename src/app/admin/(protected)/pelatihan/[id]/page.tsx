@@ -352,12 +352,12 @@ export default function AdminPelatihanDetailPage() {
     try {
       const diff: Record<string, { old: unknown; new: unknown }> = JSON.parse(changesStr);
       return (
-        <div className="mt-2 space-y-1.5 bg-slate-50 rounded-lg p-3 text-xs border border-slate-200">
-          <p className="font-semibold text-slate-700">Perubahan Data:</p>
+        <div className="mt-2 space-y-1.5 bg-stone-50 rounded-lg p-3 text-xs border border-stone-200">
+          <p className="font-semibold text-stone-700">Perubahan Data:</p>
           <div className="grid grid-cols-1 gap-1">
             {Object.entries(diff).map(([field, value]) => (
-              <div key={field} className="flex flex-wrap items-center gap-1.5 text-slate-600">
-                <span className="font-mono bg-slate-200 px-1 py-0.5 rounded text-slate-800">{field}:</span>
+              <div key={field} className="flex flex-wrap items-center gap-1.5 text-stone-600">
+                <span className="font-mono bg-stone-200 px-1 py-0.5 rounded text-stone-800">{field}:</span>
                 <span className="line-through text-red-600 bg-red-50 px-1 rounded">{String(value.old ?? "kosong")}</span>
                 <span>→</span>
                 <span className="text-emerald-700 font-medium bg-emerald-50 px-1 rounded">{String(value.new ?? "kosong")}</span>
@@ -504,13 +504,13 @@ export default function AdminPelatihanDetailPage() {
     if (status === "REJECTED") {
       return <Badge variant="destructive">Ditolak</Badge>;
     }
-    return <span className="text-slate-400">-</span>;
+    return <span className="text-stone-400">-</span>;
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
         <span className="sr-only">Memuat detail pelatihan...</span>
       </div>
     );
@@ -526,13 +526,13 @@ export default function AdminPelatihanDetailPage() {
           <Link
             href="/admin/pelatihan"
             aria-label="Kembali ke daftar pelatihan"
-            className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors shadow-sm shrink-0"
+            className="w-10 h-10 bg-white border border-stone-200 rounded-xl flex items-center justify-center text-stone-600 hover:bg-stone-50 transition-colors shadow-sm shrink-0"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Detail Pelatihan</h1>
-            <p className="text-slate-500 mt-1">Kelola data pelatihan dan lihat daftar pendaftar</p>
+            <h1 className="text-2xl font-bold text-stone-900">Detail Pelatihan</h1>
+            <p className="text-stone-500 mt-1">Kelola data pelatihan dan lihat daftar pendaftar</p>
           </div>
         </div>
 
@@ -540,9 +540,9 @@ export default function AdminPelatihanDetailPage() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl border border-slate-200 overflow-hidden"
+          className="bg-white rounded-xl border border-stone-200 overflow-hidden"
         >
-          <div className="relative h-56 bg-slate-100 flex items-center justify-center group">
+          <div className="relative h-56 bg-stone-100 flex items-center justify-center group">
             {training.imagePath ? (
               <>
                 <Image
@@ -561,31 +561,31 @@ export default function AdminPelatihanDetailPage() {
                 </Button>
               </>
             ) : (
-              <ImageIcon className="w-12 h-12 text-slate-300" />
+              <ImageIcon className="w-12 h-12 text-stone-300" />
             )}
             {!training.isActive && (
               <Badge
                 variant="secondary"
-                className="absolute top-3 right-3 bg-slate-800/80 text-white border-transparent"
+                className="absolute top-3 right-3 bg-stone-800/80 text-white border-transparent"
               >
                 Nonaktif
               </Badge>
             )}
             {training.requiresPayment && (
-              <Badge className="absolute top-3 left-3 bg-blue-600 text-white border-transparent">
+              <Badge className="absolute top-3 left-3 bg-petrol-600 text-white border-transparent">
                 Berbayar
               </Badge>
             )}
           </div>          <div className="p-6">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{training.title}</h1>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-500">
-                  <UserIcon className="w-3.5 h-3.5 text-slate-400" />
+                <h1 className="text-xl sm:text-2xl font-bold text-stone-900">{training.title}</h1>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-stone-500">
+                  <UserIcon className="w-3.5 h-3.5 text-stone-400" />
                   <span>
-                    Dibuat oleh: <strong className="text-slate-700">{training.createdBy?.name || "Admin"}</strong>
+                    Dibuat oleh: <strong className="text-stone-700">{training.createdBy?.name || "Admin"}</strong>
                     {training.createdBy?.role && (
-                      <span className="ml-1 text-[11px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                      <span className="ml-1 text-[11px] bg-stone-100 text-stone-600 px-1.5 py-0.5 rounded">
                         {training.createdBy.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"}
                       </span>
                     )}
@@ -631,26 +631,26 @@ export default function AdminPelatihanDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-sm">
-              <div className="flex items-center gap-2 text-slate-600">
-                <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
+              <div className="flex items-center gap-2 text-stone-600">
+                <MapPin className="w-4 h-4 text-petrol-500 shrink-0" />
                 {training.location}
               </div>
-              <div className="flex items-center gap-2 text-slate-600">
-                <Calendar className="w-4 h-4 text-blue-500 shrink-0" />
+              <div className="flex items-center gap-2 text-stone-600">
+                <Calendar className="w-4 h-4 text-petrol-500 shrink-0" />
                 {formatTrainingDateRange(training.startDate, training.endDate)}
               </div>
-              <div className="flex items-center gap-2 text-slate-600">
-                <Users className="w-4 h-4 text-blue-500 shrink-0" />
+              <div className="flex items-center gap-2 text-stone-600">
+                <Users className="w-4 h-4 text-petrol-500 shrink-0" />
                 {registrants.filter((r) => r.paymentStatus !== "REJECTED").length}
                 {training.capacity !== null ? ` / ${training.capacity}` : ""} pendaftar
               </div>
             </div>
 
             {training.price && (
-              <p className="text-lg font-semibold text-blue-600 mb-4">{formatRupiah(training.price)}</p>
+              <p className="text-lg font-semibold text-petrol-600 mb-4">{formatRupiah(training.price)}</p>
             )}
 
-            <p className="text-slate-600 leading-relaxed whitespace-pre-line">{training.description}</p>
+            <p className="text-stone-600 leading-relaxed whitespace-pre-line">{training.description}</p>
           </div>
         </motion.div>
 
@@ -658,9 +658,9 @@ export default function AdminPelatihanDetailPage() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl border border-slate-200 p-6"
+          className="bg-white rounded-xl border border-stone-200 p-6"
         >
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+          <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">
             QR Code Pelatihan
           </h3>
           <div className="flex justify-center mb-4">
@@ -673,7 +673,7 @@ export default function AdminPelatihanDetailPage() {
                 className="rounded-xl"
               />
             ) : (
-              <div className="w-[180px] h-[180px] bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-xs text-center px-4">
+              <div className="w-[180px] h-[180px] bg-stone-100 rounded-xl flex items-center justify-center text-stone-400 text-xs text-center px-4">
                 Tidak Ada QR Code
               </div>
             )}
@@ -696,19 +696,19 @@ export default function AdminPelatihanDetailPage() {
               </Button>
             )}
           </div>
-          <p className="text-xs text-slate-400 text-center mt-4">
+          <p className="text-xs text-stone-400 text-center mt-4">
             Scan QR code untuk membuka halaman pelatihan ini di sisi user.
           </p>
         </motion.div>
 
         {/* Tab Switcher: Pendaftar vs Riwayat */}
-        <div className="flex items-center gap-2 border-b border-slate-200">
+        <div className="flex items-center gap-2 border-b border-stone-200">
           <button
             onClick={() => setActiveTab("registrants")}
             className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
               activeTab === "registrants"
-                ? "border-blue-600 text-blue-600 font-semibold"
-                : "border-transparent text-slate-500 hover:text-slate-700"
+                ? "border-petrol-600 text-petrol-600 font-semibold"
+                : "border-transparent text-stone-500 hover:text-stone-700"
             }`}
           >
             <Users className="w-4 h-4" />
@@ -718,8 +718,8 @@ export default function AdminPelatihanDetailPage() {
             onClick={() => setActiveTab("history")}
             className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
               activeTab === "history"
-                ? "border-blue-600 text-blue-600 font-semibold"
-                : "border-transparent text-slate-500 hover:text-slate-700"
+                ? "border-petrol-600 text-petrol-600 font-semibold"
+                : "border-transparent text-stone-500 hover:text-stone-700"
             }`}
           >
             <History className="w-4 h-4" />
@@ -732,10 +732,10 @@ export default function AdminPelatihanDetailPage() {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl border border-slate-200 overflow-hidden"
+            className="bg-white rounded-xl border border-stone-200 overflow-hidden"
           >
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-3">
-              <h2 className="font-semibold text-slate-900">Data Pendaftar ({registrants.length})</h2>
+            <div className="p-5 border-b border-stone-100 flex items-center justify-between gap-3">
+              <h2 className="font-semibold text-stone-900">Data Pendaftar ({registrants.length})</h2>
               {registrants.length > 0 && (
                 <Button variant="outline" size="sm" onClick={exportToCSV}>
                   <Download className="w-3.5 h-3.5" />
@@ -744,52 +744,52 @@ export default function AdminPelatihanDetailPage() {
               )}
             </div>
             {registrants.length === 0 ? (
-              <div className="text-center py-12 text-slate-400 text-sm">Belum ada pendaftar.</div>
+              <div className="text-center py-12 text-stone-400 text-sm">Belum ada pendaftar.</div>
             ) : (
               <Table className="text-base">
                 <TableHeader>
-                  <TableRow className="bg-slate-50 hover:bg-slate-50">
-                    <TableHead className="w-16 px-4 text-center text-slate-500 text-sm">No</TableHead>
-                    <TableHead className="px-4 text-slate-500 text-sm">Nama</TableHead>
-                    <TableHead className="px-4 text-slate-500 text-sm">Email</TableHead>
-                    <TableHead className="px-4 text-slate-500 text-sm">No. HP</TableHead>
-                    <TableHead className="px-4 text-slate-500 text-sm">Instansi</TableHead>
-                    <TableHead className="px-4 text-slate-500 text-sm">Tanggal Daftar</TableHead>
-                    <TableHead className="px-4 text-slate-500 text-sm">Status Pembayaran</TableHead>
-                    <TableHead className="px-4 text-slate-500 text-sm">Bukti</TableHead>
-                    <TableHead className="px-4 text-slate-500 text-sm">Aksi</TableHead>
+                  <TableRow className="bg-stone-50 hover:bg-stone-50">
+                    <TableHead className="w-16 px-4 text-center text-stone-500 text-sm">No</TableHead>
+                    <TableHead className="px-4 text-stone-500 text-sm">Nama</TableHead>
+                    <TableHead className="px-4 text-stone-500 text-sm">Email</TableHead>
+                    <TableHead className="px-4 text-stone-500 text-sm">No. HP</TableHead>
+                    <TableHead className="px-4 text-stone-500 text-sm">Instansi</TableHead>
+                    <TableHead className="px-4 text-stone-500 text-sm">Tanggal Daftar</TableHead>
+                    <TableHead className="px-4 text-stone-500 text-sm">Status Pembayaran</TableHead>
+                    <TableHead className="px-4 text-stone-500 text-sm">Bukti</TableHead>
+                    <TableHead className="px-4 text-stone-500 text-sm">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {registrants.map((r, index) => (
                     <TableRow key={r.id}>
-                      <TableCell className="px-4 py-4 text-slate-400 text-center">
+                      <TableCell className="px-4 py-4 text-stone-400 text-center">
                         {String(index + 1).padStart(2, "0")}
                       </TableCell>
-                      <TableCell className="px-4 py-4 font-medium text-slate-800">{r.name}</TableCell>
-                      <TableCell className="px-4 py-4 text-slate-600">
+                      <TableCell className="px-4 py-4 font-medium text-stone-800">{r.name}</TableCell>
+                      <TableCell className="px-4 py-4 text-stone-600">
                         <span className="inline-flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+                          <Mail className="w-4 h-4 text-stone-400 shrink-0" />
                           {r.email}
                         </span>
                       </TableCell>
-                      <TableCell className="px-4 py-4 text-slate-600">
+                      <TableCell className="px-4 py-4 text-stone-600">
                         <span className="inline-flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-slate-400 shrink-0" />
+                          <Phone className="w-4 h-4 text-stone-400 shrink-0" />
                           {r.phone}
                         </span>
                       </TableCell>
-                      <TableCell className="px-4 py-4 text-slate-600">
+                      <TableCell className="px-4 py-4 text-stone-600">
                         {r.institution ? (
                           <span className="inline-flex items-center gap-2">
-                            <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
+                            <Building2 className="w-4 h-4 text-stone-400 shrink-0" />
                             {r.institution}
                           </span>
                         ) : (
                           "-"
                         )}
                       </TableCell>
-                      <TableCell className="px-4 py-4 text-slate-500">
+                      <TableCell className="px-4 py-4 text-stone-500">
                         {new Date(r.createdAt).toLocaleDateString("id-ID")}
                       </TableCell>
                       <TableCell className="px-4 py-4">
@@ -808,13 +808,13 @@ export default function AdminPelatihanDetailPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => openProofDialog(r)}
-                            className="h-8 gap-1.5 text-xs text-blue-600 border-blue-200 hover:bg-blue-50"
+                            className="h-8 gap-1.5 text-xs text-petrol-600 border-petrol-200 hover:bg-petrol-50"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             Lihat Bukti
                           </Button>
                         ) : (
-                          <span className="text-xs text-slate-400">Tidak ada</span>
+                          <span className="text-xs text-stone-400">Tidak ada</span>
                         )}
                       </TableCell>
                       <TableCell className="px-4 py-4">
@@ -848,7 +848,7 @@ export default function AdminPelatihanDetailPage() {
                               variant="ghost"
                               disabled={reviewingId === r.id}
                               onClick={() => setConfirmResetRegistrant(r)}
-                              className="h-8 gap-1 text-xs text-slate-600 hover:text-slate-900"
+                              className="h-8 gap-1 text-xs text-stone-600 hover:text-stone-900"
                             >
                               <RotateCcw className="w-3.5 h-3.5" />
                               Reset
@@ -869,12 +869,12 @@ export default function AdminPelatihanDetailPage() {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl border border-slate-200 overflow-hidden p-6"
+            className="bg-white rounded-xl border border-stone-200 overflow-hidden p-6"
           >
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-stone-100">
               <div>
-                <h2 className="font-semibold text-slate-900">Riwayat Perubahan & Aktivitas</h2>
-                <p className="text-xs text-slate-500 mt-0.5">Catatan log aktivitas pembuatan, pengeditan, dan verifikasi</p>
+                <h2 className="font-semibold text-stone-900">Riwayat Perubahan & Aktivitas</h2>
+                <p className="text-xs text-stone-500 mt-0.5">Catatan log aktivitas pembuatan, pengeditan, dan verifikasi</p>
               </div>
               <Button variant="outline" size="sm" onClick={fetchAuditLogs} disabled={loadingLogs}>
                 <RotateCcw className={`w-3.5 h-3.5 ${loadingLogs ? "animate-spin" : ""}`} />
@@ -884,10 +884,10 @@ export default function AdminPelatihanDetailPage() {
 
             {loadingLogs ? (
               <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-petrol-600" />
               </div>
             ) : auditLogs.length === 0 ? (
-              <div className="text-center py-12 text-slate-400 text-sm">
+              <div className="text-center py-12 text-stone-400 text-sm">
                 Belum ada catatan riwayat perubahan untuk pelatihan ini.
               </div>
             ) : (
@@ -895,20 +895,20 @@ export default function AdminPelatihanDetailPage() {
                 {auditLogs.map((log) => {
                   const actionBadge = {
                     CREATE: <Badge className="bg-emerald-100 text-emerald-800 border-transparent">DIBUAT</Badge>,
-                    UPDATE: <Badge className="bg-blue-100 text-blue-800 border-transparent">DIUBAH</Badge>,
+                    UPDATE: <Badge className="bg-petrol-100 text-petrol-800 border-transparent">DIUBAH</Badge>,
                     STATUS_CHANGE: <Badge className="bg-amber-100 text-amber-800 border-transparent">STATUS</Badge>,
                     DELETE: <Badge variant="destructive">DIHAPUS</Badge>,
                     REVIEW_PAYMENT: <Badge className="bg-purple-100 text-purple-800 border-transparent">PEMBAYARAN</Badge>,
                   }[log.action] || <Badge variant="secondary">{log.action}</Badge>;
 
                   return (
-                    <div key={log.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
+                    <div key={log.id} className="p-4 rounded-xl border border-stone-200 bg-stone-50/50 space-y-2">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                           {actionBadge}
-                          <span className="text-sm font-semibold text-slate-900">{log.summary}</span>
+                          <span className="text-sm font-semibold text-stone-900">{log.summary}</span>
                         </div>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-stone-400">
                           {new Date(log.createdAt).toLocaleDateString("id-ID", {
                             day: "numeric",
                             month: "short",
@@ -918,10 +918,10 @@ export default function AdminPelatihanDetailPage() {
                           })}
                         </span>
                       </div>
-                      <div className="text-xs text-slate-500 flex items-center gap-1.5">
-                        <UserIcon className="w-3.5 h-3.5 text-slate-400" />
+                      <div className="text-xs text-stone-500 flex items-center gap-1.5">
+                        <UserIcon className="w-3.5 h-3.5 text-stone-400" />
                         <span>
-                          Oleh <strong className="text-slate-700">{log.user?.name || "Admin"}</strong> ({log.user?.email} - {log.user?.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"})
+                          Oleh <strong className="text-stone-700">{log.user?.name || "Admin"}</strong> ({log.user?.email} - {log.user?.role === "SUPER_ADMIN" ? "Super Admin" : "Sub Admin"})
                         </span>
                       </div>
                       {renderDiffContent(log.changes)}
@@ -943,7 +943,7 @@ export default function AdminPelatihanDetailPage() {
               Hapus Pelatihan
             </DialogTitle>
           </DialogHeader>
-          <div className="py-3 text-sm text-slate-600 space-y-2">
+          <div className="py-3 text-sm text-stone-600 space-y-2">
             <p>Apakah Anda yakin ingin menghapus pelatihan <strong>{training?.title}</strong>?</p>
             <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-100">
               Tindakan ini permanen. Semua data pendaftar pelatihan ini juga akan dihapus.
@@ -1014,7 +1014,7 @@ export default function AdminPelatihanDetailPage() {
             <div className="space-y-1.5">
               <Label htmlFor="edit-price">Harga</Label>
               <div className="relative flex items-center">
-                <span className="absolute left-3 text-slate-500 text-sm font-medium select-none pointer-events-none">
+                <span className="absolute left-3 text-stone-500 text-sm font-medium select-none pointer-events-none">
                   Rp
                 </span>
                 <Input
@@ -1058,11 +1058,11 @@ export default function AdminPelatihanDetailPage() {
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
-                className="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 file:text-sm file:font-medium hover:file:bg-blue-100"
+                className="w-full text-sm text-stone-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-petrol-50 file:text-petrol-600 file:text-sm file:font-medium hover:file:bg-petrol-100"
               />
-              {uploading && <p className="text-xs text-slate-400 mt-1">Mengunggah...</p>}
+              {uploading && <p className="text-xs text-stone-400 mt-1">Mengunggah...</p>}
               {formData.imagePath && (
-                <div className="relative w-full h-36 mt-2 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 group">
+                <div className="relative w-full h-36 mt-2 rounded-lg overflow-hidden bg-stone-100 border border-stone-200 group">
                   <Image src={getImageUrl(formData.imagePath) || ""} alt="Preview" fill className="object-cover" />
                   <Button
                     type="button"
@@ -1126,8 +1126,8 @@ export default function AdminPelatihanDetailPage() {
             <DialogTitle>Bukti Pembayaran — {proofTarget?.name}</DialogTitle>
           </DialogHeader>
           {training.price && (
-            <p className="text-sm text-slate-600 bg-slate-50 rounded-lg p-3">
-              Nominal seharusnya: <span className="font-semibold text-slate-900">{formatRupiah(training.price)}</span>
+            <p className="text-sm text-stone-600 bg-stone-50 rounded-lg p-3">
+              Nominal seharusnya: <span className="font-semibold text-stone-900">{formatRupiah(training.price)}</span>
             </p>
           )}
           {proofTarget?.paymentProofPath && (
@@ -1143,7 +1143,7 @@ export default function AdminPelatihanDetailPage() {
                 </a>
               </div>
             ) : (
-              <div className="relative w-full h-96 rounded-lg overflow-hidden bg-slate-100">
+              <div className="relative w-full h-96 rounded-lg overflow-hidden bg-stone-100">
                 <Image
                   src={getImageUrl(proofTarget.paymentProofPath) || ""}
                   alt="Bukti pembayaran"
@@ -1165,12 +1165,12 @@ export default function AdminPelatihanDetailPage() {
       <Dialog open={showToggleActiveModal} onOpenChange={setShowToggleActiveModal}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className={`flex items-center gap-2 ${training?.isActive ? "text-amber-600" : "text-blue-600"}`}>
+            <DialogTitle className={`flex items-center gap-2 ${training?.isActive ? "text-amber-600" : "text-petrol-600"}`}>
               <AlertTriangle className="w-5 h-5" />
               Konfirmasi Status Pelatihan
             </DialogTitle>
           </DialogHeader>
-          <div className="py-3 text-sm text-slate-600 space-y-2">
+          <div className="py-3 text-sm text-stone-600 space-y-2">
             <p>
               Apakah Anda yakin ingin{" "}
               <strong>{training?.isActive ? "menonaktifkan" : "mengaktifkan dan mempublikasikan"}</strong> pelatihan{" "}
@@ -1181,7 +1181,7 @@ export default function AdminPelatihanDetailPage() {
                 Pelatihan yang dinonaktifkan tidak akan muncul di halaman publik dan tidak dapat menerima pendaftaran baru.
               </p>
             ) : (
-              <p className="text-xs text-blue-700 bg-blue-50 p-2.5 rounded-lg border border-blue-100">
+              <p className="text-xs text-petrol-700 bg-petrol-50 p-2.5 rounded-lg border border-petrol-100">
                 Pelatihan akan langsung tampil di website dan peserta dapat melakukan pendaftaran.
               </p>
             )}
@@ -1194,7 +1194,7 @@ export default function AdminPelatihanDetailPage() {
               className={
                 training?.isActive
                   ? "bg-amber-600 hover:bg-amber-700 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "bg-petrol-600 hover:bg-petrol-700 text-white"
               }
               onClick={toggleActive}
               disabled={togglingActive}
@@ -1218,18 +1218,18 @@ export default function AdminPelatihanDetailPage() {
               Konfirmasi Persetujuan Pembayaran
             </DialogTitle>
           </DialogHeader>
-          <div className="py-3 text-sm text-slate-600 space-y-2">
+          <div className="py-3 text-sm text-stone-600 space-y-2">
             <p>
               Apakah Anda yakin ingin menyetujui bukti pembayaran dari peserta{" "}
               <strong>{confirmApproveRegistrant?.name}</strong>?
             </p>
             {training.price && (
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-700 space-y-1">
+              <div className="bg-stone-50 border border-stone-200 rounded-lg p-2.5 text-xs text-stone-700 space-y-1">
                 <p>Email: <strong className="font-mono">{confirmApproveRegistrant?.email}</strong></p>
                 <p>Nominal: <strong className="text-green-700">{formatRupiah(training.price)}</strong></p>
               </div>
             )}
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-stone-500">
               Status pendaftar akan berubah menjadi <strong>Disetujui (APPROVED)</strong> dan tercatat pada riwayat log.
             </p>
           </div>
@@ -1252,12 +1252,12 @@ export default function AdminPelatihanDetailPage() {
       <Dialog open={!!confirmResetRegistrant} onOpenChange={(open) => !open && setConfirmResetRegistrant(null)}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-slate-800 flex items-center gap-2">
-              <RotateCcw className="w-5 h-5 text-slate-600" />
+            <DialogTitle className="text-stone-800 flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-stone-600" />
               Konfirmasi Reset Status Pembayaran
             </DialogTitle>
           </DialogHeader>
-          <div className="py-3 text-sm text-slate-600 space-y-2">
+          <div className="py-3 text-sm text-stone-600 space-y-2">
             <p>
               Apakah Anda yakin ingin mereset keputusan verifikasi untuk peserta{" "}
               <strong>{confirmResetRegistrant?.name}</strong> kembali ke status <strong>Menunggu (PENDING)</strong>?
@@ -1268,7 +1268,7 @@ export default function AdminPelatihanDetailPage() {
               Batal
             </Button>
             <Button
-              className="bg-slate-800 hover:bg-slate-900 text-white"
+              className="bg-stone-800 hover:bg-stone-900 text-white"
               onClick={() => confirmResetRegistrant && handleReset(confirmResetRegistrant.id)}
               disabled={!!reviewingId}
             >

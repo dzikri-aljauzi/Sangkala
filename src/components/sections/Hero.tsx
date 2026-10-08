@@ -13,7 +13,7 @@ const Globe3D = dynamic(() => import("@/components/ui/3d-globe"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
+      <div className="w-12 h-12 border-4 border-petrol-400 border-t-transparent rounded-full animate-spin" />
     </div>
   ),
 });
@@ -32,29 +32,29 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-screen flex items-center bg-gradient-to-br from-sky-50 via-white to-blue-50 overflow-hidden"
+      className="relative min-h-screen flex items-center bg-petrol-50 overflow-hidden"
     >
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute top-20 -left-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-sky-300/25 rounded-full blur-[100px] sm:blur-[120px]"
+          className="absolute top-20 -left-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-petrol-300/25 rounded-full blur-[100px] sm:blur-[120px]"
           animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute bottom-20 -right-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-blue-300/20 rounded-full blur-[100px] sm:blur-[120px]"
+          className="absolute bottom-20 -right-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-petrol-300/20 rounded-full blur-[100px] sm:blur-[120px]"
           animate={{ x: [0, -40, 0], y: [0, -30, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-cyan-200/15 rounded-full blur-[120px] sm:blur-[150px]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-petrol-200/15 rounded-full blur-[120px] sm:blur-[150px]"
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
         <div
           className="absolute inset-0 opacity-30"
           style={{
-            backgroundImage: `radial-gradient(circle, #94a3b8 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle, #9aa09c 1px, transparent 1px)`,
             backgroundSize: "32px 32px",
           }}
         />
@@ -82,9 +82,9 @@ export default function Hero() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 + 0.3 }}
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/90 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium border border-blue-100 shadow-sm text-slate-700"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/90 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium border border-petrol-100 shadow-sm text-stone-700"
                 >
-                  <item.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500" />
+                  <item.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-petrol-500" />
                   {item.label}
                 </motion.span>
               ))}
@@ -95,7 +95,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold sm:leading-tight mb-4 sm:mb-6 text-slate-800"
+              className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold sm:leading-tight mb-4 sm:mb-6 text-stone-800"
             >
               {t("hero.headline")}
             </motion.h1>
@@ -105,7 +105,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-sm sm:text-base md:text-lg text-slate-600 mb-6 sm:mb-8 max-w-xl leading-relaxed"
+              className="text-sm sm:text-base md:text-lg text-stone-600 mb-6 sm:mb-8 max-w-xl leading-relaxed"
             >
               {t("hero.subheadline")}
             </motion.p>
@@ -135,15 +135,15 @@ export default function Hero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1, delay: 0.8 }}
-              className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-slate-200"
+              className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-stone-200"
             >
-              <p className="text-xs sm:text-sm text-slate-500 mb-2 sm:mb-3">
+              <p className="text-xs sm:text-sm text-stone-500 mb-2 sm:mb-3">
                 {language === "id" ? "Dipercaya oleh:" : "Trusted by:"}
               </p>
               <div className="flex flex-wrap gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-1 items-center">
-                <span className="text-slate-600 font-medium text-xs sm:text-sm">BUMN Strategis</span>
-                <span className="text-slate-600 font-medium text-xs sm:text-sm">Bank Nasional</span>
-                <span className="text-slate-600 font-medium text-xs sm:text-sm">Fintech Leaders</span>
+                <span className="text-stone-600 font-medium text-xs sm:text-sm">BUMN Strategis</span>
+                <span className="text-stone-600 font-medium text-xs sm:text-sm">Bank Nasional</span>
+                <span className="text-stone-600 font-medium text-xs sm:text-sm">Fintech Leaders</span>
               </div>
             </motion.div>
           </div>
@@ -162,10 +162,10 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="lg:hidden text-center mb-4"
             >
-              <h2 className="text-lg sm:text-xl font-semibold text-slate-700">
+              <h2 className="text-lg sm:text-xl font-semibold text-stone-700">
                 {t("hero.globeTitle")}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-stone-500 mt-1">
                 Jakarta • Malang • Singapore
               </p>
             </motion.div>
@@ -174,7 +174,7 @@ export default function Hero() {
               <Suspense
                 fallback={
                   <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-12 h-12 border-4 border-petrol-400 border-t-transparent rounded-full animate-spin" />
                   </div>
                 }
               >
@@ -182,14 +182,14 @@ export default function Hero() {
                   markers={indonesiaMarkers}
                   config={{
                     radius: 1.75,
-                    atmosphereColor: "#93c5fd",
+                    atmosphereColor: "#85babd",
                     atmosphereIntensity: 0.8,
                     atmosphereBlur: 2,
                     autoRotateSpeed: 0.3,
-                    wireframeColor: "#93c5fd",
+                    wireframeColor: "#85babd",
                     showWireframe: true,
                     showAtmosphere: true,
-                    markerColor: "#fbbf24",
+                    markerColor: "#e2cdb0",
                     ambientIntensity: 1.2,
                     pointLightIntensity: 1.8,
                   }}
@@ -202,8 +202,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent pointer-events-none" />
     </section>
   );
 }

@@ -18,7 +18,7 @@ export function PasswordToggleButton({ visible, onToggle, size = "md" }: Passwor
     <button
       type="button"
       onClick={onToggle}
-      className={`absolute right-3 top-1/2 -translate-y-1/2 ${padClass} text-slate-400 hover:text-slate-600 transition-colors focus:outline-none`}
+      className={`absolute right-3 top-1/2 -translate-y-1/2 ${padClass} text-stone-400 hover:text-stone-600 transition-colors focus:outline-none`}
       aria-label={visible ? "Sembunyikan password" : "Lihat password"}
       title={visible ? "Sembunyikan password" : "Lihat password"}
     >

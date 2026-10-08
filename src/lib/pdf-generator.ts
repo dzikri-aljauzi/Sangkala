@@ -26,7 +26,7 @@ export interface GenerateCertificateOptions {
 // (PDF Ukuran A4 Landscape: 841.89 x 595.28)
 // ==========================================
 const LAYOUT = {
-  // 1. Logo Baris Atas (LNA)
+  // 1. Logo baris atas
   topLogos: {
     y: 465,
     height: 80,
@@ -170,10 +170,10 @@ export async function generateCertificatePdf(
   }
 
   // Define Colors
-  const colorNavy = rgb(15 / 255, 23 / 255, 42 / 255); // slate-900
-  const colorSlate = rgb(71 / 255, 85 / 255, 105 / 255); // slate-600
+  const colorNavy = rgb(5 / 255, 42 / 255, 46 / 255); // petrol-900
+  const colorSlate = rgb(86 / 255, 92 / 255, 89 / 255); // stone-700
   const colorBlack = rgb(0, 0, 0); // black
-  const colorGold = rgb(145 / 255, 114 / 255, 36 / 255); // gold
+  const colorGold = rgb(138 / 255, 90 / 255, 43 / 255); // sogan
 
   // 3. Draw Background Template Image
   const bgTemplatePath = path.join(process.cwd(), "public", "certificate-assets", "templates", "bg-template.png");
@@ -193,25 +193,22 @@ export async function generateCertificatePdf(
     });
   }
 
-  // Load Logos
-  const logoLnaPath = path.join(process.cwd(), "public", "certificate-assets", "templates", "logo-lna.png");
-
-  let imgLna;
-  if (fs.existsSync(logoLnaPath)) {
-    const bytes = fs.readFileSync(logoLnaPath);
-    const compressed = await sharp(bytes)
-      .resize({ width: 300 })
-      .png({ compressionLevel: 9, palette: true })
+  // Logo penuh Sangkala kanan atas
+  const logoPath = path.join(process.cwd(), "public", "brand", "sangkala-logo.png");
+  if (fs.existsSync(logoPath)) {
+    const logoBytes = await sharp(fs.readFileSync(logoPath))
+      .resize({ width: 600 })
+      .png({ compressionLevel: 9 })
       .toBuffer();
-    imgLna = await pdfDoc.embedPng(compressed);
-  }
-
-  // Draw top row logo (LNA only)
-  const wLna = imgLna ? (LAYOUT.topLogos.height * 1.10) * 2.02 : 0;
-  const currentX = width - LAYOUT.topLogos.rightMargin - wLna;
-
-  if (imgLna) {
-    page.drawImage(imgLna, { x: currentX, y: LAYOUT.topLogos.y, width: wLna, height: LAYOUT.topLogos.height * 1.10 });
+    const logoImg = await pdfDoc.embedPng(logoBytes);
+    const logoH = 32;
+    const logoW = logoH * (933 / 209);
+    page.drawImage(logoImg, {
+      x: width - LAYOUT.topLogos.rightMargin - logoW,
+      y: LAYOUT.topLogos.y + 24,
+      width: logoW,
+      height: logoH,
+    });
   }
 
   // Helper to format Indonesian Dates
@@ -327,7 +324,7 @@ export async function generateCertificatePdf(
     color: colorBlack,
   });
 
-  const companyText = "PT. Leadership Nasional Asia";
+  const companyText = "Sangkala Technology";
   const companyWidth = fontCinzelBold.widthOfTextAtSize(companyText, LAYOUT.signature.companyFontSize);
   page.drawText(companyText, {
     x: LAYOUT.signature.columnCenter - (companyWidth / 2),
@@ -350,7 +347,7 @@ export async function generateCertificatePdf(
   });
 
   // Footer links (Dinaikkan ke y: 52 agar di atas garis border)
-  const footerText = "www.leadershipnasionalasia.com";
+  const footerText = "www.sangkala.example";
   const footerWidth = fontHelvetica.widthOfTextAtSize(footerText, LAYOUT.footer.fontSize);
 
   page.drawText(footerText, {

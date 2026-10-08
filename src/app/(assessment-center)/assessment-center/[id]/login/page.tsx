@@ -24,21 +24,21 @@ const roleTabs: { role: LoginRole; label: string; icon: LucideIcon; color: strin
     role: "ASESOR",
     label: "Asesor",
     icon: UserCheck,
-    color: "from-blue-500 to-cyan-600",
+    color: "bg-petrol-500",
     description: "Login sebagai asesor",
   },
   {
     role: "KLIEN",
     label: "Klien",
     icon: Building2,
-    color: "from-emerald-500 to-teal-600",
+    color: "bg-emerald-500",
     description: "Login sebagai klien",
   },
   {
     role: "STAFF_KLIEN",
     label: "Staff",
     icon: Users,
-    color: "from-orange-500 to-amber-600",
+    color: "bg-orange-500",
     description: "Login sebagai staff klien (hanya lihat progress)",
   },
 ];
@@ -116,21 +116,21 @@ export default function AssessmentLoginPage({
   if (!assessment) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl border border-stone-200 overflow-hidden">
           {/* Header with Logo & Assessment Info */}
-          <div className={`bg-gradient-to-r ${currentTab.color} px-6 py-6 sm:px-8 sm:py-8 text-center transition-all duration-500`}>
+          <div className={`${currentTab.color} px-6 py-6 sm:px-8 sm:py-8 text-center transition-all duration-500`}>
             <div className="flex justify-center mb-4">
               {assessment.clientLogo ? (
                 <div className="bg-white rounded-xl p-3 shadow-lg">
@@ -160,10 +160,10 @@ export default function AssessmentLoginPage({
 
           {/* Role Selection Tabs */}
           <div className="px-4 pt-5 sm:px-6 sm:pt-6">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3 text-center">
+            <p className="text-xs font-medium text-stone-500 uppercase tracking-wider mb-3 text-center">
               Login Sebagai
             </p>
-            <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl">
+            <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-xl">
               {roleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = selectedRole === tab.role;
@@ -176,11 +176,11 @@ export default function AssessmentLoginPage({
                     }}
                     className={`relative flex flex-col items-center gap-0.5 py-2.5 px-1.5 rounded-lg text-[11px] font-medium transition-all duration-300 ${
                       isActive
-                        ? "bg-white shadow-md text-slate-900"
-                        : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
+                        ? "bg-white shadow-md text-stone-900"
+                        : "text-stone-500 hover:text-stone-700 hover:bg-white/50"
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${isActive ? "text-blue-600" : ""}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? "text-petrol-600" : ""}`} />
                     <span>{tab.label}</span>
                     {isActive && (
                       <motion.div
@@ -206,7 +206,7 @@ export default function AssessmentLoginPage({
                 transition={{ duration: 0.2 }}
               >
                 {/* Role description */}
-                <p className="text-sm text-slate-500 mb-5 text-center">
+                <p className="text-sm text-stone-500 mb-5 text-center">
                   {currentTab.description}
                 </p>
 
@@ -227,19 +227,19 @@ export default function AssessmentLoginPage({
                     <div>
                       <label
                         htmlFor="email"
-                        className="block text-sm font-medium text-slate-700 mb-2"
+                        className="block text-sm font-medium text-stone-700 mb-2"
                       >
                         {t("assessmentCenter.email")}
                       </label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
                         <input
                           id="email"
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required
-                          className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          className="w-full pl-10 pr-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent transition-all"
                           placeholder="example@example.com"
                         />
                       </div>
@@ -249,19 +249,19 @@ export default function AssessmentLoginPage({
                     <div>
                       <label
                         htmlFor="password"
-                        className="block text-sm font-medium text-slate-700 mb-2"
+                        className="block text-sm font-medium text-stone-700 mb-2"
                       >
                         {t("assessmentCenter.password")}
                       </label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 pointer-events-none" />
                         <input
                           id="password"
                           type={showPassword ? "text" : "password"}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
-                          className="w-full pl-10 pr-11 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          className="w-full pl-10 pr-11 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent transition-all"
                           placeholder="••••••••"
                         />
                         <PasswordToggleButton
@@ -287,9 +287,9 @@ export default function AssessmentLoginPage({
             </AnimatePresence>
 
             {/* Footer */}
-            <div className="mt-6 pt-5 border-t border-slate-100 text-center">
-              <p className="text-xs text-slate-500">
-                Leadership Nasional Asia — Assessment Center
+            <div className="mt-6 pt-5 border-t border-stone-100 text-center">
+              <p className="text-xs text-stone-500">
+                Sangkala — Assessment Center
               </p>
             </div>
           </div>
@@ -299,7 +299,7 @@ export default function AssessmentLoginPage({
         <div className="mt-4 text-center">
           <button
             onClick={() => router.push("/assessment-center")}
-            className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+            className="text-sm text-stone-600 hover:text-petrol-600 transition-colors"
           >
             ← {t("assessmentCenter.listTitle")}
           </button>

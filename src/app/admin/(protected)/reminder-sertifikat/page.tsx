@@ -65,7 +65,7 @@ const STATUS_FILTERS: { value: CertificationStatus | ""; label: string }[] = [
 ];
 
 const STATUS_BADGE: Record<CertificationStatus, string> = {
-  AKTIF: "bg-slate-100 text-slate-600 border-transparent",
+  AKTIF: "bg-stone-100 text-stone-600 border-transparent",
   MENDEKATI_REFRESHMENT: "bg-amber-100 text-amber-700 border-transparent",
   MENDEKATI_KADALUARSA: "bg-orange-100 text-orange-700 border-transparent",
   KADALUARSA: "bg-red-100 text-red-700 border-transparent",
@@ -107,18 +107,18 @@ const STATUS_SUMMARY_CARDS: {
   {
     status: "MENDEKATI_REFRESHMENT",
     icon: Clock,
-    card: "bg-white border-slate-200",
+    card: "bg-white border-stone-200",
     iconBox: "bg-amber-50 text-amber-600",
-    label: "text-slate-500",
-    value: "text-slate-900 text-xl sm:text-2xl",
+    label: "text-stone-500",
+    value: "text-stone-900 text-xl sm:text-2xl",
   },
   {
     status: "AKTIF",
     icon: CheckCircle2,
-    card: "bg-slate-50 border-slate-200",
-    iconBox: "bg-white text-slate-400",
-    label: "text-slate-400",
-    value: "text-slate-500 text-lg sm:text-xl",
+    card: "bg-stone-50 border-stone-200",
+    iconBox: "bg-white text-stone-400",
+    label: "text-stone-400",
+    value: "text-stone-500 text-lg sm:text-xl",
   },
 ];
 
@@ -391,11 +391,11 @@ export default function ReminderSertifikatPage() {
         {completedAt ? (
           <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
         ) : (
-          <Circle className="w-4 h-4 text-slate-300 shrink-0" />
+          <Circle className="w-4 h-4 text-stone-300 shrink-0" />
         )}
         <div className="min-w-0">
-          <p className="text-sm font-medium text-slate-700 truncate">{label}</p>
-          <p className="text-xs text-slate-400">{formatDate(date)}</p>
+          <p className="text-sm font-medium text-stone-700 truncate">{label}</p>
+          <p className="text-xs text-stone-400">{formatDate(date)}</p>
         </div>
       </div>
       <Button
@@ -413,7 +413,7 @@ export default function ReminderSertifikatPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
       </div>
     );
   }
@@ -428,11 +428,11 @@ export default function ReminderSertifikatPage() {
         >
           <div className="flex items-center gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-                <BellRing className="w-5 h-5 text-blue-600" />
+              <h1 className="text-2xl font-bold text-stone-900 flex items-center gap-2">
+                <BellRing className="w-5 h-5 text-petrol-600" />
                 Reminder Sertifikasi & Refreshment
               </h1>
-              <p className="text-slate-500 mt-1">
+              <p className="text-stone-500 mt-1">
                 Kelola data kadaluarsa sertifikasi dan jadwal refreshment
               </p>
             </div>
@@ -469,7 +469,7 @@ export default function ReminderSertifikatPage() {
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
           <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 z-10" />
             <Input
               type="text"
               value={searchQuery}
@@ -478,7 +478,7 @@ export default function ReminderSertifikatPage() {
                 setPage(1);
               }}
               placeholder="Cari nama, ID BSMR, atau instansi..."
-              className="pl-10 h-10 rounded-xl bg-white border border-slate-200 text-sm shadow-xs"
+              className="pl-10 h-10 rounded-xl bg-white border border-stone-200 text-sm shadow-xs"
             />
           </div>
           <Select
@@ -488,7 +488,7 @@ export default function ReminderSertifikatPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-48 h-10 rounded-xl bg-white border border-slate-200 text-sm shadow-xs">
+            <SelectTrigger className="w-48 h-10 rounded-xl bg-white border border-stone-200 text-sm shadow-xs">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -507,7 +507,7 @@ export default function ReminderSertifikatPage() {
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-36 h-10 rounded-xl bg-white border border-slate-200 text-sm shadow-xs">
+              <SelectTrigger className="w-36 h-10 rounded-xl bg-white border border-stone-200 text-sm shadow-xs">
                 <SelectValue placeholder="Jenjang" />
               </SelectTrigger>
               <SelectContent>
@@ -523,11 +523,11 @@ export default function ReminderSertifikatPage() {
         </div>
 
         {total === 0 ? (
-          <div className="text-center py-16 text-slate-400 bg-white rounded-xl border border-slate-200">
+          <div className="text-center py-16 text-stone-400 bg-white rounded-xl border border-stone-200">
             Belum ada data. Klik &quot;Tambah Peserta&quot; untuk mulai.
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="bg-white rounded-xl border border-stone-200 overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -548,11 +548,11 @@ export default function ReminderSertifikatPage() {
                       <Badge className={STATUS_BADGE[holder.status]}>{STATUS_LABEL[holder.status]}</Badge>
                     </TableCell>
                     <TableCell>{holder.institution}</TableCell>
-                    <TableCell className="text-slate-600">{formatDate(holder.expiryDate)}</TableCell>
+                    <TableCell className="text-stone-600">{formatDate(holder.expiryDate)}</TableCell>
                     <TableCell>
                       <button
                         onClick={() => setDetailHolder(holder)}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-blue-600 transition-colors"
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-600 border border-stone-200 hover:bg-stone-50 hover:text-petrol-600 transition-colors"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         Detail
@@ -567,14 +567,14 @@ export default function ReminderSertifikatPage() {
 
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-4">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-stone-500">
               Halaman {page} dari {totalPages} &mdash; {total} data
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-600 border border-stone-200 hover:bg-stone-50 disabled:opacity-40 disabled:pointer-events-none transition-colors"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 Sebelumnya
@@ -582,7 +582,7 @@ export default function ReminderSertifikatPage() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-600 border border-stone-200 hover:bg-stone-50 disabled:opacity-40 disabled:pointer-events-none transition-colors"
               >
                 Selanjutnya
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -688,32 +688,32 @@ export default function ReminderSertifikatPage() {
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                 <div>
-                  <p className="text-xs text-slate-400">ID BSMR</p>
-                  <p className="font-medium text-slate-700">{detailHolder.bsmrId}</p>
+                  <p className="text-xs text-stone-400">ID BSMR</p>
+                  <p className="font-medium text-stone-700">{detailHolder.bsmrId}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">Jenjang</p>
-                  <p className="font-medium text-slate-700">{detailHolder.level}</p>
+                  <p className="text-xs text-stone-400">Jenjang</p>
+                  <p className="font-medium text-stone-700">{detailHolder.level}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-xs text-slate-400">Instansi</p>
-                  <p className="font-medium text-slate-700">{detailHolder.institution}</p>
+                  <p className="text-xs text-stone-400">Instansi</p>
+                  <p className="font-medium text-stone-700">{detailHolder.institution}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-xs text-slate-400">Sertifikasi yang Diambil</p>
-                  <p className="font-medium text-slate-700">{detailHolder.certificationName}</p>
+                  <p className="text-xs text-stone-400">Sertifikasi yang Diambil</p>
+                  <p className="font-medium text-stone-700">{detailHolder.certificationName}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-xs text-slate-400">Email</p>
-                  <p className="font-medium text-slate-700">{detailHolder.email}</p>
+                  <p className="text-xs text-stone-400">Email</p>
+                  <p className="font-medium text-stone-700">{detailHolder.email}</p>
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 pt-3">
-                <p className="text-xs font-semibold text-slate-500 mb-1.5">
+              <div className="border-t border-stone-100 pt-3">
+                <p className="text-xs font-semibold text-stone-500 mb-1.5">
                   Checkpoint
                 </p>
-                <div className="divide-y divide-slate-50">
+                <div className="divide-y divide-stone-50">
                   {/* Urutan kronologis kejadian aslinya: refreshment thn 1 -> thn 2 ->
                       baru sertifikasi ulang di akhir masa berlaku. */}
                   {renderCheckpointRow(
@@ -829,7 +829,7 @@ function CertificationHolderFields({
           <Input id="refreshment2Date" type="date" value={formData.refreshment2Date} onChange={update("refreshment2Date")} />
         </div>
       </div>
-      <p className="text-xs text-slate-400">
+      <p className="text-xs text-stone-400">
         Kosongkan Masa Berakhir/Refreshment untuk otomatis dihitung 3/1/2 tahun dari Tanggal Ujian.
       </p>
     </>

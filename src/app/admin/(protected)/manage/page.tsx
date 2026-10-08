@@ -317,7 +317,7 @@ export default function AdminInsightsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
         <span className="sr-only">Memuat data artikel...</span>
       </div>
     );
@@ -333,17 +333,17 @@ export default function AdminInsightsPage() {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2.5">
-            <FileText className="w-7 h-7 text-blue-600" />
+          <h1 className="text-2xl font-bold text-stone-900 flex items-center gap-2.5">
+            <FileText className="w-7 h-7 text-petrol-600" />
             Kelola Insights
           </h1>
-          <p className="text-slate-500 mt-1">
+          <p className="text-stone-500 mt-1">
             Publikasikan dan kelola seluruh konten artikel, publikasi, dan materi wawasan
           </p>
         </div>
         <button
           onClick={openCreateModal}
-          className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium shadow-xs transition-colors shrink-0"
+          className="flex items-center gap-2 px-4 py-2.5 bg-petrol-600 hover:bg-petrol-700 text-white rounded-xl text-sm font-medium shadow-xs transition-colors shrink-0"
         >
           <Plus className="w-4 h-4" />
           Artikel Baru
@@ -353,20 +353,20 @@ export default function AdminInsightsPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div className="relative flex-1 min-w-[220px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 z-10" />
           <input
             type="text"
             placeholder="Cari artikel..."
             aria-label="Cari artikel berdasarkan judul atau penulis"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 h-10 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-xs placeholder:text-slate-400"
+            className="w-full pl-9 pr-4 h-10 bg-white border border-stone-200 rounded-xl text-sm focus:ring-2 focus:ring-petrol-500 focus:border-transparent outline-none shadow-xs placeholder:text-stone-400"
           />
         </div>
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-xs cursor-pointer"
+          className="h-10 px-3 bg-white border border-stone-200 rounded-xl text-sm font-medium text-stone-700 focus:ring-2 focus:ring-petrol-500 focus:border-transparent outline-none shadow-xs cursor-pointer"
         >
           <option value="">Semua Kategori</option>
           {CATEGORIES.map((cat) => (
@@ -378,7 +378,7 @@ export default function AdminInsightsPage() {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="h-10 px-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-xs cursor-pointer"
+          className="h-10 px-3 bg-white border border-stone-200 rounded-xl text-sm font-medium text-stone-700 focus:ring-2 focus:ring-petrol-500 focus:border-transparent outline-none shadow-xs cursor-pointer"
         >
           <option value="">Semua Status</option>
           <option value="DRAFT">Draft</option>
@@ -388,24 +388,24 @@ export default function AdminInsightsPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
-            <p className="text-sm text-slate-500">Total Artikel</p>
-            <p className="text-2xl font-bold text-slate-900">{articles.length}</p>
+          <div className="bg-white rounded-xl border border-stone-200 p-4">
+            <p className="text-sm text-stone-500">Total Artikel</p>
+            <p className="text-2xl font-bold text-stone-900">{articles.length}</p>
           </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
-            <p className="text-sm text-slate-500">Published</p>
+          <div className="bg-white rounded-xl border border-stone-200 p-4">
+            <p className="text-sm text-stone-500">Published</p>
             <p className="text-2xl font-bold text-green-600">
               {articles.filter((a) => a.status === "PUBLISHED").length}
             </p>
           </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
-            <p className="text-sm text-slate-500">Draft</p>
+          <div className="bg-white rounded-xl border border-stone-200 p-4">
+            <p className="text-sm text-stone-500">Draft</p>
             <p className="text-2xl font-bold text-yellow-600">
               {articles.filter((a) => a.status === "DRAFT").length}
             </p>
           </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
-            <p className="text-sm text-slate-500">Featured</p>
+          <div className="bg-white rounded-xl border border-stone-200 p-4">
+            <p className="text-sm text-stone-500">Featured</p>
             <p className="text-2xl font-bold text-purple-600">
               {articles.filter((a) => a.isFeatured).length}
             </p>
@@ -414,12 +414,12 @@ export default function AdminInsightsPage() {
 
         {/* Articles List */}
         {filteredArticles.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-            <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 text-lg">Belum ada artikel</p>
+          <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+            <FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+            <p className="text-stone-500 text-lg">Belum ada artikel</p>
             <button
               onClick={openCreateModal}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="mt-4 px-4 py-2 bg-petrol-600 text-white rounded-lg hover:bg-petrol-700 transition-colors"
             >
               Buat Artikel Pertama
             </button>
@@ -431,12 +431,12 @@ export default function AdminInsightsPage() {
                 key={article.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-md transition-shadow"
+                className="bg-white rounded-xl border border-stone-200 p-6 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start gap-4">
                   {/* Cover Image */}
                   {article.coverImage ? (
-                    <div className="w-24 h-24 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                    <div className="w-24 h-24 rounded-lg overflow-hidden bg-stone-100 flex-shrink-0">
                       <img
                         src={getImageUrl(article.coverImage) || ""}
                         alt={article.titleId}
@@ -444,8 +444,8 @@ export default function AdminInsightsPage() {
                       />
                     </div>
                   ) : (
-                    <div className="w-24 h-24 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-                      <ImageIcon className="w-8 h-8 text-slate-400" />
+                    <div className="w-24 h-24 rounded-lg bg-stone-100 flex items-center justify-center flex-shrink-0">
+                      <ImageIcon className="w-8 h-8 text-stone-400" />
                     </div>
                   )}
 
@@ -453,10 +453,10 @@ export default function AdminInsightsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="font-semibold text-slate-900 truncate">
+                        <h3 className="font-semibold text-stone-900 truncate">
                           {article.titleId}
                         </h3>
-                        <p className="text-sm text-slate-500 truncate">{article.titleEn}</p>
+                        <p className="text-sm text-stone-500 truncate">{article.titleEn}</p>
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
                         {/* Status Badge */}
@@ -470,7 +470,7 @@ export default function AdminInsightsPage() {
                           {article.status === "PUBLISHED" ? "Published" : "Draft"}
                         </span>
                         {/* Category Badge */}
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-petrol-100 text-petrol-700">
                           {CATEGORIES.find((c) => c.value === article.category)?.label}
                         </span>
                         {/* Featured Badge */}
@@ -482,7 +482,7 @@ export default function AdminInsightsPage() {
                       </div>
                     </div>
 
-                    <div className="mt-2 flex items-center gap-4 text-sm text-slate-500">
+                    <div className="mt-2 flex items-center gap-4 text-sm text-stone-500">
                       <span className="flex items-center gap-1">
                         <User className="w-4 h-4" />
                         {article.authorName}
@@ -499,7 +499,7 @@ export default function AdminInsightsPage() {
                       <button
                         onClick={() => handleEdit(article)}
                         aria-label={`Edit artikel ${article.titleId}`}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="flex items-center gap-1 px-3 py-1.5 text-sm text-petrol-600 hover:bg-petrol-50 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                         Edit
@@ -531,7 +531,7 @@ export default function AdminInsightsPage() {
                         className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
                           article.isFeatured
                             ? "text-purple-600 hover:bg-purple-50"
-                            : "text-slate-600 hover:bg-slate-50"
+                            : "text-stone-600 hover:bg-stone-50"
                         }`}
                       >
                         {article.isFeatured ? (
@@ -571,8 +571,8 @@ export default function AdminInsightsPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-xl shadow-xl w-full max-w-4xl mx-4"
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="text-lg font-semibold text-slate-900">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200">
+              <h2 className="text-lg font-semibold text-stone-900">
                 {editingArticle ? "Edit Artikel" : "Artikel Baru"}
               </h2>
               <button
@@ -580,7 +580,7 @@ export default function AdminInsightsPage() {
                   setShowModal(false);
                   setEditingArticle(null);
                 }}
-                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -590,26 +590,26 @@ export default function AdminInsightsPage() {
               {/* Basic Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Judul (ID) *
                   </label>
                   <input
                     type="text"
                     value={formData.titleId}
                     onChange={(e) => handleTitleChange("titleId", e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Title (EN) *
                   </label>
                   <input
                     type="text"
                     value={formData.titleEn}
                     onChange={(e) => handleTitleChange("titleEn", e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                     required
                   />
                 </div>
@@ -617,17 +617,17 @@ export default function AdminInsightsPage() {
 
               {/* Slug */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-stone-700 mb-1">
                   Slug (URL) *
                 </label>
                 <input
                   type="text"
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: generateSlug(e.target.value) })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent font-mono text-sm"
                   required
                 />
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-stone-500 mt-1">
                   URL: /insights/{formData.slug || "..."}
                 </p>
               </div>
@@ -635,26 +635,26 @@ export default function AdminInsightsPage() {
               {/* Author */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Nama Penulis *
                   </label>
                   <input
                     type="text"
                     value={formData.authorName}
                     onChange={(e) => setFormData({ ...formData, authorName: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Jabatan Penulis
                   </label>
                   <input
                     type="text"
                     value={formData.authorPosition}
                     onChange={(e) => setFormData({ ...formData, authorPosition: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                     placeholder="Opsional"
                   />
                 </div>
@@ -663,13 +663,13 @@ export default function AdminInsightsPage() {
               {/* Category & Status */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Kategori
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                   >
                     {CATEGORIES.map((cat) => (
                       <option key={cat.value} value={cat.value}>
@@ -679,26 +679,26 @@ export default function AdminInsightsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Status
                   </label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                   >
                     <option value="DRAFT">Draft</option>
                     <option value="PUBLISHED">Published</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Posisi Gambar
                   </label>
                   <select
                     value={formData.imagePosition}
                     onChange={(e) => setFormData({ ...formData, imagePosition: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                   >
                     {IMAGE_POSITIONS.map((pos) => (
                       <option key={pos.value} value={pos.value}>
@@ -716,21 +716,21 @@ export default function AdminInsightsPage() {
                   id="isFeatured"
                   checked={formData.isFeatured}
                   onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-petrol-600 border-stone-300 rounded focus:ring-petrol-500"
                 />
-                <label htmlFor="isFeatured" className="text-sm text-slate-700">
+                <label htmlFor="isFeatured" className="text-sm text-stone-700">
                   Tampilkan sebagai Featured Article
                 </label>
               </div>
 
               {/* Cover Image */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-stone-700 mb-1">
                   Cover Image
                 </label>
                 <div className="flex items-start gap-4">
                   {formData.coverImage ? (
-                    <div className="relative w-32 h-32 rounded-lg overflow-hidden bg-slate-100">
+                    <div className="relative w-32 h-32 rounded-lg overflow-hidden bg-stone-100">
                       <img
                         src={getImageUrl(formData.coverImage) || ""}
                         alt="Cover"
@@ -745,9 +745,9 @@ export default function AdminInsightsPage() {
                       </button>
                     </div>
                   ) : (
-                    <label className="w-32 h-32 rounded-lg border-2 border-dashed border-slate-300 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 transition-colors">
-                      <ImageIcon className="w-8 h-8 text-slate-400" />
-                      <span className="text-xs text-slate-500 mt-1">
+                    <label className="w-32 h-32 rounded-lg border-2 border-dashed border-stone-300 flex flex-col items-center justify-center cursor-pointer hover:border-petrol-500 transition-colors">
+                      <ImageIcon className="w-8 h-8 text-stone-400" />
+                      <span className="text-xs text-stone-500 mt-1">
                         {uploading ? "Uploading..." : "Upload"}
                       </span>
                       <input
@@ -760,14 +760,14 @@ export default function AdminInsightsPage() {
                     </label>
                   )}
                   <div className="flex-1">
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-stone-500">
                       Atau masukkan URL gambar:
                     </p>
                     <input
                       type="text"
                       value={formData.coverImage}
                       onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                      className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      className="w-full mt-2 px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent text-sm"
                       placeholder="https://..."
                     />
                   </div>
@@ -777,25 +777,25 @@ export default function AdminInsightsPage() {
               {/* Excerpt */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Ringkasan (ID)
                   </label>
                   <textarea
                     value={formData.excerptId}
                     onChange={(e) => setFormData({ ...formData, excerptId: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                     rows={2}
                     placeholder="Ringkasan singkat untuk preview..."
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-stone-700 mb-1">
                     Excerpt (EN)
                   </label>
                   <textarea
                     value={formData.excerptEn}
                     onChange={(e) => setFormData({ ...formData, excerptEn: e.target.value })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
                     rows={2}
                     placeholder="Short excerpt for preview..."
                   />
@@ -804,13 +804,13 @@ export default function AdminInsightsPage() {
 
               {/* Content */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-stone-700 mb-1">
                   Konten (ID) *
                 </label>
                 <textarea
                   value={formData.contentId}
                   onChange={(e) => setFormData({ ...formData, contentId: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent font-mono text-sm"
                   rows={8}
                   placeholder="Tulis konten artikel dalam bahasa Indonesia...&#10;&#10;Gunakan format:&#10;**teks tebal**&#10;*teks miring*&#10;- list item"
                   required
@@ -818,13 +818,13 @@ export default function AdminInsightsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-stone-700 mb-1">
                   Content (EN) *
                 </label>
                 <textarea
                   value={formData.contentEn}
                   onChange={(e) => setFormData({ ...formData, contentEn: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent font-mono text-sm"
                   rows={8}
                   placeholder="Write article content in English...&#10;&#10;Use format:&#10;**bold text**&#10;*italic text*&#10;- list item"
                   required
@@ -832,21 +832,21 @@ export default function AdminInsightsPage() {
               </div>
 
               {/* Submit */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-200">
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
                     setEditingArticle(null);
                   }}
-                  className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-4 py-2 bg-petrol-600 text-white rounded-lg hover:bg-petrol-700 transition-colors disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {saving ? "Menyimpan..." : "Simpan"}

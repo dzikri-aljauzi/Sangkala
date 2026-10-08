@@ -158,25 +158,25 @@ const programs = [
 
 const colorMap = {
   blue: {
-    gradient: "from-blue-500 to-blue-600",
-    bg: "bg-blue-50",
-    border: "border-blue-200",
-    text: "text-blue-600",
+    gradient: "bg-petrol-500",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    text: "text-petrol-600",
   },
   teal: {
-    gradient: "from-teal-500 to-teal-600",
-    bg: "bg-teal-50",
-    border: "border-teal-200",
-    text: "text-teal-600",
+    gradient: "bg-petrol-500",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    text: "text-petrol-600",
   },
   cyan: {
-    gradient: "from-cyan-500 to-cyan-600",
-    bg: "bg-cyan-50",
-    border: "border-cyan-200",
-    text: "text-cyan-600",
+    gradient: "bg-petrol-500",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    text: "text-petrol-600",
   },
   gold: {
-    gradient: "from-amber-500 to-amber-600",
+    gradient: "bg-stone-700",
     bg: "bg-amber-50",
     border: "border-amber-200",
     text: "text-amber-600",
@@ -189,7 +189,7 @@ export default function ProgramsPage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-stone-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -197,15 +197,15 @@ export default function ProgramsPage() {
             transition={{ duration: 0.6 }}
             className="max-w-4xl"
           >
-            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-600 mb-3 sm:mb-4">
+            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-petrol-600 mb-3 sm:mb-4">
               {language === "id" ? "Program Unggulan" : "Flagship Programs"}
             </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-slate-800">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-stone-800">
               {language === "id"
                 ? "Program Unggulan Kami"
                 : "Our Flagship Programs"}
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl">
+            <p className="text-base sm:text-lg md:text-xl text-stone-600 max-w-3xl">
               {language === "id"
                 ? "Program signature dengan dampak terukur untuk transformasi organisasi Anda."
                 : "Signature programs with measurable impact for your organizational transformation."}
@@ -228,10 +228,10 @@ export default function ProgramsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
-                className="bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border border-gray-100"
+                className="bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border border-stone-100"
               >
                 {/* Header */}
-                <div className={`bg-gradient-to-r ${colors.gradient} p-4 sm:p-6 md:p-8 text-white`}>
+                <div className={`${colors.gradient} p-4 sm:p-6 md:p-8 text-white`}>
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
                     <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
@@ -265,11 +265,11 @@ export default function ProgramsPage() {
                   <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
                     {/* Description */}
                     <div>
-                      <p className="text-sm sm:text-base md:text-lg text-slate-500 mb-4 sm:mb-6">
+                      <p className="text-sm sm:text-base md:text-lg text-stone-500 mb-4 sm:mb-6">
                         {program.desc[language]}
                       </p>
 
-                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-500 mb-4 sm:mb-6">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-stone-500 mb-4 sm:mb-6">
                         <Users className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span className="font-medium">
                           {language === "id" ? "Target Peserta:" : "Target Audience:"}
@@ -287,14 +287,14 @@ export default function ProgramsPage() {
 
                     {/* Features */}
                     <div className={`${colors.bg} rounded-lg sm:rounded-xl p-4 sm:p-6`}>
-                      <h3 className="font-semibold text-slate-800 mb-3 sm:mb-4 text-sm sm:text-base">
+                      <h3 className="font-semibold text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
                         {language === "id" ? "Yang Akan Anda Dapatkan:" : "What You'll Get:"}
                       </h3>
                       <ul className="space-y-2 sm:space-y-3">
                         {program.features[language].map((feature, i) => (
                           <li key={i} className="flex items-start gap-2 sm:gap-3">
                             <CheckCircle className={`w-4 h-4 sm:w-5 sm:h-5 ${colors.text} mt-0.5 flex-shrink-0`} />
-                            <span className="text-xs sm:text-sm md:text-base text-slate-500">{feature}</span>
+                            <span className="text-xs sm:text-sm md:text-base text-stone-500">{feature}</span>
                           </li>
                         ))}
                       </ul>
@@ -321,7 +321,7 @@ export default function ProgramsPage() {
                 ? "Butuh Program Khusus?"
                 : "Need a Custom Program?"}
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-6 sm:mb-8">
+            <p className="text-sm sm:text-base md:text-lg text-stone-300 mb-6 sm:mb-8">
               {language === "id"
                 ? "Kami dapat merancang program yang disesuaikan dengan kebutuhan spesifik organisasi Anda."
                 : "We can design programs tailored to your organization's specific needs."}

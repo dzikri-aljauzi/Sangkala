@@ -255,14 +255,14 @@ export default function ParticipantManager({
       {/* Modal */}
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">Daftar Peserta</h2>
-            <p className="text-sm text-slate-500 mt-0.5">{recipientName}</p>
+            <h2 className="text-lg font-bold text-stone-900">Daftar Peserta</h2>
+            <p className="text-sm text-stone-500 mt-0.5">{recipientName}</p>
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+            className="w-9 h-9 flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-xl transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -272,25 +272,25 @@ export default function ParticipantManager({
         <div className="flex-1 overflow-y-auto p-6 space-y-5">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <input
               type="text"
               placeholder="Cari nama peserta..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900"
+              className="w-full pl-10 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-petrol-500/20 focus:border-petrol-500 transition-all text-stone-900"
             />
           </div>
 
           {/* Participant list */}
           {loading ? (
-            <div className="text-center py-8 text-slate-400 text-sm">Memuat peserta...</div>
+            <div className="text-center py-8 text-stone-400 text-sm">Memuat peserta...</div>
           ) : filtered.length > 0 ? (
             <div className="space-y-2">
               {filtered.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-100 group"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-stone-50 rounded-xl border border-stone-100 group"
                 >
                   {editingId === p.id ? (
                     <>
@@ -302,7 +302,7 @@ export default function ParticipantManager({
                           if (e.key === "Enter") saveEdit(p.id);
                           if (e.key === "Escape") cancelEdit();
                         }}
-                        className="flex-1 px-3 py-1.5 bg-white border border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-900"
+                        className="flex-1 px-3 py-1.5 bg-white border border-petrol-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-petrol-500/20 text-stone-900"
                         autoFocus
                       />
                       <button
@@ -314,7 +314,7 @@ export default function ParticipantManager({
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="w-8 h-8 flex items-center justify-center text-slate-400 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="w-8 h-8 flex items-center justify-center text-stone-400 hover:bg-stone-100 rounded-lg transition-colors"
                         title="Batal"
                       >
                         <X className="w-4 h-4" />
@@ -322,19 +322,19 @@ export default function ParticipantManager({
                     </>
                   ) : (
                     <>
-                      <span className="flex-1 text-sm font-medium text-slate-800 truncate">
+                      <span className="flex-1 text-sm font-medium text-stone-800 truncate">
                         {p.name}
                       </span>
                       <button
                         onClick={() => startEdit(p)}
-                        className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                        className="w-8 h-8 flex items-center justify-center text-stone-400 hover:text-petrol-600 hover:bg-petrol-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                         title="Ubah Nama"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(p.id, p.name)}
-                        className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                        className="w-8 h-8 flex items-center justify-center text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                         title="Hapus"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -345,7 +345,7 @@ export default function ParticipantManager({
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-slate-400 text-sm">
+            <div className="text-center py-8 text-stone-400 text-sm">
               {searchTerm
                 ? `Tidak ada peserta yang cocok dengan "${searchTerm}"`
                 : "Belum ada peserta"}
@@ -353,7 +353,7 @@ export default function ParticipantManager({
           )}
 
           {/* Divider */}
-          <div className="border-t border-slate-200 pt-5 space-y-4">
+          <div className="border-t border-stone-200 pt-5 space-y-4">
             {/* Manual add */}
             <form onSubmit={handleAdd} className="flex gap-2">
               <input
@@ -361,12 +361,12 @@ export default function ParticipantManager({
                 placeholder="Nama lengkap peserta..."
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="flex-1 px-4 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-slate-900 placeholder-slate-500"
+                className="flex-1 px-4 py-2 bg-white border border-stone-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-petrol-500/20 focus:border-petrol-500 transition-all text-stone-900 placeholder-stone-500"
               />
               <button
                 type="submit"
                 disabled={!newName.trim()}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm font-semibold rounded-xl transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-petrol-600 hover:bg-petrol-700 disabled:bg-petrol-300 text-white text-sm font-semibold rounded-xl transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
                 Tambah
@@ -381,8 +381,8 @@ export default function ParticipantManager({
               onClick={() => fileInputRef.current?.click()}
               className={`border-2 border-dashed rounded-2xl p-5 text-center cursor-pointer transition-all flex flex-col items-center gap-1.5 ${
                 dragOver
-                  ? "border-blue-500 bg-blue-50/50"
-                  : "border-slate-200 hover:border-slate-300 bg-slate-50/50"
+                  ? "border-petrol-500 bg-petrol-50/50"
+                  : "border-stone-200 hover:border-stone-300 bg-stone-50/50"
               }`}
             >
               <input
@@ -396,11 +396,11 @@ export default function ParticipantManager({
                 accept=".xlsx,.xls,.csv"
                 className="hidden"
               />
-              <Upload className="w-6 h-6 text-slate-400" />
-              <span className="text-xs font-semibold text-slate-700">
+              <Upload className="w-6 h-6 text-stone-400" />
+              <span className="text-xs font-semibold text-stone-700">
                 Upload Excel untuk menambah banyak peserta
               </span>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[10px] text-stone-400">
                 Format: Kolom Nama / Name / Nama Lengkap
               </span>
             </div>
@@ -409,7 +409,7 @@ export default function ParticipantManager({
             <a
               href="/template-excel/template-bulk-nama-peserta.xlsx"
               download
-              className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors border border-slate-200"
+              className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold rounded-xl transition-colors border border-stone-200"
             >
               <Download className="w-3.5 h-3.5" />
               Unduh Template Excel
@@ -418,13 +418,13 @@ export default function ParticipantManager({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50/50 rounded-b-2xl shrink-0">
-          <span className="text-sm text-slate-500">
-            <span className="font-semibold text-slate-700">{participants.length}</span> peserta
+        <div className="flex items-center justify-between px-6 py-4 border-t border-stone-200 bg-stone-50/50 rounded-b-2xl shrink-0">
+          <span className="text-sm text-stone-500">
+            <span className="font-semibold text-stone-700">{participants.length}</span> peserta
           </span>
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-xl transition-colors"
+            className="px-5 py-2 bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 text-sm font-semibold rounded-xl transition-colors"
           >
             Tutup
           </button>

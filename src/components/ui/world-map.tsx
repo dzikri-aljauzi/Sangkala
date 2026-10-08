@@ -37,8 +37,8 @@ function generateCurvePath(
 
 export default function WorldMap({
   dots = [],
-  lineColor = "#0891b2",
-  dotColor = "#fbbf24",
+  lineColor = "#0d5c63",
+  dotColor = "#e2cdb0",
 }: WorldMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
@@ -69,7 +69,7 @@ export default function WorldMap({
         style={{ background: "transparent" }}
       >
         {/* Simplified world map dots pattern */}
-        <g fill="#e2e8f0" opacity="0.3">
+        <g fill="#e3e5e2" opacity="0.3">
           {/* Generate a dot pattern representing continents */}
           {Array.from({ length: 50 }).map((_, row) =>
             Array.from({ length: 100 }).map((_, col) => {

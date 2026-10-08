@@ -49,8 +49,8 @@ export const translations = {
       en: "In an era of regulatory dynamics, Lifestyle customers, the era of social finance and digital transformation (AI, open banking, fintech disruption), organizations need more than just ad-hoc training or one-dimensional consultants.",
     },
     intro: {
-      id: "Leadership Nasional Asia hadir sebagai integrator ekosistem kinerja yang menyatukan:",
-      en: "Leadership Nasional Asia serves as a performance ecosystem integrator that unifies:",
+      id: "Sangkala hadir sebagai integrator ekosistem kinerja yang menyatukan:",
+      en: "Sangkala serves as a performance ecosystem integrator that unifies:",
     },
     pillars: {
       people: {
@@ -281,8 +281,8 @@ export const translations = {
     items: [
       {
         quote: {
-          id: "Leadership Nasional Asia membantu kami membangun integrated risk culture dari level board sampai front-line. Framework People, Process, Technology mereka membuat GRC tidak lagi silo.",
-          en: "Leadership Nasional Asia helped us build an integrated risk culture from board level to front-line. Their People, Process, Technology framework eliminated GRC silos.",
+          id: "Sangkala membantu kami membangun integrated risk culture dari level board sampai front-line. Framework People, Process, Technology mereka membuat GRC tidak lagi silo.",
+          en: "Sangkala helped us build an integrated risk culture from board level to front-line. Their People, Process, Technology framework eliminated GRC silos.",
         },
         author: { id: "Direktur Risiko, Bank Umum Nasional", en: "Risk Director, National Commercial Bank" },
       },
@@ -319,7 +319,7 @@ export const translations = {
   // Assessment Center
   assessmentCenter: {
     title: { id: "Risk Leadership Assessment Center", en: "Risk Leadership Assessment Center" },
-    subtitle: { id: "Portal Assessment LNA", en: "LNA Assessment Portal" },
+    subtitle: { id: "Portal Assessment Sangkala", en: "Sangkala Assessment Portal" },
     pageDescription: { id: "Akses assessment yang sedang berlangsung", en: "Access ongoing assessments" },
     listTitle: { id: "Daftar Assessment", en: "Assessment List" },
     noAssessments: { id: "Belum ada assessment tersedia", en: "No assessments available" },

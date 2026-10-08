@@ -241,16 +241,16 @@ export default function CommandPalette({
                 }`}
               >
                 {item.group === "Pengguna" ? (
-                  <User className="h-4 w-4 flex-shrink-0 text-indigo-600" />
+                  <User className="h-4 w-4 flex-shrink-0 text-petrol-600" />
                 ) : item.group === "Assessment" ? (
-                  <FolderOpen className="h-4 w-4 flex-shrink-0 text-blue-600" />
+                  <FolderOpen className="h-4 w-4 flex-shrink-0 text-petrol-600" />
                 ) : (
-                  <Compass className="h-4 w-4 flex-shrink-0 text-slate-500" />
+                  <Compass className="h-4 w-4 flex-shrink-0 text-stone-500" />
                 )}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium text-ink">{item.label}</span>
                   <span className="block truncate text-xs text-ink-muted">
-                    <span className="font-semibold text-slate-700">{item.group}</span> · {item.description}
+                    <span className="font-semibold text-stone-700">{item.group}</span> · {item.description}
                   </span>
                 </span>
                 {index === activeIndex && (

@@ -5,20 +5,22 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { forwardRef, ButtonHTMLAttributes } from "react";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrol-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-blue-500 to-[#0891b2] text-white hover:from-[#1e3a8a] hover:to-[#0e7490] shadow-lg hover:shadow-xl hover:scale-105",
+          "bg-petrol-600 text-white hover:bg-petrol-700",
         secondary:
-          "bg-white text-blue-600 border-2 border-blue-500 hover:bg-blue-600 hover:text-white",
+          "bg-transparent text-stone-900 border border-stone-200 hover:bg-stone-100",
         outline:
-          "border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white",
+          "border border-petrol-600 text-petrol-600 hover:bg-petrol-50",
         ghost:
-          "text-blue-600 hover:bg-blue-600/10",
+          "text-petrol-600 hover:bg-petrol-50",
+        // Nama "gold" dipertahankan agar pemakai lama tidak berubah API. Sogan
+        // tidak boleh jadi tombol (BRAND.md), jadi tampil sebagai tombol primer.
         gold:
-          "bg-gradient-to-r from-[#d4a012] to-[#fbbf24] text-slate-800 hover:from-[#b8860b] hover:to-[#d4a012] shadow-lg hover:shadow-xl hover:scale-105",
+          "bg-petrol-600 text-white hover:bg-petrol-700",
       },
       size: {
         sm: "h-9 px-4 text-sm",

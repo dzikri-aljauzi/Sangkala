@@ -5,31 +5,33 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* LNA Brand Colors */
-  --primary-navy: #0f172a;
-  --primary-navy-light: #1e293b;
-  --primary-blue: #2563eb;
-  --primary-blue-light: #3b82f6;
-  --accent-teal: #0891b2;
-  --accent-cyan: #22d3ee;
-  --accent-gold: #d4a012;
-  --accent-gold-light: #fbbf24;
+  /* Sangkala brand: petrol (primer), stone (netral), sogan (aksen kecil).
+     Lihat BRAND.md. Flat, tanpa gradien. */
+  --primary-navy: #052a2e;
+  --primary-navy-light: #083a3f;
+  --primary-blue: #0d5c63;
+  --primary-blue-light: #2a7c82;
+  --accent-teal: #0d5c63;
+  --accent-cyan: #85babd;
+  --accent-gold: #8a5a2b;
+  --accent-gold-light: #e2cdb0;
 
   /* Background & Text */
-  --background-secondary: #f8fafc;
-  --background-dark: #0f172a;
-  --foreground-muted: #64748b;
+  --background-secondary: #f2f3f1;
+  --background-dark: #052a2e;
+  --foreground-muted: #6b716e;
 
-  /* Gradients - Professional & Clean (Light Theme) */
-  --gradient-primary: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
-  --gradient-hero: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #eff6ff 100%);
-  --gradient-accent: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%);
+  /* Gradien dihapus: brand ini datar. Token dipertahankan sebagai warna flat
+     supaya kelas .bg-gradient-* lama tetap aman. */
+  --gradient-primary: #0d5c63;
+  --gradient-hero: #fcfcfb;
+  --gradient-accent: #0d5c63;
 
-  /* Workbench tokens (Unified Workbench dashboard redesign) */
-  --paper: #faf8f5;
-  --ink: #1c1917;
-  --ink-muted: #44403c;
-  --hairline: #e7e5e4;
+  /* Workbench tokens */
+  --paper: #fcfcfb;
+  --ink: #17181a;
+  --ink-muted: #565c59;
+  --hairline: #e3e5e2;
   --ok: #059669;
 
   /* Semantic Status Tokens (Audit Log, Badge, & Alert Theming) */
@@ -49,8 +51,8 @@
   --status-purple-bg: #faf5ff;
   --status-purple-border: #e9d5ff;
 
-  --background: #ffffff;
-  --foreground: #1e293b;
+  --background: #fcfcfb;
+  --foreground: #17181a;
   --card: #ffffff;
   --card-foreground: var(--foreground);
   --popover: #ffffff;
@@ -61,12 +63,12 @@
   --secondary-foreground: var(--foreground);
   --muted: var(--background-secondary);
   --muted-foreground: var(--foreground-muted);
-  --accent: #f1f5f9;
+  --accent: #f2f3f1;
   --accent-foreground: var(--foreground);
   --destructive: #dc2626;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: var(--primary-blue-light);
+  --border: #e3e5e2;
+  --input: #e3e5e2;
+  --ring: #0d5c63;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -93,6 +95,7 @@
   --color-teal: var(--accent-teal);
   --color-cyan: var(--accent-cyan);
   --color-gold: var(--accent-gold);
+  --color-sogan: var(--accent-gold);
   --color-paper: var(--paper);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
@@ -113,9 +116,9 @@
   --color-status-purple: var(--status-purple);
   --color-status-purple-bg: var(--status-purple-bg);
   --color-status-purple-border: var(--status-purple-border);
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-inter);
-  --font-mono: var(--font-inter);
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
   --container-2xl: 1400px;
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -153,6 +156,39 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Palet Sangkala. Kelas Tailwind lama (blue-*, slate-*, gray-*, cyan-*, teal-*)
+   dipetakan ke ramp ini supaya seluruh UI ikut berganti brand. */
+@theme {
+  --color-petrol-50: #eef6f6;
+  --color-petrol-100: #d9ebec;
+  --color-petrol-200: #b3d6d8;
+  --color-petrol-300: #85babd;
+  --color-petrol-400: #4f9a9f;
+  --color-petrol-500: #2a7c82;
+  --color-petrol-600: #0d5c63;
+  --color-petrol-700: #0a4a50;
+  --color-petrol-800: #083a3f;
+  --color-petrol-900: #052a2e;
+
+  --color-stone-*: initial;
+  --color-stone-50: #fcfcfb;
+  --color-stone-100: #f2f3f1;
+  --color-stone-200: #e3e5e2;
+  --color-stone-300: #e3e5e2;
+  --color-stone-400: #9aa09c;
+  --color-stone-500: #6b716e;
+  --color-stone-600: #6b716e;
+  --color-stone-700: #565c59;
+  --color-stone-800: #2c312f;
+  --color-stone-900: #17181a;
+  --color-stone-950: #17181a;
+
+  --color-sogan-50: #f3eadf;
+  --color-sogan-200: #e2cdb0;
+  --color-sogan-600: #8a5a2b;
+  --color-sogan-700: #5c3b1b;
 }
 
 /* Smooth scrolling */
@@ -204,8 +240,8 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(30, 64, 175, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(30, 64, 175, 0.6); }
+  0%, 100% { box-shadow: 0 0 20px rgba(13, 92, 99, 0.25); }
+  50% { box-shadow: 0 0 40px rgba(13, 92, 99, 0.45); }
 }
 
 @keyframes slide-up {
@@ -251,8 +287,8 @@ body {
 
 /* Selection */
 ::selection {
-  background: var(--accent-cyan);
-  color: white;
+  background: var(--color-petrol-200);
+  color: var(--ink);
 }
 
 @layer base {
@@ -291,9 +327,9 @@ body {
   padding: 6px 10px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  color: #0f172a !important;
+  color: #17181a !important;
   background-color: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
+  border: 1px solid #e3e5e2 !important;
   border-radius: 8px !important;
   outline: none !important;
   cursor: pointer !important;
@@ -301,7 +337,7 @@ body {
 }
 
 .goog-te-gadget .goog-te-combo:hover {
-  border-color: #2563eb !important;
+  border-color: #0d5c63 !important;
 }
 
 .goog-te-gadget > span,
@@ -322,14 +358,14 @@ body {
   box-shadow: none !important;
 }
 
-/* Ensure all form controls and option tags strictly inherit Inter font */
+/* Ensure all form controls and option tags strictly inherit the brand font */
 button,
 input,
 optgroup,
 select,
 textarea,
 option {
-  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-family: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif !important;
 }
 
-
+

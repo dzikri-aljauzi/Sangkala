@@ -12,19 +12,19 @@ const pillars = [
     icon: Users,
     titleKey: "about.pillars.people.title",
     descKey: "about.pillars.people.desc",
-    color: "from-blue-500 to-blue-600",
+    color: "bg-petrol-500",
   },
   {
     icon: Cog,
     titleKey: "about.pillars.process.title",
     descKey: "about.pillars.process.desc",
-    color: "from-teal-500 to-teal-600",
+    color: "bg-petrol-500",
   },
   {
     icon: Cpu,
     titleKey: "about.pillars.technology.title",
     descKey: "about.pillars.technology.desc",
-    color: "from-cyan-500 to-cyan-600",
+    color: "bg-petrol-500",
   },
 ];
 
@@ -41,16 +41,16 @@ export default function AboutPreview() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-cyan-600 mb-2 sm:mb-3">
+          <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-petrol-600 mb-2 sm:mb-3">
             {t("about.subtitle")}
           </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-stone-800 mb-4 sm:mb-6">
             {language === "id"
               ? "Integrator Ekosistem Kinerja"
               : "Performance Ecosystem Integrator"}
           </h2>
-          <p className="text-sm sm:text-base lg:text-lg text-slate-500 mb-4 sm:mb-6">{t("about.narrative")}</p>
-          <p className="text-sm sm:text-base lg:text-lg text-slate-500 mb-6 sm:mb-8">{t("about.intro")}</p>
+          <p className="text-sm sm:text-base lg:text-lg text-stone-500 mb-4 sm:mb-6">{t("about.narrative")}</p>
+          <p className="text-sm sm:text-base lg:text-lg text-stone-500 mb-6 sm:mb-8">{t("about.intro")}</p>
 
           <Link href="/about">
             <Button variant="primary" size="lg" className="group w-full sm:w-auto justify-center">
@@ -69,19 +69,19 @@ export default function AboutPreview() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-xl p-4 sm:p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
+              className="bg-white rounded-xl p-4 sm:p-6 shadow-lg border border-stone-100 hover:shadow-xl transition-shadow"
             >
               <div className="flex items-start gap-3 sm:gap-4">
                 <div
-                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${pillar.color} flex items-center justify-center shrink-0`}
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl ${pillar.color} flex items-center justify-center shrink-0`}
                 >
                   <pillar.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-slate-800 mb-1 sm:mb-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-stone-800 mb-1 sm:mb-2">
                     {t(pillar.titleKey)}
                   </h3>
-                  <p className="text-sm sm:text-base text-slate-500">{t(pillar.descKey)}</p>
+                  <p className="text-sm sm:text-base text-stone-500">{t(pillar.descKey)}</p>
                 </div>
               </div>
             </motion.div>
@@ -97,7 +97,7 @@ export default function AboutPreview() {
         transition={{ duration: 0.6, delay: 0.3 }}
         className="mt-12 sm:mt-16 text-center"
       >
-        <blockquote className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-blue-600 italic px-4">
+        <blockquote className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-petrol-600 italic px-4">
           &quot;{t("about.differentiator")}&quot;
         </blockquote>
       </motion.div>

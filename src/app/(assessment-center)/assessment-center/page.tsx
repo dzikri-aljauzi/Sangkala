@@ -50,12 +50,12 @@ export default function AssessmentCenterPage() {
   return (
     <>
       {/* Hero Section */}
-      <Section className="pt-32 pb-16 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+      <Section className="pt-32 pb-16 bg-petrol-50">
         <div className="text-center max-w-3xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold text-slate-900 mb-4"
+            className="text-4xl md:text-5xl font-bold text-stone-900 mb-4"
           >
             {t("assessmentCenter.title")}
           </motion.h1>
@@ -63,7 +63,7 @@ export default function AssessmentCenterPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-lg text-slate-600"
+            className="text-lg text-stone-600"
           >
             {t("assessmentCenter.pageDescription")}
           </motion.p>
@@ -73,10 +73,10 @@ export default function AssessmentCenterPage() {
       {/* Assessment List Section */}
       <Section className="py-16">
         <div className="mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+          <h2 className="text-2xl md:text-3xl font-bold text-stone-900 mb-2">
             {t("assessmentCenter.listTitle")}
           </h2>
-          <p className="text-slate-600">
+          <p className="text-stone-600">
             {t("assessmentCenter.selectAssessment")}
           </p>
         </div>
@@ -86,19 +86,19 @@ export default function AssessmentCenterPage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-xl border border-slate-200 p-6 animate-pulse"
+                className="bg-white rounded-xl border border-stone-200 p-6 animate-pulse"
               >
-                <div className="h-16 w-16 bg-slate-200 rounded-lg mb-4"></div>
-                <div className="h-6 bg-slate-200 rounded mb-3"></div>
-                <div className="h-4 bg-slate-200 rounded mb-2"></div>
-                <div className="h-4 bg-slate-200 rounded w-2/3"></div>
+                <div className="h-16 w-16 bg-stone-200 rounded-lg mb-4"></div>
+                <div className="h-6 bg-stone-200 rounded mb-3"></div>
+                <div className="h-4 bg-stone-200 rounded mb-2"></div>
+                <div className="h-4 bg-stone-200 rounded w-2/3"></div>
               </div>
             ))}
           </div>
         ) : assessments.length === 0 ? (
           <div className="text-center py-16">
-            <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 text-lg">
+            <FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+            <p className="text-stone-500 text-lg">
               {t("assessmentCenter.noAssessments")}
             </p>
           </div>
@@ -113,15 +113,15 @@ export default function AssessmentCenterPage() {
               >
                 <Link
                   href={`/assessment-center/${assessment.id}/login`}
-                  className="block bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 overflow-hidden group"
+                  className="block bg-white rounded-xl border border-stone-200 hover:border-petrol-300 hover:shadow-lg transition-all duration-300 overflow-hidden group"
                 >
                   <div className="p-6">
                     {/* Logo */}
                     <div
                       className={`flex items-center justify-center h-20 w-20 rounded-lg mb-4 group-hover:scale-110 transition-transform ${
                         assessment.clientLogo
-                          ? "bg-white border border-slate-200"
-                          : "bg-gradient-to-br from-blue-500 to-cyan-500"
+                          ? "bg-white border border-stone-200"
+                          : "bg-petrol-500"
                       }`}
                     >
                       {assessment.clientLogo ? (
@@ -138,29 +138,29 @@ export default function AssessmentCenterPage() {
                     </div>
 
                     {/* Content */}
-                    <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-xl font-bold text-stone-900 mb-2 group-hover:text-petrol-600 transition-colors">
                       {assessment.name}
                     </h3>
-                    <p className="text-sm text-slate-600 mb-1">
+                    <p className="text-sm text-stone-600 mb-1">
                       {assessment.clientName}
                     </p>
                     {assessment.description && (
-                      <p className="text-sm text-slate-500 mb-4 line-clamp-2">
+                      <p className="text-sm text-stone-500 mb-4 line-clamp-2">
                         {assessment.description}
                       </p>
                     )}
 
                     {/* Stats */}
-                    <div className="flex items-center gap-4 pt-4 border-t border-slate-100">
-                      <div className="flex items-center gap-1 text-sm text-slate-600">
+                    <div className="flex items-center gap-4 pt-4 border-t border-stone-100">
+                      <div className="flex items-center gap-1 text-sm text-stone-600">
                         <Users className="w-4 h-4" />
                         <span>{assessment._count.users}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-slate-600">
+                      <div className="flex items-center gap-1 text-sm text-stone-600">
                         <FileText className="w-4 h-4" />
                         <span>{assessment._count.documents}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-slate-600">
+                      <div className="flex items-center gap-1 text-sm text-stone-600">
                         <Calendar className="w-4 h-4" />
                         <span className="text-xs">
                           {new Date(assessment.createdAt).toLocaleDateString(
@@ -172,7 +172,7 @@ export default function AssessmentCenterPage() {
                   </div>
 
                   {/* Login Indicator */}
-                  <div className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 group-hover:from-blue-600 group-hover:to-cyan-600 transition-all">
+                  <div className="px-6 py-3 bg-petrol-500 group-hover:bg-petrol-700 transition-all">
                     <p className="text-white text-sm font-medium text-center">
                       {t("assessmentCenter.login")} →
                     </p>

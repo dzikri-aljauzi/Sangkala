@@ -43,12 +43,12 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
   const signerRightName = parseTemplateData(certificate.templateData).signerRightName;
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9]">
+    <div className="min-h-screen bg-[#f2f3f1]">
       {/* Top bar */}
-      <div className="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <div className="bg-white border-b border-stone-200 px-6 py-3 flex items-center justify-between">
         <Link
           href="/admin/sertifikat"
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+          className="flex items-center gap-2 text-sm text-stone-500 hover:text-stone-800 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Kembali
@@ -58,12 +58,12 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
       <div className="max-w-[1400px] mx-auto px-6 py-8">
         {/* Header row */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-lg font-bold text-slate-800">Pratinjau Sertifikat PDF</h1>
+          <h1 className="text-lg font-bold text-stone-800">Pratinjau Sertifikat PDF</h1>
           {certificate.pdfPath && (
             <a
               href={certificate.pdfPath}
               download
-              className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-petrol-600 hover:text-petrol-700 transition-colors"
             >
               <Download className="w-4 h-4" />
               Unduh PDF
@@ -75,8 +75,8 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
           {/* Left Sidebar */}
           <div className="w-[300px] shrink-0 space-y-6">
             {/* Certificate Info Card */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-              <h2 className="text-base font-bold text-slate-800 mb-5 pb-3 border-b border-slate-100">
+            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
+              <h2 className="text-base font-bold text-stone-800 mb-5 pb-3 border-b border-stone-100">
                 Info Sertifikat
               </h2>
 
@@ -93,22 +93,22 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
                 />
 
                 <div>
-                  <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                  <span className="block text-[10px] font-semibold text-stone-400 uppercase tracking-wider mb-1">
                     TANGGAL TERBIT
                   </span>
-                  <span className="text-sm font-semibold text-slate-700">
+                  <span className="text-sm font-semibold text-stone-700">
                     {issuedDateShort}
                   </span>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100">
-                  <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                <div className="pt-3 border-t border-stone-100">
+                  <span className="block text-[10px] font-semibold text-stone-400 uppercase tracking-wider mb-1">
                     DITERBITKAN OLEH
                   </span>
-                  <p className="text-sm font-bold text-slate-800">
+                  <p className="text-sm font-bold text-stone-800">
                     {certificate.createdBy?.name || "Super Admin"}
                   </p>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-stone-400">
                     {certificate.createdBy?.email || "admin@lna.com"}
                   </p>
                 </div>
@@ -116,8 +116,8 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
             </div>
 
             {/* QR Code Card */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center mb-4">
+            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
+              <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest text-center mb-4">
                 QR Code Verifikasi
               </h3>
 
@@ -131,7 +131,7 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
                     className="rounded-xl"
                   />
                 ) : (
-                  <div className="w-[180px] h-[180px] bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-xs">
+                  <div className="w-[180px] h-[180px] bg-stone-100 rounded-xl flex items-center justify-center text-stone-400 text-xs">
                     Tidak Ada QR Code
                   </div>
                 )}
@@ -142,7 +142,7 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
                   <a
                     href={certificate.qrCodeData}
                     download={`qrcode-${certificate.certCode}.png`}
-                    className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all"
+                    className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-petrol-600 hover:bg-petrol-700 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all"
                   >
                     <Download className="w-4 h-4" />
                     Unduh QR Code
@@ -150,12 +150,12 @@ export default async function CertificatePreviewPage({ params }: PreviewPageProp
                 </div>
               )}
 
-              <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+              <p className="text-[11px] text-stone-400 text-center leading-relaxed">
                 Pindai QR code di atas untuk membuka portal verifikasi publik dan memeriksa{" "}
                 <Link
                   href={`/verify/${certificate.verifyHash}`}
                   target="_blank"
-                  className="text-blue-500 underline underline-offset-2 hover:text-blue-600"
+                  className="text-petrol-500 underline underline-offset-2 hover:text-petrol-600"
                 >
                   keaslian sertifikat
                 </Link>
@@ -199,11 +199,11 @@ function InfoRow({
 }) {
   return (
     <div>
-      <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+      <span className="block text-[10px] font-semibold text-stone-400 uppercase tracking-wider mb-1">
         {label}
       </span>
       <span
-        className={`text-sm text-slate-800 ${mono ? "font-mono font-bold" : ""} ${
+        className={`text-sm text-stone-800 ${mono ? "font-mono font-bold" : ""} ${
           bold ? "font-bold" : "font-medium"
         }`}
       >

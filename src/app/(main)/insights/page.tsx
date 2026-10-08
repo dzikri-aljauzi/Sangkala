@@ -45,28 +45,28 @@ const categories = [
     icon: BookOpen,
     title: { id: "Whitepapers", en: "Whitepapers" },
     desc: { id: "Riset mendalam dan best practices", en: "In-depth research and best practices" },
-    color: "from-blue-500 to-blue-700",
+    color: "bg-petrol-500",
   },
   {
     id: "WEBINAR",
     icon: Video,
     title: { id: "Webinar & Events", en: "Webinars & Events" },
     desc: { id: "Sesi interaktif dengan para ahli", en: "Interactive sessions with experts" },
-    color: "from-purple-500 to-purple-700",
+    color: "bg-petrol-800",
   },
   {
     id: "CASE_STUDY",
     icon: FolderOpen,
     title: { id: "Case Studies", en: "Case Studies" },
     desc: { id: "Success stories dari klien kami", en: "Success stories from our clients" },
-    color: "from-emerald-500 to-emerald-700",
+    color: "bg-petrol-600",
   },
   {
     id: "TEMPLATE",
     icon: Download,
     title: { id: "Tools & Templates", en: "Tools & Templates" },
     desc: { id: "Resources yang dapat diunduh", en: "Downloadable resources" },
-    color: "from-amber-500 to-amber-700",
+    color: "bg-stone-700",
   },
 ];
 
@@ -135,7 +135,7 @@ export default function InsightsPage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-stone-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -144,15 +144,15 @@ export default function InsightsPage() {
             className="max-w-4xl"
           >
             <div className="flex items-center gap-3 mb-4">
-              <Lightbulb className="w-8 h-8 text-blue-600" />
-              <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-600">
+              <Lightbulb className="w-8 h-8 text-petrol-600" />
+              <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-petrol-600">
                 {t("insights.subtitle")}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-slate-800">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-stone-800">
               {t("insights.title")}
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl">
+            <p className="text-base sm:text-lg md:text-xl text-stone-600 max-w-3xl">
               {language === "id"
                 ? "Temukan whitepapers, webinar recordings, case studies, dan tools yang dapat membantu transformasi organisasi Anda."
                 : "Discover whitepapers, webinar recordings, case studies, and tools that can help transform your organization."}
@@ -176,22 +176,22 @@ export default function InsightsPage() {
                 onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
                 className={`p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-md hover:shadow-lg transition-all border text-center group ${
                   selectedCategory === category.id
-                    ? "bg-blue-600 border-blue-600 text-white"
-                    : "bg-white border-gray-100 hover:border-blue-200"
+                    ? "bg-petrol-600 border-petrol-600 text-white"
+                    : "bg-white border-stone-100 hover:border-petrol-200"
                 }`}
               >
                 <category.icon className={`w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1.5 sm:mb-2 transition-colors ${
                   selectedCategory === category.id
                     ? "text-white"
-                    : "text-blue-600 group-hover:text-cyan-600"
+                    : "text-petrol-600 group-hover:text-petrol-600"
                 }`} />
                 <span className={`font-semibold text-xs sm:text-sm md:text-base block ${
-                  selectedCategory === category.id ? "text-white" : "text-slate-800"
+                  selectedCategory === category.id ? "text-white" : "text-stone-800"
                 }`}>
                   {category.title[language]}
                 </span>
                 <span className={`text-xs ${
-                  selectedCategory === category.id ? "text-white/70" : "text-slate-400"
+                  selectedCategory === category.id ? "text-white/70" : "text-stone-400"
                 }`}>
                   {count} {language === "id" ? "item" : "items"}
                 </span>
@@ -203,7 +203,7 @@ export default function InsightsPage() {
           <div className="mt-4 text-center">
             <button
               onClick={() => setSelectedCategory(null)}
-              className="text-sm text-blue-600 hover:text-blue-800"
+              className="text-sm text-petrol-600 hover:text-petrol-800"
             >
               {language === "id" ? "× Hapus Filter" : "× Clear Filter"}
             </button>
@@ -224,15 +224,15 @@ export default function InsightsPage() {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600"></div>
           </div>
         ) : filteredResources.length === 0 ? (
           <div className="text-center py-12">
-            <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">
+            <FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+            <p className="text-stone-500">
               {language === "id" ? "Belum ada resources" : "No resources yet"}
             </p>
-            <p className="text-sm text-slate-400 mt-2">
+            <p className="text-sm text-stone-400 mt-2">
               {language === "id"
                 ? "Hubungi kami untuk mendapatkan akses ke resources premium."
                 : "Contact us to get access to premium resources."}
@@ -272,7 +272,7 @@ export default function InsightsPage() {
                 ? "Butuh Resources Khusus?"
                 : "Need Custom Resources?"}
             </h2>
-            <p className="text-sm sm:text-base text-gray-300 mb-6 sm:mb-8">
+            <p className="text-sm sm:text-base text-stone-300 mb-6 sm:mb-8">
               {language === "id"
                 ? "Hubungi kami untuk mendapatkan akses ke resources premium atau request materi khusus sesuai kebutuhan organisasi Anda."
                 : "Contact us to get access to premium resources or request custom materials tailored to your organization's needs."}
@@ -325,11 +325,11 @@ function ResourceCard({
 
   const getCategoryColor = () => {
     switch (resource.category) {
-      case "WHITEPAPER": return "bg-blue-600/10 text-blue-600";
-      case "WEBINAR": return "bg-purple-600/10 text-purple-600";
+      case "WHITEPAPER": return "bg-petrol-600/10 text-petrol-600";
+      case "WEBINAR": return "bg-petrol-800/10 text-petrol-800";
       case "CASE_STUDY": return "bg-emerald-600/10 text-emerald-600";
-      case "TEMPLATE": return "bg-amber-600/10 text-amber-600";
-      default: return "bg-slate-600/10 text-slate-600";
+      case "TEMPLATE": return "bg-stone-700/10 text-stone-700";
+      default: return "bg-stone-600/10 text-stone-600";
     }
   };
 
@@ -345,7 +345,7 @@ function ResourceCard({
     >
       <Link href={`/insights/${resource.slug}`}>
         {resource.coverImage ? (
-          <div className="h-28 sm:h-32 md:h-40 bg-slate-100 overflow-hidden">
+          <div className="h-28 sm:h-32 md:h-40 bg-stone-100 overflow-hidden">
             <img
               src={getImageUrl(resource.coverImage) || ""}
               alt={title}
@@ -353,11 +353,11 @@ function ResourceCard({
             />
           </div>
         ) : (
-          <div className={`h-28 sm:h-32 md:h-40 bg-gradient-to-br ${
-            resource.category === "WHITEPAPER" ? "from-blue-500 to-blue-700" :
-            resource.category === "WEBINAR" ? "from-purple-500 to-purple-700" :
-            resource.category === "CASE_STUDY" ? "from-emerald-500 to-emerald-700" :
-            "from-amber-500 to-amber-700"
+          <div className={`h-28 sm:h-32 md:h-40 ${
+            resource.category === "WHITEPAPER" ? "bg-petrol-500" :
+            resource.category === "WEBINAR" ? "bg-petrol-800" :
+            resource.category === "CASE_STUDY" ? "bg-petrol-600" :
+            "bg-stone-700"
           } flex items-center justify-center`}>
             <CategoryIcon className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-white/30" />
           </div>
@@ -368,23 +368,23 @@ function ResourceCard({
             <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium rounded ${getCategoryColor()}`}>
               {categoryLabel}
             </span>
-            <span className="text-[10px] sm:text-xs text-slate-500 flex items-center gap-1">
+            <span className="text-[10px] sm:text-xs text-stone-500 flex items-center gap-1">
               <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               {getReadTime(content)}
             </span>
           </div>
 
-          <h3 className="font-bold text-slate-800 mb-2 sm:mb-3 group-hover:text-blue-600 transition-colors line-clamp-2 text-sm sm:text-base">
+          <h3 className="font-bold text-stone-800 mb-2 sm:mb-3 group-hover:text-petrol-600 transition-colors line-clamp-2 text-sm sm:text-base">
             {title}
           </h3>
 
           {excerpt && (
-            <p className="text-xs sm:text-sm text-slate-600 line-clamp-2 mb-3">
+            <p className="text-xs sm:text-sm text-stone-600 line-clamp-2 mb-3">
               {excerpt}
             </p>
           )}
 
-          <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500">
+          <div className="flex items-center justify-between text-xs sm:text-sm text-stone-500">
             <div className="flex items-center gap-1.5">
               <User className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="truncate max-w-[100px]">{resource.authorName}</span>

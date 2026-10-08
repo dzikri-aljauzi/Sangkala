@@ -201,7 +201,7 @@ export default function DetailPelatihanPage() {
     return (
       <Section variant="gradient" padding="xl" className="pt-32 sm:pt-36 min-h-screen">
         <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
         </div>
       </Section>
     );
@@ -210,7 +210,7 @@ export default function DetailPelatihanPage() {
   if (error || !training) {
     return (
       <Section variant="gradient" padding="xl" className="pt-32 sm:pt-36 min-h-screen">
-        <div className="max-w-4xl mx-auto text-center py-16 text-slate-500 bg-white rounded-xl border border-slate-200">
+        <div className="max-w-4xl mx-auto text-center py-16 text-stone-500 bg-white rounded-xl border border-stone-200">
           <p className="mb-4">{t("trainingDetail.notFound")}</p>
           <Link
             href="/info-pelatihan"
@@ -238,7 +238,7 @@ export default function DetailPelatihanPage() {
         {/* Back link */}
         <Link
           href="/info-pelatihan"
-          className="notranslate inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded transition-colors"
+          className="notranslate inline-flex items-center text-sm font-medium text-stone-500 hover:text-petrol-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrol-500 rounded transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-1.5" />
           {t("trainingDetail.back")}
@@ -246,20 +246,20 @@ export default function DetailPelatihanPage() {
 
         {/* Centered title */}
         <div className="text-center space-y-3 pt-2">
-          <p className="notranslate text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600">
+          <p className="notranslate text-xs font-semibold uppercase tracking-[0.2em] text-petrol-600">
             {t("trainingDetail.program")}
           </p>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 leading-tight max-w-3xl mx-auto">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900 leading-tight max-w-3xl mx-auto">
             {training.title}
           </h1>
-          <div className="notranslate flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-sm text-slate-500">
+          <div className="notranslate flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-sm text-stone-500">
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-slate-400" />
+              <MapPin className="w-4 h-4 text-stone-400" />
               {training.location}
             </span>
-            <span className="text-slate-300">•</span>
+            <span className="text-stone-300">•</span>
             <span className="inline-flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-slate-400" />
+              <Calendar className="w-4 h-4 text-stone-400" />
               {formatTrainingDateRange(training.startDate, training.endDate, locale)}
             </span>
           </div>
@@ -267,7 +267,7 @@ export default function DetailPelatihanPage() {
 
         {/* Poster Banner (Full Width / Natural Aspect Ratio) */}
         {training.imagePath ? (
-          <div className="relative rounded-2xl overflow-hidden shadow-sm border border-slate-200 w-full bg-slate-50">
+          <div className="relative rounded-2xl overflow-hidden shadow-sm border border-stone-200 w-full bg-stone-50">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={getImageUrl(training.imagePath) ?? ""}
@@ -285,53 +285,53 @@ export default function DetailPelatihanPage() {
             </button>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm flex flex-col items-center justify-center text-slate-300 py-24">
+          <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col items-center justify-center text-stone-300 py-24">
             <ImageIcon className="w-16 h-16 mb-2" />
             <span className="text-sm">{t("trainingDetail.noImage")}</span>
           </div>
         )}
 
         {/* Quick Info & Action CTA */}
-        <Card className="notranslate border border-slate-200 bg-white p-6 sm:p-8 space-y-6 shadow-sm">
+        <Card className="notranslate border border-stone-200 bg-white p-6 sm:p-8 space-y-6 shadow-sm">
           {/* 3-Column Info Grid: Jadwal, Tempat, Biaya */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pb-6 border-b border-slate-100">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pb-6 border-b border-stone-100">
             <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-petrol-50 text-petrol-600 flex items-center justify-center shrink-0">
                 <Calendar className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">
+                <p className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold">
                   {t("trainingDetail.scheduleLabel")}
                 </p>
-                <p className="text-sm sm:text-base font-bold text-slate-800 mt-1">
+                <p className="text-sm sm:text-base font-bold text-stone-800 mt-1">
                   {formatTrainingDateRange(training.startDate, training.endDate, locale)}
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-petrol-50 text-petrol-600 flex items-center justify-center shrink-0">
                 <MapPin className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">
+                <p className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold">
                   {t("trainingDetail.locationLabel")}
                 </p>
-                <p className="text-sm sm:text-base font-bold text-slate-800 mt-1">
+                <p className="text-sm sm:text-base font-bold text-stone-800 mt-1">
                   {training.location}
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-petrol-50 text-petrol-600 flex items-center justify-center shrink-0">
                 <Tag className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">
+                <p className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold">
                   {t("trainingDetail.priceLabel")}
                 </p>
-                <p className="text-lg sm:text-xl font-bold text-blue-600 mt-0.5">
+                <p className="text-lg sm:text-xl font-bold text-petrol-600 mt-0.5">
                   {training.price ? formatRupiah(training.price) : t("trainingDetail.contactUs")}
                 </p>
               </div>
@@ -341,7 +341,7 @@ export default function DetailPelatihanPage() {
           {/* Sisa Kuota & Button Daftar Sekarang */}
           <div className="space-y-3 pt-1">
             {slotsLeft !== null && (
-              <p className={`text-xs sm:text-sm text-center font-medium ${isFull ? "text-red-600" : "text-slate-500"}`}>
+              <p className={`text-xs sm:text-sm text-center font-medium ${isFull ? "text-red-600" : "text-stone-500"}`}>
                 {isFull
                   ? t("trainingDetail.quotaFull")
                   : `${t("trainingDetail.quotaLeft")}: ${slotsLeft}`}
@@ -364,11 +364,11 @@ export default function DetailPelatihanPage() {
         </Card>
 
         {/* Description */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
-          <p className="notranslate text-xs font-semibold uppercase tracking-[0.18em] text-cyan-600 mb-4">
+        <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+          <p className="notranslate text-xs font-semibold uppercase tracking-[0.18em] text-petrol-600 mb-4">
             {t("trainingDetail.about")}
           </p>
-          <div className="text-slate-700 whitespace-pre-line leading-relaxed text-sm sm:text-base">
+          <div className="text-stone-700 whitespace-pre-line leading-relaxed text-sm sm:text-base">
             {training.description}
           </div>
         </div>
@@ -383,10 +383,10 @@ export default function DetailPelatihanPage() {
                 <CheckCircle className="w-7 h-7" />
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-xl font-bold text-slate-900">
+                <h3 className="text-xl font-bold text-stone-900">
                   {t("registrationModal.successTitle")}
                 </h3>
-                <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+                <p className="text-sm text-stone-500 max-w-sm mx-auto leading-relaxed">
                   {training.requiresPayment
                     ? t("registrationModal.successDescPending")
                     : t("registrationModal.successDesc")}
@@ -405,16 +405,16 @@ export default function DetailPelatihanPage() {
           ) : (
             <>
               <DialogHeader className="pt-2 pr-6">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-600">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-petrol-600">
                   {t("registrationModal.eyebrow")}
                 </p>
-                <DialogTitle className="text-xl font-bold text-slate-900 mt-1">
+                <DialogTitle className="text-xl font-bold text-stone-900 mt-1">
                   {t("registrationModal.title")}
                 </DialogTitle>
               </DialogHeader>
 
               {/* Program strip — signature carried into the form */}
-              <div className="flex items-stretch rounded-lg border border-slate-200 overflow-hidden">
+              <div className="flex items-stretch rounded-lg border border-stone-200 overflow-hidden">
                 <div className="flex flex-col items-center justify-center w-16 bg-primary text-white py-3 shrink-0">
                   <span className="text-lg font-bold leading-none">{day}</span>
                   <span className="text-[9px] uppercase tracking-widest mt-1">
@@ -423,13 +423,13 @@ export default function DetailPelatihanPage() {
                   <span className="text-[9px] mt-0.5 opacity-80">{year}</span>
                 </div>
                 <div className="px-3.5 py-3 min-w-0">
-                  <p className="text-[11px] uppercase tracking-widest text-slate-400 font-medium">
+                  <p className="text-[11px] uppercase tracking-widest text-stone-400 font-medium">
                     {t("trainingDetail.scheduleLabel")}
                   </p>
-                  <p className="text-sm font-semibold text-slate-800 mt-0.5 line-clamp-1">
+                  <p className="text-sm font-semibold text-stone-800 mt-0.5 line-clamp-1">
                     {training.title}
                   </p>
-                  <p className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
+                  <p className="flex items-center gap-1.5 text-xs text-stone-500 mt-1">
                     <MapPin className="w-3 h-3 shrink-0" />
                     <span className="line-clamp-1">{training.location}</span>
                   </p>
@@ -446,7 +446,7 @@ export default function DetailPelatihanPage() {
 
                 {/* Nama Lengkap */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="reg-name" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                  <Label htmlFor="reg-name" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
                     {t("registrationModal.nameLabel")} <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -463,7 +463,7 @@ export default function DetailPelatihanPage() {
 
                 {/* Email */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="reg-email" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                  <Label htmlFor="reg-email" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
                     {t("registrationModal.emailLabel")} <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -480,7 +480,7 @@ export default function DetailPelatihanPage() {
 
                 {/* Phone / WA */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="reg-phone" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                  <Label htmlFor="reg-phone" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
                     {t("registrationModal.phoneLabel")} <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -497,7 +497,7 @@ export default function DetailPelatihanPage() {
 
                 {/* Institution (Optional) */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="reg-institution" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                  <Label htmlFor="reg-institution" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
                     {t("registrationModal.institutionLabel")}
                   </Label>
                   <Input
@@ -513,32 +513,32 @@ export default function DetailPelatihanPage() {
 
                 {/* Payment info + proof upload (training berbayar) */}
                 {training.requiresPayment && (
-                  <div className="space-y-3 border-t border-slate-100 pt-4">
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-slate-900">
-                      <Landmark className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="space-y-3 border-t border-stone-100 pt-4">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-stone-900">
+                      <Landmark className="w-3.5 h-3.5 text-stone-400" />
                       {t("registrationModal.paymentTitle")}
                     </div>
                     {paymentSettings && (
-                      <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 text-sm space-y-1">
+                      <div className="rounded-lg bg-stone-50 border border-stone-200 p-3 text-sm space-y-1">
                         <p className="flex justify-between">
-                          <span className="text-slate-500">{t("registrationModal.bankNameLabel")}</span>
-                          <span className="font-medium text-slate-800">{paymentSettings.bankName}</span>
+                          <span className="text-stone-500">{t("registrationModal.bankNameLabel")}</span>
+                          <span className="font-medium text-stone-800">{paymentSettings.bankName}</span>
                         </p>
                         <p className="flex justify-between">
-                          <span className="text-slate-500">{t("registrationModal.accountNumberLabel")}</span>
-                          <span className="font-medium text-slate-800">{paymentSettings.accountNumber}</span>
+                          <span className="text-stone-500">{t("registrationModal.accountNumberLabel")}</span>
+                          <span className="font-medium text-stone-800">{paymentSettings.accountNumber}</span>
                         </p>
                         <p className="flex justify-between">
-                          <span className="text-slate-500">{t("registrationModal.accountHolderLabel")}</span>
-                          <span className="font-medium text-slate-800">{paymentSettings.accountHolder}</span>
+                          <span className="text-stone-500">{t("registrationModal.accountHolderLabel")}</span>
+                          <span className="font-medium text-stone-800">{paymentSettings.accountHolder}</span>
                         </p>
                         {paymentSettings.notes && (
-                          <p className="text-xs text-slate-500 pt-1">{paymentSettings.notes}</p>
+                          <p className="text-xs text-stone-500 pt-1">{paymentSettings.notes}</p>
                         )}
                       </div>
                     )}
                     <div className="space-y-1.5">
-                      <Label htmlFor="reg-proof" className="text-[11px] font-semibold uppercase tracking-widest text-slate-900">
+                      <Label htmlFor="reg-proof" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
                         {t("registrationModal.proofLabel")} <span className="text-red-500">*</span>
                       </Label>
                       <input
@@ -546,10 +546,10 @@ export default function DetailPelatihanPage() {
                         type="file"
                         accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
                         onChange={handleProofUpload}
-                        className="w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-600 file:text-sm file:font-medium hover:file:bg-blue-100"
+                        className="w-full text-sm text-stone-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-petrol-50 file:text-petrol-600 file:text-sm file:font-medium hover:file:bg-petrol-100"
                       />
                       {uploadingProof && (
-                        <p className="text-xs text-slate-400">{t("registrationModal.proofUploading")}</p>
+                        <p className="text-xs text-stone-400">{t("registrationModal.proofUploading")}</p>
                       )}
                       {paymentProofPath && !uploadingProof && (
                         <p className="text-xs text-green-600">✓ {paymentProofPath.split("/").pop()}</p>
@@ -559,7 +559,7 @@ export default function DetailPelatihanPage() {
                 )}
 
                 {/* Submit Button */}
-                <div className="border-t border-slate-100 pt-4">
+                <div className="border-t border-stone-100 pt-4">
                   <Button
                     type="submit"
                     variant="primary"
@@ -593,7 +593,7 @@ export default function DetailPelatihanPage() {
             <DialogTitle>{training.title}</DialogTitle>
           </DialogHeader>
           {previewImageUrl && (
-            <div className="relative w-full flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden mt-2">
+            <div className="relative w-full flex items-center justify-center bg-stone-50 rounded-xl overflow-hidden mt-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={previewImageUrl}

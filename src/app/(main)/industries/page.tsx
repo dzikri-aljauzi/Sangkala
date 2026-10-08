@@ -116,25 +116,25 @@ const industries = [
 
 const colorMap = {
   blue: {
-    gradient: "from-blue-500 to-blue-600",
-    bg: "bg-blue-50",
-    border: "border-blue-200",
-    text: "text-blue-600",
-    lightBg: "bg-blue-100",
+    gradient: "bg-petrol-500",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    text: "text-petrol-600",
+    lightBg: "bg-petrol-100",
   },
   teal: {
-    gradient: "from-teal-500 to-teal-600",
-    bg: "bg-teal-50",
-    border: "border-teal-200",
-    text: "text-teal-600",
-    lightBg: "bg-teal-100",
+    gradient: "bg-petrol-500",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    text: "text-petrol-600",
+    lightBg: "bg-petrol-100",
   },
   cyan: {
-    gradient: "from-cyan-500 to-cyan-600",
-    bg: "bg-cyan-50",
-    border: "border-cyan-200",
-    text: "text-cyan-600",
-    lightBg: "bg-cyan-100",
+    gradient: "bg-petrol-500",
+    bg: "bg-petrol-50",
+    border: "border-petrol-200",
+    text: "text-petrol-600",
+    lightBg: "bg-petrol-100",
   },
 };
 
@@ -144,7 +144,7 @@ export default function IndustriesPage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-stone-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -152,15 +152,15 @@ export default function IndustriesPage() {
             transition={{ duration: 0.6 }}
             className="max-w-4xl"
           >
-            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-blue-600 mb-3 sm:mb-4">
+            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-petrol-600 mb-3 sm:mb-4">
               {language === "id" ? "Industri" : "Industries"}
             </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-slate-800">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-stone-800">
               {language === "id"
                 ? "Industri yang Kami Layani"
                 : "Industries We Serve"}
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-3xl">
+            <p className="text-base sm:text-lg md:text-xl text-stone-600 max-w-3xl">
               {language === "id"
                 ? "Fokus vertikal dengan pemahaman mendalam terhadap tantangan spesifik setiap industri."
                 : "Vertical focus with deep understanding of specific challenges in each industry."}
@@ -191,29 +191,29 @@ export default function IndustriesPage() {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
                   <div
-                    className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center flex-shrink-0`}
+                    className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl ${colors.gradient} flex items-center justify-center flex-shrink-0`}
                   >
                     <industry.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" />
                   </div>
-                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-stone-800">
                     {industry.title[language]}
                   </h2>
                 </div>
 
-                <p className="text-sm sm:text-base md:text-lg text-slate-500 mb-6 sm:mb-8">
+                <p className="text-sm sm:text-base md:text-lg text-stone-500 mb-6 sm:mb-8">
                   {industry.desc[language]}
                 </p>
 
                 {/* Challenges */}
                 <div className="mb-6 sm:mb-8">
-                  <h3 className="text-sm sm:text-base md:text-lg font-semibold text-slate-800 mb-3 sm:mb-4">
+                  <h3 className="text-sm sm:text-base md:text-lg font-semibold text-stone-800 mb-3 sm:mb-4">
                     {language === "id" ? "Tantangan Industri:" : "Industry Challenges:"}
                   </h3>
                   <ul className="space-y-2 sm:space-y-3">
                     {industry.challenges[language].map((challenge, i) => (
                       <li key={i} className="flex items-start gap-2 sm:gap-3">
                         <CheckCircle className={`w-4 h-4 sm:w-5 sm:h-5 ${colors.text} mt-0.5 flex-shrink-0`} />
-                        <span className="text-xs sm:text-sm md:text-base text-slate-500">{challenge}</span>
+                        <span className="text-xs sm:text-sm md:text-base text-stone-500">{challenge}</span>
                       </li>
                     ))}
                   </ul>
@@ -235,7 +235,7 @@ export default function IndustriesPage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className={`${colors.bg} rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 ${index % 2 === 0 ? "" : "lg:order-1"}`}
               >
-                <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 mb-4 sm:mb-6">
+                <h3 className="text-base sm:text-lg md:text-xl font-bold text-stone-800 mb-4 sm:mb-6">
                   {language === "id" ? "Program Unggulan:" : "Featured Programs:"}
                 </h3>
                 <div className="space-y-3 sm:space-y-4">
@@ -251,7 +251,7 @@ export default function IndustriesPage() {
                       <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md sm:rounded-lg ${colors.lightBg} flex items-center justify-center flex-shrink-0`}>
                         <CheckCircle className={`w-4 h-4 sm:w-5 sm:h-5 ${colors.text}`} />
                       </div>
-                      <span className="font-medium text-slate-800 text-xs sm:text-sm md:text-base">
+                      <span className="font-medium text-stone-800 text-xs sm:text-sm md:text-base">
                         {program[language]}
                       </span>
                     </motion.div>
@@ -277,7 +277,7 @@ export default function IndustriesPage() {
                 ? "Tidak Menemukan Industri Anda?"
                 : "Don't See Your Industry?"}
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-gray-300 mb-6 sm:mb-8">
+            <p className="text-sm sm:text-base md:text-lg text-stone-300 mb-6 sm:mb-8">
               {language === "id"
                 ? "Framework 3P kami dapat diadaptasi untuk berbagai industri regulated. Hubungi kami untuk diskusi kebutuhan spesifik Anda."
                 : "Our 3P framework can be adapted for various regulated industries. Contact us to discuss your specific needs."}

@@ -73,20 +73,20 @@ export default function AsesorDashboard({
   if (loading || !assessment) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600"></div>
       </div>
     );
   }
 
   const header = (
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
+      <div className="bg-white border-b border-stone-200 sticky top-0 z-30">
         <div className="px-8 py-6">
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-stone-900">
             {activeTab === "overview" && "Dashboard Asesor"}
             {activeTab === "upload" && "Upload Dokumen"}
             {activeTab === "history" && "Riwayat Upload"}
           </h1>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-sm text-stone-600 mt-1">
             {activeTab === "overview" && "Overview dokumen dan statistik Anda"}
             {activeTab === "upload" && "Upload laporan assessment Anda"}
             {activeTab === "history" && "Lihat semua dokumen yang telah diupload"}
@@ -104,17 +104,17 @@ export default function AsesorDashboard({
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl border border-slate-200 p-6"
+                className="bg-white rounded-xl border border-stone-200 p-6"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-petrol-500 flex items-center justify-center">
                     <FileText className="w-6 h-6 text-white" />
                   </div>
                 </div>
-                <p className="text-3xl font-bold text-slate-900">
+                <p className="text-3xl font-bold text-stone-900">
                   {myDocuments.length}
                 </p>
-                <p className="text-sm text-slate-600 mt-1">
+                <p className="text-sm text-stone-600 mt-1">
                   {t("assessmentCenter.myDocuments")}
                 </p>
               </motion.div>
@@ -123,12 +123,12 @@ export default function AsesorDashboard({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-6 col-span-1 md:col-span-2"
+                className="bg-petrol-600 rounded-xl p-6 col-span-1 md:col-span-2"
               >
                 <h3 className="text-white text-lg font-semibold mb-2">
                   {t("assessmentCenter.uploadDocument")}
                 </h3>
-                <p className="text-blue-100 text-sm mb-4">
+                <p className="text-petrol-100 text-sm mb-4">
                   Upload laporan assessment Anda dalam format Word atau PDF
                 </p>
                 <Button
@@ -144,7 +144,7 @@ export default function AsesorDashboard({
 
             {/* My Documents List */}
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-4">
+              <h2 className="text-xl font-bold text-stone-900 mb-4">
                 {t("assessmentCenter.myDocuments")}
               </h2>
 
@@ -152,13 +152,13 @@ export default function AsesorDashboard({
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-white rounded-xl border border-slate-200 p-12 text-center"
+                  className="bg-white rounded-xl border border-stone-200 p-12 text-center"
                 >
-                  <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                  <p className="text-slate-500 mb-2">
+                  <FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+                  <p className="text-stone-500 mb-2">
                     Anda belum mengupload laporan
                   </p>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-stone-400">
                     Klik tombol upload di atas untuk menambahkan laporan
                   </p>
                 </motion.div>
@@ -170,11 +170,11 @@ export default function AsesorDashboard({
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-all group"
+                      className="bg-white rounded-xl border border-stone-200 p-6 hover:shadow-lg transition-all group"
                     >
                       <div className="flex items-start justify-between mb-4">
-                        <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                          <FileText className="w-6 h-6 text-blue-600" />
+                        <div className="w-12 h-12 rounded-lg bg-petrol-100 flex items-center justify-center group-hover:bg-petrol-200 transition-colors">
+                          <FileText className="w-6 h-6 text-petrol-600" />
                         </div>
                         <button
                           onClick={async () => {
@@ -195,11 +195,11 @@ export default function AsesorDashboard({
                         </button>
                       </div>
 
-                      <h3 className="font-semibold text-slate-900 mb-2">
+                      <h3 className="font-semibold text-stone-900 mb-2">
                         {doc.title}
                       </h3>
-                      <p className="text-sm text-slate-600 mb-1">{doc.fileName}</p>
-                      <p className="text-xs text-slate-400 mb-4">
+                      <p className="text-sm text-stone-600 mb-1">{doc.fileName}</p>
+                      <p className="text-xs text-stone-400 mb-4">
                         {new Date(doc.createdAt).toLocaleDateString("id-ID", {
                           day: "numeric",
                           month: "long",
@@ -212,7 +212,7 @@ export default function AsesorDashboard({
                       <a
                         href={`${doc.filePath.startsWith('/api/files') ? doc.filePath : `/api/files${doc.filePath.replace('/uploads/', '/')}`}?filename=${encodeURIComponent(doc.fileName)}`}
                         download={doc.fileName}
-                        className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                        className="flex items-center gap-2 text-sm text-petrol-600 hover:text-petrol-800 font-medium transition-colors"
                       >
                         <Download className="w-4 h-4" />
                         {t("assessmentCenter.download")}
@@ -230,12 +230,12 @@ export default function AsesorDashboard({
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl p-8 mb-8 text-white"
+              className="bg-petrol-600 rounded-xl p-8 mb-8 text-white"
             >
               <h3 className="text-2xl font-bold mb-2">
                 {t("assessmentCenter.uploadDocument")}
               </h3>
-              <p className="text-blue-100 mb-6">
+              <p className="text-petrol-100 mb-6">
                 Upload laporan assessment Anda dalam format Word atau PDF (Max 10MB)
               </p>
               <Button
@@ -252,16 +252,16 @@ export default function AsesorDashboard({
 
         {activeTab === "history" && (
           <div>
-            <h2 className="text-xl font-bold text-slate-900 mb-4">
+            <h2 className="text-xl font-bold text-stone-900 mb-4">
               {t("assessmentCenter.myDocuments")}
             </h2>
             {myDocuments.length === 0 ? (
-              <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-                <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                <p className="text-slate-500 mb-2">
+              <div className="bg-white rounded-xl border border-stone-200 p-12 text-center">
+                <FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" />
+                <p className="text-stone-500 mb-2">
                   Anda belum mengupload laporan
                 </p>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-stone-400">
                   Klik tombol upload di sidebar untuk mulai upload dokumen
                 </p>
               </div>
@@ -272,18 +272,18 @@ export default function AsesorDashboard({
                     key={doc.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-xl border border-slate-200 p-6 hover:shadow-lg transition-shadow"
+                    className="bg-white rounded-xl border border-stone-200 p-6 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                        <div className="w-12 h-12 rounded-lg bg-petrol-500 flex items-center justify-center flex-shrink-0">
                           <FileText className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-slate-900">
+                          <h3 className="font-semibold text-stone-900">
                             {doc.title}
                           </h3>
-                          <p className="text-xs text-slate-500">{doc.fileName}</p>
+                          <p className="text-xs text-stone-500">{doc.fileName}</p>
                         </div>
                       </div>
                       <button
@@ -301,7 +301,7 @@ export default function AsesorDashboard({
                       </button>
                     </div>
 
-                    <p className="text-xs text-slate-500 mb-3">
+                    <p className="text-xs text-stone-500 mb-3">
                       {new Date(doc.uploadedAt).toLocaleDateString("id-ID", {
                         day: "numeric",
                         month: "long",
@@ -314,7 +314,7 @@ export default function AsesorDashboard({
                     <a
                       href={`${doc.filePath.startsWith('/api/files') ? doc.filePath : `/api/files${doc.filePath.replace('/uploads/', '/')}`}?filename=${encodeURIComponent(doc.fileName)}`}
                       download={doc.fileName}
-                      className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                      className="flex items-center gap-2 text-sm text-petrol-600 hover:text-petrol-800 font-medium transition-colors"
                     >
                       <Download className="w-4 h-4" />
                       {t("assessmentCenter.download")}
@@ -441,12 +441,12 @@ function UploadModal({
         className="bg-white rounded-xl max-w-md w-full p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-slate-900">
+          <h2 className="text-xl font-bold text-stone-900">
             {t("assessmentCenter.uploadDocument")}
           </h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600"
+            className="text-stone-400 hover:text-stone-600"
           >
             <X className="w-5 h-5" />
           </button>
@@ -460,7 +460,7 @@ function UploadModal({
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               {t("assessmentCenter.documentTitle")}
             </label>
             <input
@@ -469,12 +469,12 @@ function UploadModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Contoh: Laporan Assessment Kepemimpinan"
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               File (Word/PDF, max 10MB)
             </label>
             <input
@@ -485,10 +485,10 @@ function UploadModal({
                 setFile(e.target.files?.[0] || null);
                 setError("");
               }}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-medium hover:file:bg-blue-100"
+              className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-petrol-50 file:text-petrol-700 file:font-medium hover:file:bg-petrol-100"
             />
             {file && (
-              <p className="mt-2 text-xs text-slate-600">
+              <p className="mt-2 text-xs text-stone-600">
                 Selected: {file.name} (
                 {(file.size / 1024 / 1024).toFixed(2)} MB)
               </p>

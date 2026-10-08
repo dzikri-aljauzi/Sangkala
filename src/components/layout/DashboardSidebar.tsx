@@ -206,25 +206,25 @@ export default function DashboardSidebar({
     <div
       className={`${
         collapsed ? "w-20" : "w-64"
-      } min-h-screen bg-linear-to-b from-slate-900 to-slate-800 text-white flex flex-col transition-all duration-300`}
+      } min-h-screen bg-stone-900 text-white flex flex-col transition-all duration-300`}
     >
       {/* Header */}
-      <div className="p-6 border-b border-slate-700">
+      <div className="p-6 border-b border-stone-700">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-petrol-600 rounded-lg flex items-center justify-center">
                 <FileText className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="font-bold text-sm">LNA</h2>
-                <p className="text-xs text-slate-400">Assessment Center</p>
+                <h2 className="font-medium text-sm">Sangkala</h2>
+                <p className="text-xs text-stone-400">Assessment Center</p>
               </div>
             </div>
           )}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-stone-700 rounded-lg transition-colors"
           >
             {collapsed ? (
               <Menu className="w-5 h-5" />
@@ -236,9 +236,9 @@ export default function DashboardSidebar({
       </div>
 
       {/* User Info */}
-      <div className="p-4 border-b border-slate-700">
+      <div className="p-4 border-b border-stone-700">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 bg-petrol-500 rounded-full flex items-center justify-center flex-shrink-0">
             <span className="text-sm font-bold">
               {session?.user?.name?.charAt(0).toUpperCase()}
             </span>
@@ -248,7 +248,7 @@ export default function DashboardSidebar({
               <p className="text-sm font-medium truncate">
                 {session?.user?.name}
               </p>
-              <p className="text-xs text-slate-400">{role}</p>
+              <p className="text-xs text-stone-400">{role}</p>
             </div>
           )}
         </div>
@@ -260,16 +260,16 @@ export default function DashboardSidebar({
           <div className="relative">
             <button
               onClick={() => setShowSwitcher(!showSwitcher)}
-              className="w-full flex items-center justify-between p-3 bg-slate-800/80 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700"
+              className="w-full flex items-center justify-between p-3 bg-stone-800/80 hover:bg-stone-700 rounded-lg transition-colors border border-stone-700"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <FolderOpen className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                <FolderOpen className="w-4 h-4 text-petrol-400 flex-shrink-0" />
                 <span className="text-xs font-medium truncate">
                   {assessmentName || "Pilih Assessment"}
                 </span>
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform ${
+                className={`w-4 h-4 text-stone-400 flex-shrink-0 transition-transform ${
                   showSwitcher ? "rotate-180" : ""
                 }`}
               />
@@ -277,9 +277,9 @@ export default function DashboardSidebar({
 
             {/* Dropdown */}
             {showSwitcher && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 max-h-64 overflow-y-auto">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-stone-800 border border-stone-700 rounded-lg shadow-xl z-50 max-h-64 overflow-y-auto">
                 {assessments.length === 0 ? (
-                  <div className="px-3 py-4 text-xs text-slate-500 text-center">
+                  <div className="px-3 py-4 text-xs text-stone-500 text-center">
                     Belum ada assessment
                   </div>
                 ) : (
@@ -287,10 +287,10 @@ export default function DashboardSidebar({
                     <button
                       key={a.id}
                       onClick={() => switchAssessment(a.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-3 text-left hover:bg-slate-700 transition-colors text-sm ${
+                      className={`w-full flex items-center gap-3 px-3 py-3 text-left hover:bg-stone-700 transition-colors text-sm ${
                         a.id === assessmentId
-                          ? "bg-blue-600/20 text-blue-300"
-                          : "text-slate-300"
+                          ? "bg-petrol-600/20 text-petrol-300"
+                          : "text-stone-300"
                       }`}
                     >
                       {a.clientLogo ? (
@@ -302,7 +302,7 @@ export default function DashboardSidebar({
                           />
                         </div>
                       ) : (
-                        <div className="w-8 h-8 rounded bg-slate-600 flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 rounded bg-stone-600 flex items-center justify-center flex-shrink-0">
                           <span className="text-xs font-bold">
                             {a.clientName.charAt(0)}
                           </span>
@@ -310,12 +310,12 @@ export default function DashboardSidebar({
                       )}
                       <div className="min-w-0">
                         <p className="font-medium truncate text-xs">{a.name}</p>
-                        <p className="text-xs text-slate-500 truncate">
+                        <p className="text-xs text-stone-500 truncate">
                           {a.clientName}
                         </p>
                       </div>
                       {a.id === assessmentId && (
-                        <div className="ml-auto w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
+                        <div className="ml-auto w-2 h-2 rounded-full bg-petrol-400 flex-shrink-0" />
                       )}
                     </button>
                   ))
@@ -329,8 +329,8 @@ export default function DashboardSidebar({
       {/* Collapsed Assessment Indicator */}
       {role === "ADMIN" && collapsed && assessmentName && (
         <div className="px-2 pt-4">
-          <div className="w-10 h-10 mx-auto bg-slate-800 rounded-lg flex items-center justify-center border border-slate-700" title={assessmentName}>
-            <FolderOpen className="w-5 h-5 text-blue-400" />
+          <div className="w-10 h-10 mx-auto bg-stone-800 rounded-lg flex items-center justify-center border border-stone-700" title={assessmentName}>
+            <FolderOpen className="w-5 h-5 text-petrol-400" />
           </div>
         </div>
       )}
@@ -338,8 +338,8 @@ export default function DashboardSidebar({
       {/* Non-admin Assessment Info */}
       {role !== "ADMIN" && !collapsed && assessmentName && (
         <div className="px-4 pt-4">
-          <div className="p-2 bg-slate-800 rounded-lg">
-            <p className="text-xs text-slate-400 mb-1">Assessment:</p>
+          <div className="p-2 bg-stone-800 rounded-lg">
+            <p className="text-xs text-stone-400 mb-1">Assessment:</p>
             <p className="text-sm font-medium truncate">{assessmentName}</p>
           </div>
         </div>
@@ -360,7 +360,7 @@ export default function DashboardSidebar({
             }}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
               collapsed ? "justify-center" : ""
-            } hover:bg-slate-700 hover:translate-x-1`}
+            } hover:bg-stone-700 hover:translate-x-1`}
           >
             <item.icon className="w-5 h-5 flex-shrink-0" />
             {!collapsed && (
@@ -372,12 +372,12 @@ export default function DashboardSidebar({
         {/* Admin: Kelola Insights */}
         {role === "ADMIN" && (
           <>
-            <div className={`my-3 border-t border-slate-700 ${collapsed ? "mx-2" : ""}`} />
+            <div className={`my-3 border-t border-stone-700 ${collapsed ? "mx-2" : ""}`} />
             <button
               onClick={() => router.push("/admin/manage")}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                 collapsed ? "justify-center" : ""
-              } hover:bg-slate-700 hover:translate-x-1 text-cyan-400`}
+              } hover:bg-stone-700 hover:translate-x-1 text-petrol-400`}
             >
               <Newspaper className="w-5 h-5 flex-shrink-0" />
               {!collapsed && (
@@ -392,7 +392,7 @@ export default function DashboardSidebar({
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-slate-700">
+      <div className="p-4 border-t border-stone-700">
         <button
           onClick={handleLogout}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${

@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -280,7 +280,7 @@ model Article {
 
 model Certificate {
   id               String   @id @default(cuid())
-  certCode         String   @unique // Contoh: LNA/06062026/PLTH-GRK/001
+  certCode         String   @unique // Contoh: SKL/06062026/PLTH-GRK/001
   type             String   @default("INSTANSI") // 'INDIVIDU' atau 'INSTANSI'
   verifyHash       String   @unique // Hash acak untuk URL verifikasi publik
   recipientName    String   // Nama Instansi (atau Nama Individu)
