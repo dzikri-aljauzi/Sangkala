@@ -162,7 +162,7 @@ export default function PengaturanPembayaranPage() {
             <Input
               id="bankName"
               required
-              placeholder="Contoh: Bank Mandiri"
+              placeholder="Contoh: Bank Contoh"
               value={formData.bankName}
               onChange={(e) => setFormData((prev) => ({ ...prev, bankName: e.target.value }))}
             />

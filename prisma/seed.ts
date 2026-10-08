@@ -58,8 +58,8 @@ async function main() {
     create: {
       id: "bankaltimtara-2026",
       name: "Risk Leadership Assessment Bidang Perkreditan 2026",
-      description: "Assessment Center Risk Leadership Assessment Bidang Perkreditan untuk Bank Kaltimtara tahun 2026",
-      clientName: "Bank Kaltimtara",
+      description: "Assessment Center Risk Leadership Assessment Bidang Perkreditan untuk Bank Contoh tahun 2026",
+      clientName: "Bank Contoh",
       clientLogo: null,
       isActive: true,
     },
@@ -230,7 +230,7 @@ async function main() {
   console.log("\n📍 Assessment Created:");
   console.log("   ID: bankaltimtara-2026");
   console.log("   Name: Risk Leadership Assessment Bidang Perkreditan 2026");
-  console.log("   Client: Bank Kaltimtara");
+  console.log("   Client: Bank Contoh");
 
   console.log("\n🔗 Quick Links:");
   console.log("   Assessment List: http://localhost:3000/assessment-center");

@@ -5,15 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 import { Section, SectionHeader } from "@/components/ui/section";
 import { Quote, User, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
 
 interface Testimonial {
   quote: string;
   author: string;
   position: string;
   company: string;
-  image?: string;
-  imagePosition?: string;
 }
 
 function TestimonialCard({
@@ -40,21 +37,9 @@ function TestimonialCard({
 
       {/* Author Info at Top */}
       <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5 min-w-0 w-full">
-        {testimonial.image ? (
-          <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden ring-2 ring-petrol-100 flex-shrink-0">
-            <Image
-              src={testimonial.image}
-              alt={testimonial.author}
-              fill
-              className="object-cover"
-              style={{ objectPosition: testimonial.imagePosition || "center" }}
-            />
-          </div>
-        ) : (
-          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-petrol-500 flex items-center justify-center flex-shrink-0">
-            <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-          </div>
-        )}
+        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-petrol-500 flex items-center justify-center flex-shrink-0">
+          <User className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+        </div>
         <div className="min-w-0 flex-1">
           <p className="font-semibold text-stone-800 text-sm sm:text-base truncate">
             {testimonial.author}
@@ -108,52 +93,18 @@ function TestimonialCard({
   );
 }
 
-// Client logos data
+// Klien fiktif untuk keperluan portofolio (tanpa logo)
 const clientLogos = [
-  { name: "Bank Bengkulu", src: "/client/BankBengkulu.png" },
-  { name: "Bank BPD DIY", src: "/client/BankBPDDIY.png" },
-  { name: "Universitas BPD", src: "/client/UniversitasBPD.png" },
-  { name: "STIE YKPN", src: "/client/STIEYKPN.png" },
-  { name: "Universitas Mulawarman", src: "/client/UniversitasMulawarman.png" },
-  { name: "Bank Jateng", src: "/client/bankjateng.png" },
-  { name: "Bank Sumsel", src: "/client/banksumsel.png" },
-  { name: "Bank BPD Bali", src: "/client/bankbpdbali.png" },
-  { name: "Bank Kaltimtara", src: "/client/Bankaltimtara.png" },
-  { name: "BSI", src: "/client/bsi.png" },
-  { name: "Bank Aceh", src: "/client/bankaceh.png" },
-  { name: "Bank Jatim", src: "/client/bankjatim.png" },
-  { name: "Dirgantara Indonesia", src: "/client/Dirgantara Indonesia.jpg" },
-  { name: "BNI", src: "/client/bni.png" },
-  { name: "Mandiri", src: "/client/mandiri.png" },
-  { name: "NTP", src: "/client/ntp.png" },
-  { name: "Bank BJB Syariah", src: "/client/bankbjpsyariah.jpg" },
-  { name: "BPKH", src: "/client/bpkh.png" },
-  { name: "Bank BJB", src: "/client/bankbjb.png" },
-  { name: "China Construction Bank", src: "/client/China_Construction_Bank_Indonesia.png" },
-  { name: "Bank Muamalat", src: "/client/bankmuamalat.png" },
-  { name: "Bank Resona", src: "/client/BankResona.png" },
-  { name: "Bank Banten", src: "/client/BankBanten.png" },
-  { name: "BCA", src: "/client/bca.png" },
-  { name: "Bank Jambi", src: "/client/bankjambi.png" },
-  { name: "Bank Kalbar", src: "/client/BankKalbar.png" },
-  { name: "PKN STAN", src: "/client/logoSTAN.png" },
-  { name: "Bank DKI", src: "/client/BankDKI..png" },
-  { name: "Bank Artha Graha", src: "/client/Bank_Artha_Graha_Internasional.png" },
-  { name: "QNB", src: "/client/Logo_Qatar_National_Bank.png" },
-  { name: "iWISE", src: "/client/iWISE.png" },
-  { name: "DP Information Group", src: "/client/DP_Information_Group.png" },
-  { name: "Bank Maluku Malut", src: "/client/Logo_Bank_Maluku_Malut.png" },
-  { name: "Bank Sulteng", src: "/client/Logo_Bank_Sulteng.png" },
-  { name: "Bank Sumut", src: "/client/Logo_Bank_Sumut.png" },
-  { name: "UPNVJ", src: "/client/Logo_UPNVJ.png" },
-  { name: "Bank NTB Syariah", src: "/client/BankNTBSyariah.png" },
-  { name: "Bank Aceh Syariah", src: "/client/Logo_Bank_Aceh_Syariah.png" },
-  { name: "Bank Riau Kepri", src: "/client/Logo_bankriaukepri.png" },
-  { name: "BSMR", src: "/client/bsmr.JPG" },
-  { name: "LSP TRK", src: "/client/lsptrk.PNG" },
-  { name: "LSP KS", src: "/client/lspks.PNG" },
-  { name: "APINDO", src: "/client/apindo.JPG" },
-  { name: "LSP PM", src: "/client/lsppm.png" },
+  { name: "Bank Contoh A" },
+  { name: "Bank Contoh B" },
+  { name: "Bank Contoh C" },
+  { name: "BUMN Contoh A" },
+  { name: "BUMN Contoh B" },
+  { name: "Universitas Contoh A" },
+  { name: "Universitas Contoh B" },
+  { name: "Fintech Contoh A" },
+  { name: "Asosiasi Contoh A" },
+  { name: "Lembaga Contoh A" },
 ];
 
 function ClientLogosCarousel({ language }: { language: string }) {
@@ -203,8 +154,8 @@ function ClientLogosCarousel({ language }: { language: string }) {
     >
       <p className="text-center text-stone-500 mb-6 sm:mb-8 text-sm sm:text-base">
         {language === "id"
-          ? "Dipercaya oleh institusi terkemuka"
-          : "Trusted by leading institutions"}
+          ? "Contoh klien (fiktif, untuk portofolio)"
+          : "Sample clients (fictional, for portfolio)"}
       </p>
 
       <div
@@ -246,14 +197,9 @@ function ClientLogosCarousel({ language }: { language: string }) {
                   key={`${logo.name}-${index}`}
                   className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-stone-100 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center aspect-[4/3] w-full min-w-0 overflow-hidden"
                 >
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={logo.src}
-                      alt={logo.name}
-                      fill
-                      className="object-contain p-1 sm:p-2"
-                    />
-                  </div>
+                  <span className="text-center font-mono text-xs sm:text-sm text-stone-700">
+                    {logo.name}
+                  </span>
                 </div>
               ))}
             </motion.div>
@@ -274,67 +220,28 @@ function ClientLogosCarousel({ language }: { language: string }) {
 export default function Testimonials() {
   const { language } = useLanguage();
 
+  // Testimoni fiktif untuk keperluan portofolio.
   const testimonials: Testimonial[] = [
     {
       quote:
-        "Pelatihan manajemen risiko perbankan yang diselenggarakan oleh Leadership Nasional sangat bermanfaat dan aplikatif. Materi yang disampaikan terstruktur dengan baik dan relevan dengan tantangan yang dihadapi industri perbankan saat ini. Fasilitatornya berpengalaman dan mampu menjelaskan konsep-konsep kompleks dengan cara yang mudah dipahami. Pelatihan ini memberikan wawasan baru serta meningkatkan kemampuan analisis dan pengambilan keputusan dalam pengelolaan risiko di perbankan.",
-      author: "Adhitya Pranajaya",
-      position: "Kepala Cabang",
-      company: "Bank BPD Bali",
-      image: "/testi/adhitya.jpeg",
-      imagePosition: "center top",
+        "Sangkala membantu kami merapikan proses penerbitan dan verifikasi sertifikat pelatihan. Pengingat masa berlaku membuat tidak ada lagi sertifikat yang lapse tanpa disadari.",
+      author: "Contoh Klien A",
+      position: "Kepala Divisi Manajemen Risiko",
+      company: "Bank Contoh (fiktif)",
     },
     {
       quote:
-        "Pelatihan memaparkan konsep BJR secara terstruktur. Saya apresiasi kualitas diskusi yang membuat materi hidup dan aplikatif. Saya merekomendasikan pelatihan dari LNA bagi pimpinan manapun yang ingin memperkuat landasan pengambilan keputusan.",
-      author: "Ari Supangat",
-      position: "Deputi Analisis Portofolio, Penyelesaian Transaksi dan Penempatan",
-      company: "BPKH",
-      image: "/testi/Supangat.jpeg",
-      imagePosition: "center top",
+        "Alur assessment center-nya jelas untuk setiap peran. Asesor, admin, dan peserta bisa menjalankan bagiannya tanpa saling menunggu.",
+      author: "Contoh Klien B",
+      position: "Kepala SDM",
+      company: "BUMN Contoh (fiktif)",
     },
     {
       quote:
-        "Saya sangat terkesan dengan pelatihan IT GRC di LNA. Memberikan manfaat strategis dalam memperkuat tata kelola teknologi informasi yang selaras dengan tujuan bisnis dan regulasi.",
-      author: "Dodit Wiweko Probojakti",
-      position: "Direktur IT, Digital, dan Operasional",
-      company: "Bank Jatim",
-      image: "/testi/wiweko.jpeg",
-      imagePosition: "center top",
-    },
-    {
-      quote:
-        "Sebagai Direktur Manajemen Risiko dan Kepatuhan, saya mengapresiasi peran strategis Leadership Nasional Asia dalam menyusun Blueprint Kepatuhan dan Manajemen Risiko kami. LNA berhasil menciptakan kerangka kerja yang tidak hanya kokoh secara teknis untuk memitigasi risiko, tetapi juga adaptif terhadap dinamika bisnis. Blueprint ini secara signifikan memperkuat fondasi tata kelola kami dan menciptakan budaya risiko dan budaya kepatuhan yang visioner, menjadikannya peta jalan strategis menuju operasional perbankan yang lebih modern dan berdaya saing serta memenuhi GRC.",
-      author: "Erik Abibon",
-      position: "Direktur Manajemen Risiko dan Kepatuhan",
-      company: "Bank Jateng",
-      image: "/testi/Abibon.jpeg",
-      imagePosition: "center 20%",
-    },
-    {
-      quote:
-        "Kami mengapresiasi peran Leadership Nasional Asia dalam penyusunan Blueprint SDM di Bank BPD DIY. Blueprint ini menjadi fondasi penting dalam mencetak SDM yang adaptif terhadap perubahan teknologi, sekaligus mendorong peningkatan produktivitas melalui indikator Earning per Employee (EPE). Dengan sinergi antara pengembangan kompetensi dan target bisnis yang terukur, kami yakin langkah ini akan memperkuat daya saing bank dalam menghadapi era digital.",
-      author: "Hudan Mulyawan",
-      position: "Direktur Umum",
-      company: "Bank BPD DIY",
-      image: "/testi/hudan.jpeg",
-    },
-    {
-      quote:
-        "Kami mengapresiasi kontribusi Leadership Nasional Asia dalam mendukung penguatan tata kelola, manajemen risiko, dan kepatuhan di Bank BPD Bali. Pendekatan yang komprehensif dan visioner telah membantu kami menyusun kerangka kerja GRC (Governance, Risk, and Compliance) yang tidak hanya memenuhi regulasi, tetapi juga selaras dengan strategi bisnis jangka panjang. Pencapaian kinerja dengan penerapan prudential dan berbagai pengakuan sebagai The High Performing Compliance Director on GRC menjadi bukti nyata bahwa fondasi GRC yang kokoh mampu mendorong peningkatan kualitas bisnis dan layanan perbankan kami. Kolaborasi strategis seperti Focus Group Discussion bersama Kejaksaan Tinggi Bali juga semakin memperkuat mitigasi risiko hukum, memastikan setiap aspek kepatuhan berjalan transparan dan sesuai regulasi yang berlaku. Ke depan, kami berkomitmen untuk terus menerapkan prinsip tata kelola yang baik secara berkelanjutan guna mendukung pertumbuhan bisnis yang sehat dan terpercaya.",
-      author: "Drs. I Wayan Sutela Negara, M.M.",
-      position: "Direktur Kepatuhan",
-      company: "Bank BPD Bali",
-      image: "/testi/wayan.jpeg",
-    },
-    {
-      quote:
-        "Sebagai Wakil Ketua I Bidang Akademik STIE YKPN, saya memandang bahwa program pendidikan dan pelatihan yang diselenggarakan oleh Leadership Nasional Asia memberikan nilai tambah yang signifikan bagi penguatan kapasitas akademik dan tata kelola institusi. Materi yang disampaikan tidak hanya relevan dengan perkembangan strategi inovasi, Governance, Risk, and Compliance (GRC), serta keberlanjutan bisnis, tetapi juga dikemas secara sistematis, aplikatif, dan selaras dengan kebutuhan sektor perbankan, keuangan, maupun pendidikan tinggi. Pendekatan berbasis praktik, dukungan teknologi, serta perspektif kepemimpinan yang kuat menjadikan setiap sesi pelatihan berdampak nyata dalam meningkatkan kompetensi peserta dan memperluas wawasan strategis. Kami mengapresiasi komitmen Leadership Nasional Asia dalam menghadirkan program yang profesional, adaptif terhadap perubahan industri, serta berorientasi pada kinerja berkelanjutan dan kontribusi bagi kemajuan bangsa.",
-      author: "Cahyo Indraswono SE., M.Sc., Ak., CA., CRP.",
-      position: "Wakil Ketua I Bidang Akademik",
-      company: "STIE YKPN School Of Business",
-      image: "/testi/Cahyo.jpeg",
-      imagePosition: "center top",
+        "Kerangka People, Process, Technology yang dipakai Sangkala membuat program pelatihan kami terhubung langsung dengan proses dan sistem yang berjalan.",
+      author: "Contoh Klien C",
+      position: "Wakil Ketua Bidang Akademik",
+      company: "Universitas Contoh (fiktif)",
     },
   ];
 

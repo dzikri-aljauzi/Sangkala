@@ -1464,7 +1464,7 @@ function CreateAssessmentModal({
                 setFormData({ ...formData, clientName: e.target.value })
               }
               className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent"
-              placeholder="Contoh: Bank Kaltimtara"
+              placeholder="Contoh: Bank Contoh"
             />
           </div>
 

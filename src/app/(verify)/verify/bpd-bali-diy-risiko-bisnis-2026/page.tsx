@@ -1,19 +1,19 @@
-import Image from "next/image";
+import { Wordmark } from "@/components/brand/Wordmark";
 import type { Metadata } from "next";
 import { CheckCircle } from "lucide-react";
 
 // ─── Data sertifikat (statis) ───────────────────────────────────────────────
-// Ubah nilai-nilai di bawah ini jika ada koreksi data.
+// Data fiktif untuk keperluan portofolio.
 const CERTIFICATE = {
   programName: "Pelatihan Risiko Bisnis",
-  recipientName: "Bank BPD Bali dan Bank BPD DIY",
+  recipientName: "Bank Contoh A dan Bank Contoh B",
   issuedDateLabel: "11 Juli 2026",
   verificationText:
-    "Sertifikat Pelatihan Risiko Bisnis untuk peserta Bank BPD Bali dan Bank BPD DIY ini dikeluarkan dan terdaftar di Leadership Nasional Asia tanggal 11 Juli 2026.",
+    "Sertifikat Pelatihan Risiko Bisnis untuk peserta Bank Contoh A dan Bank Contoh B ini dikeluarkan dan terdaftar di Sangkala tanggal 11 Juli 2026.",
 };
 
 export const metadata: Metadata = {
-  title: `Verifikasi Sertifikat - ${CERTIFICATE.recipientName} | Leadership Nasional Asia`,
+  title: `Verifikasi Sertifikat - ${CERTIFICATE.recipientName} | Sangkala`,
   description: CERTIFICATE.verificationText,
   robots: { index: false, follow: false },
 };
@@ -31,8 +31,7 @@ export default function VerifyBpdBaliDiyRisikoBisnisPage() {
             <span className="font-bold text-emerald-400">
               Sertifikat Resmi Terverifikasi.
             </span>{" "}
-            Sertifikat ini diterbitkan secara sah oleh PT. Leadership
-            Nasional Asia (LNA) dan terdaftar dalam basis data sertifikasi
+            Sertifikat ini diterbitkan secara sah oleh Sangkala Technology dan terdaftar dalam basis data sertifikasi
             kami.
           </p>
         </div>
@@ -44,20 +43,12 @@ export default function VerifyBpdBaliDiyRisikoBisnisPage() {
         <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden mb-6">
           <div className="p-8 sm:p-10">
             <div className="flex flex-col items-center">
-              <div className="relative w-24 h-24 mb-4 rounded-full border border-stone-100 p-2 shadow-sm flex items-center justify-center bg-stone-50">
-                <Image
-                  src="/logo-lna.png"
-                  alt="LNA Logo"
-                  width={80}
-                  height={80}
-                  className="object-contain"
-                />
-              </div>
+              <div className="mb-4"><Wordmark className="text-3xl" /></div>
               <span className="inline-block px-3 py-1 text-xs font-semibold text-petrol-600 bg-petrol-50 border border-petrol-100 rounded-md mb-2">
                 Lembaga Penerbit
               </span>
               <h2 className="text-xl sm:text-2xl font-bold text-stone-900 text-center">
-                PT. Leadership Nasional Asia (LNA)
+                Sangkala Technology
               </h2>
             </div>
             <div className="mt-2 text-center max-w-2xl mx-auto border-t border-stone-100 pt-2">
@@ -100,16 +91,7 @@ export default function VerifyBpdBaliDiyRisikoBisnisPage() {
         {/* Footer */}
         <div className="text-center py-12">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Image
-              src="/logo-lna-transparent.png"
-              alt="LNA"
-              width={28}
-              height={28}
-              className="object-contain opacity-60"
-            />
-            <span className="text-xs font-bold text-stone-400 tracking-wider uppercase">
-              Leadership Nasional Asia
-            </span>
+            <Wordmark className="text-sm opacity-70" />
           </div>
           <p className="text-xs text-stone-400">
             Halaman ini hanya dapat diakses untuk keperluan verifikasi
