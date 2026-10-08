@@ -116,16 +116,37 @@ function tickPath(rx: number, ry: number, count: number): string {
 }
 const TICKS = tickPath(RINGS[0].rx, RINGS[0].ry, 60);
 
-// Debu waktu: titik kecil di sekitar cincin. Acak deterministik agar stabil.
-const DUST = Array.from({ length: 34 }, (_, i) => {
-  const rnd = (s: number) => {
-    const x = Math.sin(i * 12.9898 + s * 78.233) * 43758.5453;
-    return x - Math.floor(x);
+// Koordinat hasil sin/cos dibulatkan: selisih last-digit antara Node (server) dan
+// browser (client) bisa memicu hydration mismatch pada atribut SVG.
+const r2 = (n: number) => Math.round(n * 100) / 100;
+
+// PRNG bilangan bulat (mulberry32): hasilnya identik di semua mesin JS. Jangan pakai
+// pola sin(x)*besar, perbedaan kecil sin() antar mesin diperbesar jadi selisih nyata.
+function mulberry32(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-  const a = rnd(1) * Math.PI * 2;
-  const r = 170 + rnd(2) * 85;
-  return { x: Math.cos(a) * r, y: Math.sin(a) * r, r: 1.2 + rnd(3) * 2.2, d: rnd(4) * 6 };
-});
+}
+
+// Debu waktu: titik kecil di sekitar cincin.
+const DUST = (() => {
+  const rnd = mulberry32(20261008);
+  return Array.from({ length: 34 }, () => {
+    const a = rnd() * Math.PI * 2;
+    const r = 170 + rnd() * 85;
+    return {
+      x: r2(Math.cos(a) * r),
+      y: r2(Math.sin(a) * r),
+      r: r2(1.2 + rnd() * 2.2),
+      d: Math.round(rnd() * 60) / 10,
+    };
+  });
+})();
 
 // Ornamen: orbit putus-putus sogan dengan empat belah ketupat. Satu-satunya
 // rujukan budaya di visual ini.
@@ -215,7 +236,7 @@ export default function TimeRings({ className }: { className?: string }) {
                       width="12"
                       height="12"
                       fill={SOGAN_600}
-                      transform={`translate(${ORN.rx * Math.cos(t)} ${ORN.ry * Math.sin(t)}) rotate(45) scale(0.8 1.25)`}
+                      transform={`translate(${r2(ORN.rx * Math.cos(t))} ${r2(ORN.ry * Math.sin(t))}) rotate(45) scale(0.8 1.25)`}
                     />
                   );
                 })}
@@ -224,8 +245,8 @@ export default function TimeRings({ className }: { className?: string }) {
 
             {/* Cincin tahap 01 sampai 04 */}
             {RINGS.map((r, i) => {
-              const bx = r.rx * Math.cos(r.bead.phase);
-              const by = r.ry * Math.sin(r.bead.phase);
+              const bx = r2(r.rx * Math.cos(r.bead.phase));
+              const by = r2(r.ry * Math.sin(r.bead.phase));
               const isActive = active === i;
               const frozen = hovered === i || selected === i;
               return (
