@@ -29,7 +29,8 @@ export const translations = {
     },
     ctaPrimary: { id: "Konsultasi Gratis", en: "Free Consultation" },
     ctaSecondary: { id: "Lihat Program Kami", en: "View Our Programs" },
-    globeTitle: { id: "Jangkauan Global", en: "Global Reach" },
+    globeTitle: { id: "Penanda Waktu", en: "Time Markers" },
+    globeSubtitle: { id: "Terbit • Ingatkan • Perpanjang", en: "Issue • Remind • Renew" },
   },
 
   // Value Metrics

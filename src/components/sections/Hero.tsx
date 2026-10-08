@@ -8,8 +8,8 @@ import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Cog, Cpu } from "lucide-react";
 
-// Dynamic import for 3D Globe to avoid SSR issues
-const Globe3D = dynamic(() => import("@/components/ui/3d-globe"), {
+// Dynamic import untuk 3D cincin waktu agar tidak ikut SSR
+const TimeRings = dynamic(() => import("@/components/ui/time-rings"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex items-center justify-center">
@@ -17,13 +17,6 @@ const Globe3D = dynamic(() => import("@/components/ui/3d-globe"), {
     </div>
   ),
 });
-
-// Markers with correct coordinates
-const indonesiaMarkers = [
-  { lat: -6.2615, lng: 106.8106, label: "Jakarta Selatan" },
-  { lat: -7.9666, lng: 112.6326, label: "Malang" },
-  { lat: 1.3521, lng: 103.8198, label: "Singapore" },
-];
 
 export default function Hero() {
   const { t, language } = useLanguage();
@@ -118,13 +111,13 @@ export default function Hero() {
               className="flex flex-col sm:flex-row gap-3 sm:gap-4"
             >
               <Link href="/contact" className="w-full sm:w-auto">
-                <Button variant="gold" size="lg" className="group shadow-lg w-full sm:w-auto justify-center">
+                <Button variant="primary" size="lg" className="group w-full sm:w-auto justify-center">
                   {t("hero.ctaPrimary")}
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               <Link href="/programs" className="w-full sm:w-auto">
-                <Button variant="primary" size="lg" className="w-full sm:w-auto justify-center">
+                <Button variant="secondary" size="lg" className="w-full sm:w-auto justify-center">
                   {t("hero.ctaSecondary")}
                 </Button>
               </Link>
@@ -148,14 +141,14 @@ export default function Hero() {
             </motion.div>
           </div>
 
-          {/* 3D Globe */}
+          {/* 3D cincin waktu */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.4 }}
             className="order-2 relative z-10 w-full flex flex-col items-center justify-center"
           >
-            {/* Mobile Title Above Globe */}
+            {/* Judul mobile di atas visual */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -166,7 +159,7 @@ export default function Hero() {
                 {t("hero.globeTitle")}
               </h2>
               <p className="text-xs sm:text-sm text-stone-500 mt-1">
-                Jakarta • Malang • Singapore
+                {t("hero.globeSubtitle")}
               </p>
             </motion.div>
 
@@ -178,24 +171,7 @@ export default function Hero() {
                   </div>
                 }
               >
-                <Globe3D
-                  markers={indonesiaMarkers}
-                  config={{
-                    radius: 1.75,
-                    atmosphereColor: "#85babd",
-                    atmosphereIntensity: 0.8,
-                    atmosphereBlur: 2,
-                    autoRotateSpeed: 0.3,
-                    wireframeColor: "#85babd",
-                    showWireframe: true,
-                    showAtmosphere: true,
-                    markerColor: "#e2cdb0",
-                    ambientIntensity: 1.2,
-                    pointLightIntensity: 1.8,
-                  }}
-                  className="h-full w-full"
-                  onMarkerClick={(marker) => console.log("Clicked:", marker.label)}
-                />
+                <TimeRings className="h-full w-full" />
               </Suspense>
             </div>
           </motion.div>
