@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Component, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, useCursor } from "@react-three/drei";
 import * as THREE from "three";
@@ -154,7 +154,7 @@ function Ring({ index, spec, animate, activeRef, registerAnchor, withDisc, onHov
     }
     if (beadOrbit.current && speedF > 0) beadOrbit.current.rotation.z += spec.bead.speed * delta * speedF;
 
-    const k = Math.min(1, delta * 8);
+    const k = Math.min(1, Math.max(0, delta * 8));
     emph.current += ((isActive ? 1 : 0) - emph.current) * k;
     dim.current += ((others ? 1 : 0) - dim.current) * k;
 
@@ -390,7 +390,7 @@ function Core({ animate, activeRef, registerAnchor, onHover, onSelect }: CorePro
 
   useFrame((state, delta) => {
     const isActive = activeRef.current === CORE_INDEX;
-    emph.current += ((isActive ? 1 : 0) - emph.current) * Math.min(1, delta * 8);
+    emph.current += ((isActive ? 1 : 0) - emph.current) * Math.min(1, Math.max(0, delta * 8));
     if (spin.current && animate) {
       const f = isActive ? 2.5 : 1;
       spin.current.rotation.y += 0.35 * delta * f;
@@ -441,17 +441,25 @@ function Core({ animate, activeRef, registerAnchor, onHover, onSelect }: CorePro
 }
 
 // Menjalankan frame secara manual (frameloop="never") dengan batas fps, dan
-// berhenti total saat tidak aktif (di luar layar). Memakai jam virtual agar
-// animasi tidak melompat setelah jeda.
-function FrameLimiter({ fps, active }: { fps: number; active: boolean }) {
+// berhenti total saat tidak aktif (di luar layar). Jam virtual dilanjutkan dari
+// jam r3f supaya delta tidak pernah negatif saat efek dimulai ulang.
+function FrameLimiter({
+  fpsRef,
+  active,
+  onFrame,
+}: {
+  fpsRef: { current: number };
+  active: boolean;
+  onFrame: () => void;
+}) {
   const advance = useThree((s) => s.advance);
+  const clock = useThree((s) => s.clock);
 
   useEffect(() => {
     if (!active) return;
-    const minStep = 1000 / fps - 2;
     let raf = 0;
     let last = 0;
-    let virtual = 0;
+    let virtual = clock.elapsedTime;
     const tick = (t: number) => {
       raf = requestAnimationFrame(tick);
       if (last === 0) {
@@ -459,14 +467,15 @@ function FrameLimiter({ fps, active }: { fps: number; active: boolean }) {
         return;
       }
       const dt = t - last;
-      if (dt < minStep) return;
+      if (dt < 1000 / fpsRef.current - 2) return;
       last = t;
       virtual += Math.min(dt, 100) / 1000;
       advance(virtual);
+      onFrame();
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [advance, fps, active]);
+  }, [advance, clock, active, fpsRef, onFrame]);
 
   return null;
 }
@@ -478,6 +487,7 @@ interface SceneProps {
   autoRotate: boolean;
   fps: number;
   running: boolean;
+  onFrame: () => void;
   tipRef: { current: HTMLDivElement | null };
   onHover: (i: number | null) => void;
   onSelect: (i: number) => void;
@@ -486,11 +496,12 @@ interface SceneProps {
 }
 
 function Scene({
-  animate, active, hovered, autoRotate, fps, running, tipRef,
+  animate, active, hovered, autoRotate, fps, running, onFrame, tipRef,
   onHover, onSelect, onDragStart, onDragEnd,
 }: SceneProps) {
   const activeRef = useRef<number | null>(active);
   const hoveredRef = useRef<number | null>(hovered);
+  const fpsRef = useRef(fps);
   const anchors = useRef<(THREE.Object3D | null)[]>([]);
   const tmp = useMemo(() => new THREE.Vector3(), []);
   const gl = useThree((s) => s.gl);
@@ -501,7 +512,8 @@ function Scene({
   useEffect(() => {
     activeRef.current = active;
     hoveredRef.current = hovered;
-  }, [active, hovered]);
+    fpsRef.current = fps;
+  }, [active, hovered, fps]);
 
   useCursor(hovered !== null, "pointer", "grab");
 
@@ -535,7 +547,7 @@ function Scene({
 
   return (
     <>
-      <FrameLimiter fps={fps} active={running} />
+      <FrameLimiter fpsRef={fpsRef} active={running} onFrame={onFrame} />
       <Dust animate={animate} />
       <Ornament animate={animate} />
       {RINGS.map((spec, i) => (
@@ -570,48 +582,76 @@ function Scene({
   );
 }
 
-// Fallback statis bila WebGL tidak tersedia atau context hilang.
-function StaticRings() {
+// Fallback bila WebGL tidak tersedia, macet, atau context hilang. Tetap berputar
+// pelan lewat animasi CSS (ringan, tanpa JS); berhenti bila reduced motion.
+const FALLBACK_RINGS = [
+  { rx: 200, ry: 95, color: PETROL_600, w: 8, tilt: -12, dur: 70, rev: false, bead: SOGAN_600, br: 14 },
+  { rx: 160, ry: 70, color: PETROL_500, w: 6, tilt: 28, dur: 55, rev: true, bead: PETROL_900, br: 10 },
+  { rx: 125, ry: 52, color: PETROL_400, w: 5, tilt: -48, dur: 45, rev: false, bead: PETROL_800, br: 9 },
+  { rx: 90, ry: 38, color: PETROL_800, w: 4, tilt: 70, dur: 38, rev: true, bead: SOGAN_600, br: 8 },
+];
+
+function FallbackRings() {
+  const dur = (s: number) => ({ "--tr-dur": `${s}s` }) as CSSProperties;
   return (
     <svg viewBox="-260 -200 520 400" className="h-full w-full" aria-hidden="true">
       <g fill="none">
-        <ellipse rx="200" ry="95" stroke={PETROL_600} strokeWidth="8" transform="rotate(-12)" />
-        <ellipse rx="160" ry="70" stroke={PETROL_500} strokeWidth="6" transform="rotate(28)" />
-        <ellipse rx="125" ry="52" stroke={PETROL_400} strokeWidth="5" transform="rotate(-48)" />
-        <ellipse rx="90" ry="38" stroke={PETROL_800} strokeWidth="4" transform="rotate(70)" />
-        <ellipse rx="255" ry="120" stroke={SOGAN_600} strokeWidth="1.5" strokeDasharray="8 7" opacity="0.55" transform="rotate(-12)" />
+        <g transform="rotate(-12)">
+          <g className="tr-spin tr-rev" style={dur(120)}>
+            <ellipse rx="255" ry="120" stroke={SOGAN_600} strokeWidth="1.5" strokeDasharray="8 7" opacity="0.55" />
+          </g>
+        </g>
+        {FALLBACK_RINGS.map((r, i) => (
+          <g key={i} transform={`rotate(${r.tilt})`}>
+            <g className={cn("tr-spin", r.rev && "tr-rev")} style={dur(r.dur)}>
+              <ellipse rx={r.rx} ry={r.ry} stroke={r.color} strokeWidth={r.w} />
+              <circle cx={r.rx} cy="0" r={r.br} fill={r.bead} />
+            </g>
+          </g>
+        ))}
       </g>
-      <polygon points="0,-34 30,-17 30,17 0,34 -30,17 -30,-17" fill={PETROL_600} stroke={PETROL_50} strokeWidth="2" />
-      <circle cx="192" cy="-40" r="14" fill={SOGAN_600} />
+      <g className="tr-spin" style={dur(24)}>
+        <polygon points="0,-34 30,-17 30,17 0,34 -30,17 -30,-17" fill={PETROL_600} stroke={PETROL_50} strokeWidth="2" />
+      </g>
     </svg>
   );
 }
 
 // Menangkap kegagalan pembuatan WebGL agar halaman tidak ikut crash.
-class WebGLBoundary extends Component<{ onFail: () => void; children: ReactNode }, { failed: boolean }> {
+class WebGLBoundary extends Component<{ onFail: (reason: string) => void; children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
   }
-  componentDidCatch() {
-    this.props.onFail();
+  componentDidCatch(error: unknown) {
+    this.props.onFail(`error: ${error instanceof Error ? error.message : String(error)}`);
   }
   render() {
     return this.state.failed ? null : this.props.children;
   }
 }
 
-function detectWebGL(): boolean {
-  try {
-    const c = document.createElement("canvas");
-    const ctx = (c.getContext("webgl2") || c.getContext("webgl")) as WebGLRenderingContext | null;
-    if (!ctx) return false;
-    // Lepaskan context uji segera agar tidak menambah beban GPU.
-    ctx.getExtension("WEBGL_lose_context")?.loseContext();
-    return true;
-  } catch {
-    return false;
-  }
+// Uji apakah buffer WebGL seukuran canvas asli (dengan dpr dan atribut yang sama)
+// bisa dibuat. Probe kecil saja tidak cukup: GPU yang hampir kehabisan memori
+// bisa lolos di 300x150 tapi gagal di ukuran asli ("backbuffer failed").
+// Mencoba dengan antialias dulu, lalu tanpa antialias. null = tidak bisa.
+function probeGPU(width: number, height: number, dpr: number, wantAA: boolean): { antialias: boolean } | null {
+  const attempt = (antialias: boolean) => {
+    try {
+      const c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(width * dpr));
+      c.height = Math.max(1, Math.round(height * dpr));
+      const gl = c.getContext("webgl2", { alpha: true, antialias, stencil: false, powerPreference: "default" });
+      if (!gl) return false;
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  if (wantAA && attempt(true)) return { antialias: true };
+  if (attempt(false)) return { antialias: false };
+  return null;
 }
 
 function detectLowEnd(): boolean {
@@ -628,13 +668,31 @@ export default function TimeRings({ className }: { className?: string }) {
   const [dragging, setDragging] = useState(false);
   const [interacted, setInteracted] = useState(false);
   const [inView, setInView] = useState(true);
-  const [webgl, setWebgl] = useState<boolean>(() => detectWebGL());
   const [lowEnd] = useState<boolean>(() => detectLowEnd());
+  const [gpu] = useState(() => {
+    const dpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), detectLowEnd() ? 1 : 1.5);
+    return probeGPU(Math.min(window.innerWidth, 640), 560, dpr, !detectLowEnd());
+  });
+  const [fallback, setFallback] = useState<string | null>(gpu ? null : "buffer WebGL tidak bisa dibuat");
   const [reduced] = useState<boolean>(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
+  const webgl = fallback === null;
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const tipRef = useRef<HTMLDivElement>(null);
+  const framesRef = useRef(0);
+  const inViewRef = useRef(true);
+
+  const onFrame = useCallback(() => {
+    framesRef.current += 1;
+  }, []);
+
+  const failWith = useCallback((reason: string) => {
+    setFallback((prev) => {
+      if (prev === null) console.warn(`[time-rings] WebGL tidak dipakai (${reason}); memakai fallback SVG.`);
+      return prev ?? reason;
+    });
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -646,10 +704,62 @@ export default function TimeRings({ className }: { className?: string }) {
   useEffect(() => {
     const el = wrapRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.05 });
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        inViewRef.current = entry.isIntersecting;
+        setInView(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!gpu) console.warn("[time-rings] WebGL tidak dipakai (buffer WebGL tidak bisa dibuat); memakai fallback SVG.");
+  }, [gpu]);
+
+  // Jaring pengaman: kegagalan membuat WebGL di dalam r3f muncul sebagai error
+  // async yang tidak tertangkap error boundary. Tangkap di sini lalu pakai fallback.
+  useEffect(() => {
+    if (!webgl) return;
+    const isGL = (m: string) => /webgl/i.test(m);
+    const onError = (e: ErrorEvent) => {
+      if (isGL(e.message || "")) failWith(e.message);
+    };
+    const onRejection = (e: PromiseRejectionEvent) => {
+      const m = e.reason instanceof Error ? e.reason.message : String(e.reason);
+      if (isGL(m)) failWith(m);
+    };
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onRejection);
+    return () => {
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onRejection);
+    };
+  }, [webgl, failWith]);
+
+  // Pengawas: bila WebGL terlihat tapi tidak ada frame yang maju (context mati
+  // diam-diam, GPU kehabisan memori, dll.), pindah ke fallback agar tetap bergerak.
+  useEffect(() => {
+    if (!webgl) return;
+    let lastCount = framesRef.current;
+    let stalls = 0;
+    let interval: ReturnType<typeof setInterval> | undefined;
+    const start = setTimeout(() => {
+      interval = setInterval(() => {
+        const now = framesRef.current;
+        const watching = inViewRef.current && document.visibilityState === "visible";
+        stalls = watching && now - lastCount < 2 ? stalls + 1 : 0;
+        lastCount = now;
+        if (stalls >= 2) failWith("tidak ada frame yang maju");
+      }, 2000);
+    }, 3000);
+    return () => {
+      clearTimeout(start);
+      if (interval) clearInterval(interval);
+    };
+  }, [webgl, failWith]);
 
   const active = hovered ?? selected;
   const autoRotate = !reduced && !dragging && active === null;
@@ -674,25 +784,28 @@ export default function TimeRings({ className }: { className?: string }) {
   };
 
   return (
-    <div className={cn("relative flex flex-col", className)}>
+    <div className={cn("relative flex flex-col", className)} data-mode={webgl ? "webgl" : `fallback: ${fallback}`}>
       <div ref={wrapRef} className="relative min-h-0 flex-1">
         <div aria-hidden="true" className="absolute inset-0">
           {webgl ? (
-            <WebGLBoundary onFail={() => setWebgl(false)}>
+            <WebGLBoundary onFail={failWith}>
               <Canvas
                 frameloop="never"
                 camera={{ position: [0, 0, 6.6], fov: 40 }}
                 dpr={lowEnd ? 1 : [1, 1.5]}
-                gl={{
-                  alpha: true,
-                  antialias: !lowEnd,
-                  stencil: false,
-                  powerPreference: "default",
+                gl={(defaults) => {
+                  const base = { ...defaults, alpha: true, stencil: false, powerPreference: "default" as const };
+                  try {
+                    return new THREE.WebGLRenderer({ ...base, antialias: gpu?.antialias ?? false });
+                  } catch {
+                    // Coba sekali lagi tanpa antialias sebelum menyerah.
+                    return new THREE.WebGLRenderer({ ...base, antialias: false });
+                  }
                 }}
                 onCreated={({ gl }) => {
                   gl.domElement.addEventListener("webglcontextlost", (e) => {
                     e.preventDefault();
-                    setWebgl(false);
+                    failWith("context hilang");
                   });
                 }}
                 onPointerMissed={() => setSelected(null)}
@@ -704,6 +817,7 @@ export default function TimeRings({ className }: { className?: string }) {
                   autoRotate={autoRotate}
                   fps={fps}
                   running={inView}
+                  onFrame={onFrame}
                   tipRef={tipRef}
                   onHover={setHovered}
                   onSelect={handleSelect}
@@ -713,7 +827,7 @@ export default function TimeRings({ className }: { className?: string }) {
               </Canvas>
             </WebGLBoundary>
           ) : (
-            <StaticRings />
+            <FallbackRings />
           )}
         </div>
 
