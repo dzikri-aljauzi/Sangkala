@@ -66,3 +66,8 @@ next-env.d.ts
 # local file
 /public/uploads/logos/
 /public/uploads/**/*.pdf
+
+# Backup database lokal (berisi data asli)
+/prisma/dev.db.backup-*
+
+!.env.example
