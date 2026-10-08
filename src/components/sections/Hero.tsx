@@ -163,7 +163,7 @@ export default function Hero() {
               </p>
             </motion.div>
 
-            <div className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-none h-[280px] sm:h-[320px] md:h-[380px] lg:h-[450px] xl:h-[500px] flex items-center justify-center mx-auto">
+            <div className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-none h-[400px] sm:h-[440px] md:h-[480px] lg:h-[520px] xl:h-[560px] flex items-center justify-center mx-auto">
               <Suspense
                 fallback={
                   <div className="w-full h-full flex items-center justify-center">
