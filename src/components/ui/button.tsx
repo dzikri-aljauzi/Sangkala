@@ -17,6 +17,9 @@ const buttonVariants = cva(
           "border border-petrol-600 text-petrol-600 hover:bg-petrol-50",
         ghost:
           "text-petrol-600 hover:bg-petrol-50",
+        // Tombol teks (DESIGN.md): untuk "Selengkapnya" di dalam blok.
+        text:
+          "rounded-none font-semibold text-petrol-600 underline-offset-4 hover:underline",
         // Nama "gold" dipertahankan agar pemakai lama tidak berubah API. Sogan
         // tidak boleh jadi tombol (BRAND.md), jadi tampil sebagai tombol primer.
         gold:
@@ -29,6 +32,10 @@ const buttonVariants = cva(
         xl: "h-12 sm:h-14 px-6 sm:px-10 text-sm sm:text-lg",
       },
     },
+    compoundVariants: [
+      // Dideklarasikan setelah size supaya menang dari h-* dan px-*.
+      { variant: "text", className: "h-auto px-0" },
+    ],
     defaultVariants: {
       variant: "primary",
       size: "md",

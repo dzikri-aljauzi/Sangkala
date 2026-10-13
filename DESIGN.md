@@ -106,7 +106,7 @@ Diamati dari screenshot lokal pada 1440px dan 390px.
 | Navigasi 9 item | `layout/Navbar.tsx` | 5 item. Insight dan News & Article digabung, Metodologi masuk ke Layanan |
 | Ajakan bertindak penutup muncul dua kali berturut-turut | `CTASection.tsx` dan footer | Satu blok penutup saja |
 | Seksi gelap memakai `stone-800` (abu kehitaman), bukan Petrol 900. Terlihat di halaman Layanan | `ui/section.tsx`, varian `dark` | Petrol 900 sesuai `BRAND.md` |
-| Isi tersembunyi sampai animasi scroll berjalan, sehingga seksi tampak kosong tanpa JavaScript, saat dicetak, dan bagi crawler | `ui/animated.tsx` | Isi terlihat secara default. Animasi hanya mempercantik |
+| Isi dirender tersembunyi (`opacity: 0`) sampai animasi scroll berjalan, sehingga seksi tampak kosong tanpa JavaScript, saat dicetak, dan bagi crawler. Pola `initial="hidden"` + `whileInView` tertulis langsung di sekitar 35 file (halaman, `sections/*`, dashboard). `ui/animated.tsx` adalah kode mati dan sudah dihapus | Halaman dan `sections/*` | Pakai `<Reveal>` (`ui/reveal.tsx`): terlihat di HTML server, hanya elemen di bawah layar yang disembunyikan sebentar. Migrasi per halaman di fase 1–3 |
 | Efek hover angkat kartu (`hover:-translate-y-1`, `hover:shadow-2xl`) | `ui/card.tsx` | Hover hanya mengubah warna garis atau teks |
 | Klaim angka (99% kepuasan, ISO 9001, 15.000+) tanpa sumber yang terlihat | `ValueMetrics.tsx` | Tampilkan hanya angka yang bisa disebut sumbernya. Lihat `PRODUCT.md` |
 
@@ -416,6 +416,12 @@ berubah.
 Font dimuat di `app/layout.tsx` lewat `next/font/google`:
 `IBM_Plex_Serif` dengan bobot 400 dan 400 italic, variabel
 `--font-plex-serif`.
+
+**Status fase 0 (diterapkan).** Token ada di `globals.css` sebagai kelas
+`type-display`, `type-h1`, `type-h2`, `type-h3`, `type-card`, `type-lead`,
+`type-meta`, dan `prose-width` (ukuran mobile dan desktop sudah di dalamnya),
+bukan sebagai utilitas `text-*`. `--font-heading` sengaja tidak diubah karena
+dipakai dialog yang dibagi dengan admin.
 
 ---
 
