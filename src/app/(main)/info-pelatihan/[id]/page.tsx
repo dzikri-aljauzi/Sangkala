@@ -3,26 +3,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import {
-  MapPin,
-  Calendar,
-  ArrowLeft,
-  ArrowRight,
-  Image as ImageIcon,
-  Tag,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-  Landmark,
-  Maximize2,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, AlertCircle, CheckCircle, Loader2, Maximize2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { Section } from "@/components/ui/section";
-import { Card } from "@/components/ui/card";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Band, Container } from "@/components/ui/layout";
+import { Button } from "@/components/ui/button";
+import { Field, controlClass } from "@/components/ui/field";
 import {
   Dialog,
   DialogContent,
@@ -117,13 +102,6 @@ export default function DetailPelatihanPage() {
 
   const locale = language === "en" ? "en-US" : "id-ID";
 
-  const formatDate = (dateStr: string): string =>
-    new Date(dateStr).toLocaleDateString(locale, {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -199,28 +177,25 @@ export default function DetailPelatihanPage() {
 
   if (loading) {
     return (
-      <Section variant="gradient" padding="xl" className="pt-32 sm:pt-36 min-h-screen">
-        <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
-        </div>
-      </Section>
+      <Band>
+        <p role="status" className="notranslate text-stone-700">Memuat…</p>
+      </Band>
     );
   }
 
   if (error || !training) {
     return (
-      <Section variant="gradient" padding="xl" className="pt-32 sm:pt-36 min-h-screen">
-        <div className="max-w-4xl mx-auto text-center py-16 text-stone-500 bg-white rounded-xl border border-stone-200">
-          <p className="mb-4">{t("trainingDetail.notFound")}</p>
-          <Link
-            href="/info-pelatihan"
-            className={buttonVariants({ variant: "outline" })}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {t("trainingDetail.back")}
+      <Band>
+        <div className="max-w-xl">
+          <p className="type-h2 mb-6">{t("trainingDetail.notFound")}</p>
+          <Link href="/info-pelatihan">
+            <Button variant="secondary" size="lg">
+              <ArrowLeft aria-hidden className="size-4" />
+              {t("trainingDetail.back")}
+            </Button>
           </Link>
         </div>
-      </Section>
+      </Band>
     );
   }
 
@@ -231,126 +206,68 @@ export default function DetailPelatihanPage() {
 
   const slotsLeft = training.capacity !== null ? training.capacity - training.activeRegistrantsCount : null;
   const isFull = slotsLeft !== null && slotsLeft <= 0;
+  const poster = getImageUrl(training.imagePath);
+  const dateRange = formatTrainingDateRange(training.startDate, training.endDate, locale);
+  const reqText = language === "en" ? "(required)" : "(wajib)";
 
   return (
-    <Section variant="gradient" padding="xl" className="pt-32 sm:pt-36">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Back link */}
+    <>
+      <Container className="pb-[72px] pt-10 md:pb-[112px] md:pt-14">
         <Link
           href="/info-pelatihan"
-          className="notranslate inline-flex items-center text-sm font-medium text-stone-500 hover:text-petrol-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrol-500 rounded transition-colors"
+          className="notranslate mb-10 inline-flex items-center gap-2 text-[0.9375rem] text-stone-700 transition-colors hover:text-petrol-600"
         >
-          <ArrowLeft className="w-4 h-4 mr-1.5" />
+          <ArrowLeft aria-hidden className="size-4" />
           {t("trainingDetail.back")}
         </Link>
 
-        {/* Centered title */}
-        <div className="text-center space-y-3 pt-2">
-          <p className="notranslate text-xs font-semibold uppercase tracking-[0.2em] text-petrol-600">
-            {t("trainingDetail.program")}
-          </p>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-stone-900 leading-tight max-w-3xl mx-auto">
-            {training.title}
-          </h1>
-          <div className="notranslate flex items-center justify-center flex-wrap gap-x-3 gap-y-1 text-sm text-stone-500">
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-stone-400" />
-              {training.location}
-            </span>
-            <span className="text-stone-300">•</span>
-            <span className="inline-flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-stone-400" />
-              {formatTrainingDateRange(training.startDate, training.endDate, locale)}
-            </span>
-          </div>
-        </div>
+        <p className="notranslate type-meta mb-5 text-petrol-600">{t("trainingDetail.program")}</p>
+        <h1 className="type-h1 max-w-[28ch]">{training.title}</h1>
 
-        {/* Poster Banner (Full Width / Natural Aspect Ratio) */}
-        {training.imagePath ? (
-          <div className="relative rounded-2xl overflow-hidden shadow-sm border border-stone-200 w-full bg-stone-50">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={getImageUrl(training.imagePath) ?? ""}
-              alt={training.title}
-              className="w-full h-auto block"
-            />
-            {/* Mobile preview button */}
-            <button
-              type="button"
-              onClick={() => setPreviewImageUrl(getImageUrl(training.imagePath))}
-              className="sm:hidden absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 hover:bg-black/80 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg backdrop-blur-sm transition-colors"
-            >
-              <Maximize2 className="w-3.5 h-3.5" />
-              Preview
-            </button>
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col items-center justify-center text-stone-300 py-24">
-            <ImageIcon className="w-16 h-16 mb-2" />
-            <span className="text-sm">{t("trainingDetail.noImage")}</span>
-          </div>
-        )}
-
-        {/* Quick Info & Action CTA */}
-        <Card className="notranslate border border-stone-200 bg-white p-6 sm:p-8 space-y-6 shadow-sm">
-          {/* 3-Column Info Grid: Jadwal, Tempat, Biaya */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pb-6 border-b border-stone-100">
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-petrol-50 text-petrol-600 flex items-center justify-center shrink-0">
-                <Calendar className="w-5 h-5" />
+        <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_22rem] lg:gap-16">
+          <div className="min-w-0">
+            {poster && (
+              <div className="relative mb-12 overflow-hidden rounded-lg border border-stone-200 bg-stone-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={poster} alt={training.title} className="block h-auto w-full" />
+                <button
+                  type="button"
+                  onClick={() => setPreviewImageUrl(poster)}
+                  className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-ink/70 px-3 py-1.5 text-xs font-medium text-white hover:bg-ink sm:hidden"
+                >
+                  <Maximize2 aria-hidden className="size-3.5" />
+                  Preview
+                </button>
               </div>
-              <div>
-                <p className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold">
-                  {t("trainingDetail.scheduleLabel")}
-                </p>
-                <p className="text-sm sm:text-base font-bold text-stone-800 mt-1">
-                  {formatTrainingDateRange(training.startDate, training.endDate, locale)}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-petrol-50 text-petrol-600 flex items-center justify-center shrink-0">
-                <MapPin className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold">
-                  {t("trainingDetail.locationLabel")}
-                </p>
-                <p className="text-sm sm:text-base font-bold text-stone-800 mt-1">
-                  {training.location}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-petrol-50 text-petrol-600 flex items-center justify-center shrink-0">
-                <Tag className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[11px] uppercase tracking-widest text-stone-400 font-semibold">
-                  {t("trainingDetail.priceLabel")}
-                </p>
-                <p className="text-lg sm:text-xl font-bold text-petrol-600 mt-0.5">
-                  {training.price ? formatRupiah(training.price) : t("trainingDetail.contactUs")}
-                </p>
-              </div>
+            )}
+            <h2 className="notranslate type-meta mb-4 text-stone-700">{t("trainingDetail.about")}</h2>
+            <div className="max-w-[68ch] whitespace-pre-line border-t border-ink pt-6 text-lg leading-8 text-ink">
+              {training.description}
             </div>
           </div>
 
-          {/* Sisa Kuota & Button Daftar Sekarang */}
-          <div className="space-y-3 pt-1">
+          {/* Kolom samping menempel: jadwal, tempat, biaya, dan satu tombol daftar */}
+          <aside className="notranslate lg:sticky lg:top-24 lg:self-start">
+            <dl className="border-t border-ink">
+              {[
+                [t("trainingDetail.scheduleLabel"), dateRange],
+                [t("trainingDetail.locationLabel"), training.location],
+                [t("trainingDetail.priceLabel"), training.price ? formatRupiah(training.price) : t("trainingDetail.contactUs")],
+              ].map(([k, v]) => (
+                <div key={k} className="border-b border-stone-200 py-4">
+                  <dt className="type-meta mb-1 text-stone-700">{k}</dt>
+                  <dd className="text-[1.0625rem] font-medium text-ink">{v}</dd>
+                </div>
+              ))}
+            </dl>
             {slotsLeft !== null && (
-              <p className={`text-xs sm:text-sm text-center font-medium ${isFull ? "text-red-600" : "text-stone-500"}`}>
-                {isFull
-                  ? t("trainingDetail.quotaFull")
-                  : `${t("trainingDetail.quotaLeft")}: ${slotsLeft}`}
+              <p className="type-meta mt-5 !tracking-normal text-stone-700">
+                {isFull ? t("trainingDetail.quotaFull") : `${t("trainingDetail.quotaLeft")}: ${slotsLeft}`}
               </p>
             )}
             <Button
-              variant="primary"
-              size="lg"
-              className="w-full h-12 text-base font-semibold shadow-md hover:shadow-lg transition-all"
+              size="xl"
+              className="mt-5 w-full"
               disabled={isFull}
               onClick={() => {
                 resetModalState();
@@ -358,224 +275,116 @@ export default function DetailPelatihanPage() {
               }}
             >
               {isFull ? t("trainingDetail.quotaFull") : t("trainingDetail.register")}
-              {!isFull && <ArrowRight className="w-5 h-5 ml-2" />}
+              {!isFull && <ArrowRight aria-hidden className="size-5" />}
             </Button>
-          </div>
-        </Card>
-
-        {/* Description */}
-        <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm">
-          <p className="notranslate text-xs font-semibold uppercase tracking-[0.18em] text-petrol-600 mb-4">
-            {t("trainingDetail.about")}
-          </p>
-          <div className="text-stone-700 whitespace-pre-line leading-relaxed text-sm sm:text-base">
-            {training.description}
-          </div>
+          </aside>
         </div>
-      </div>
+      </Container>
 
       {/* Registration Dialog Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="notranslate sm:max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="notranslate max-h-[90vh] overflow-y-auto sm:max-w-lg">
           {submitSuccess ? (
-            <div className="py-8 px-2 text-center space-y-5">
-              <div className="w-14 h-14 bg-green-600 text-white rounded-xl flex items-center justify-center mx-auto">
-                <CheckCircle className="w-7 h-7" />
-              </div>
-              <div className="space-y-1.5">
-                <h3 className="text-xl font-bold text-stone-900">
-                  {t("registrationModal.successTitle")}
-                </h3>
-                <p className="text-sm text-stone-500 max-w-sm mx-auto leading-relaxed">
+            <div role="status" className="space-y-5 px-2 py-8">
+              <CheckCircle aria-hidden className="size-10 text-petrol-600" />
+              <div className="space-y-2">
+                <h3 className="type-card">{t("registrationModal.successTitle")}</h3>
+                <p className="max-w-sm text-[0.9375rem] leading-relaxed text-stone-700">
                   {training.requiresPayment
                     ? t("registrationModal.successDescPending")
                     : t("registrationModal.successDesc")}
                 </p>
               </div>
-              <div className="pt-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsModalOpen(false)}
-                  className="w-full sm:w-auto px-8"
-                >
-                  {t("registrationModal.closeBtn")}
-                </Button>
-              </div>
+              <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
+                {t("registrationModal.closeBtn")}
+              </Button>
             </div>
           ) : (
             <>
-              <DialogHeader className="pt-2 pr-6">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-petrol-600">
-                  {t("registrationModal.eyebrow")}
-                </p>
-                <DialogTitle className="text-xl font-bold text-stone-900 mt-1">
-                  {t("registrationModal.title")}
-                </DialogTitle>
+              <DialogHeader className="pr-6 pt-2">
+                <p className="type-meta text-petrol-600">{t("registrationModal.eyebrow")}</p>
+                <DialogTitle className="type-card mt-1">{t("registrationModal.title")}</DialogTitle>
               </DialogHeader>
 
-              {/* Program strip — signature carried into the form */}
-              <div className="flex items-stretch rounded-lg border border-stone-200 overflow-hidden">
-                <div className="flex flex-col items-center justify-center w-16 bg-primary text-white py-3 shrink-0">
-                  <span className="text-lg font-bold leading-none">{day}</span>
-                  <span className="text-[9px] uppercase tracking-widest mt-1">
-                    {month}
-                  </span>
-                  <span className="text-[9px] mt-0.5 opacity-80">{year}</span>
+              <div className="flex items-stretch overflow-hidden rounded-lg border border-stone-200">
+                <div className="flex w-16 shrink-0 flex-col items-center justify-center bg-petrol-900 py-3 text-paper">
+                  <span className="font-mono text-lg font-medium leading-none">{day}</span>
+                  <span className="type-meta mt-1 !text-[0.5625rem] !tracking-widest">{month}</span>
+                  <span className="mt-0.5 font-mono text-[0.5625rem] opacity-80">{year}</span>
                 </div>
-                <div className="px-3.5 py-3 min-w-0">
-                  <p className="text-[11px] uppercase tracking-widest text-stone-400 font-medium">
-                    {t("trainingDetail.scheduleLabel")}
-                  </p>
-                  <p className="text-sm font-semibold text-stone-800 mt-0.5 line-clamp-1">
-                    {training.title}
-                  </p>
-                  <p className="flex items-center gap-1.5 text-xs text-stone-500 mt-1">
-                    <MapPin className="w-3 h-3 shrink-0" />
-                    <span className="line-clamp-1">{training.location}</span>
-                  </p>
+                <div className="min-w-0 px-4 py-3">
+                  <p className="type-meta text-stone-700">{t("trainingDetail.scheduleLabel")}</p>
+                  <p className="mt-0.5 line-clamp-1 text-sm font-semibold text-ink">{training.title}</p>
+                  <p className="mt-1 line-clamp-1 text-xs text-stone-700">{training.location}</p>
                 </div>
               </div>
 
-              <form onSubmit={handleRegisterSubmit} className="space-y-4">
+              <form onSubmit={handleRegisterSubmit} className="space-y-5">
                 {submitError && (
-                  <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <div role="alert" className="flex items-start gap-2 rounded-lg border border-status-danger-border bg-status-danger-bg p-3 text-sm text-status-danger">
+                    <AlertCircle aria-hidden className="mt-0.5 size-4 shrink-0" />
                     <span>{submitError}</span>
                   </div>
                 )}
 
-                {/* Nama Lengkap */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="reg-name" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
-                    {t("registrationModal.nameLabel")} <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="reg-name"
-                    name="name"
-                    type="text"
-                    required
-                    placeholder={t("registrationModal.namePlaceholder")}
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="h-11 rounded-lg"
-                  />
-                </div>
+                <Field label={t("registrationModal.nameLabel")} htmlFor="reg-name" required requiredText={reqText}>
+                  <input id="reg-name" name="name" type="text" required autoComplete="name" placeholder={t("registrationModal.namePlaceholder")} value={formData.name} onChange={handleInputChange} className={controlClass} />
+                </Field>
+                <Field label={t("registrationModal.emailLabel")} htmlFor="reg-email" required requiredText={reqText}>
+                  <input id="reg-email" name="email" type="email" required autoComplete="email" placeholder={t("registrationModal.emailPlaceholder")} value={formData.email} onChange={handleInputChange} className={controlClass} />
+                </Field>
+                <Field label={t("registrationModal.phoneLabel")} htmlFor="reg-phone" required requiredText={reqText}>
+                  <input id="reg-phone" name="phone" type="tel" required autoComplete="tel" placeholder={t("registrationModal.phonePlaceholder")} value={formData.phone} onChange={handleInputChange} className={controlClass} />
+                </Field>
+                <Field label={t("registrationModal.institutionLabel")} htmlFor="reg-institution">
+                  <input id="reg-institution" name="institution" type="text" autoComplete="organization" placeholder={t("registrationModal.institutionPlaceholder")} value={formData.institution} onChange={handleInputChange} className={controlClass} />
+                </Field>
 
-                {/* Email */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="reg-email" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
-                    {t("registrationModal.emailLabel")} <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="reg-email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder={t("registrationModal.emailPlaceholder")}
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="h-11 rounded-lg"
-                  />
-                </div>
-
-                {/* Phone / WA */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="reg-phone" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
-                    {t("registrationModal.phoneLabel")} <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="reg-phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    placeholder={t("registrationModal.phonePlaceholder")}
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="h-11 rounded-lg"
-                  />
-                </div>
-
-                {/* Institution (Optional) */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="reg-institution" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
-                    {t("registrationModal.institutionLabel")}
-                  </Label>
-                  <Input
-                    id="reg-institution"
-                    name="institution"
-                    type="text"
-                    placeholder={t("registrationModal.institutionPlaceholder")}
-                    value={formData.institution}
-                    onChange={handleInputChange}
-                    className="h-11 rounded-lg"
-                  />
-                </div>
-
-                {/* Payment info + proof upload (training berbayar) */}
                 {training.requiresPayment && (
-                  <div className="space-y-3 border-t border-stone-100 pt-4">
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-stone-900">
-                      <Landmark className="w-3.5 h-3.5 text-stone-400" />
-                      {t("registrationModal.paymentTitle")}
-                    </div>
+                  <div className="space-y-4 border-t border-stone-200 pt-5">
+                    <p className="type-meta text-ink">{t("registrationModal.paymentTitle")}</p>
                     {paymentSettings && (
-                      <div className="rounded-lg bg-stone-50 border border-stone-200 p-3 text-sm space-y-1">
-                        <p className="flex justify-between">
-                          <span className="text-stone-500">{t("registrationModal.bankNameLabel")}</span>
-                          <span className="font-medium text-stone-800">{paymentSettings.bankName}</span>
-                        </p>
-                        <p className="flex justify-between">
-                          <span className="text-stone-500">{t("registrationModal.accountNumberLabel")}</span>
-                          <span className="font-medium text-stone-800">{paymentSettings.accountNumber}</span>
-                        </p>
-                        <p className="flex justify-between">
-                          <span className="text-stone-500">{t("registrationModal.accountHolderLabel")}</span>
-                          <span className="font-medium text-stone-800">{paymentSettings.accountHolder}</span>
-                        </p>
-                        {paymentSettings.notes && (
-                          <p className="text-xs text-stone-500 pt-1">{paymentSettings.notes}</p>
-                        )}
-                      </div>
+                      <dl className="space-y-1 rounded-lg border border-stone-200 bg-stone-100 p-4 text-sm">
+                        {[
+                          [t("registrationModal.bankNameLabel"), paymentSettings.bankName],
+                          [t("registrationModal.accountNumberLabel"), paymentSettings.accountNumber],
+                          [t("registrationModal.accountHolderLabel"), paymentSettings.accountHolder],
+                        ].map(([k, v]) => (
+                          <div key={k} className="flex justify-between gap-4">
+                            <dt className="text-stone-700">{k}</dt>
+                            <dd className="font-mono font-medium text-ink">{v}</dd>
+                          </div>
+                        ))}
+                        {paymentSettings.notes && <p className="pt-2 text-xs text-stone-700">{paymentSettings.notes}</p>}
+                      </dl>
                     )}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="reg-proof" className="text-[11px] font-semibold uppercase tracking-widest text-stone-900">
-                        {t("registrationModal.proofLabel")} <span className="text-red-500">*</span>
-                      </Label>
+                    <Field label={t("registrationModal.proofLabel")} htmlFor="reg-proof" required requiredText={reqText}>
                       <input
                         id="reg-proof"
                         type="file"
                         accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
                         onChange={handleProofUpload}
-                        className="w-full text-sm text-stone-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-petrol-50 file:text-petrol-600 file:text-sm file:font-medium hover:file:bg-petrol-100"
+                        className="w-full text-sm text-stone-700 file:mr-3 file:rounded-lg file:border file:border-stone-200 file:bg-white file:px-4 file:py-2 file:text-sm file:font-medium file:text-ink hover:file:bg-stone-100"
                       />
-                      {uploadingProof && (
-                        <p className="text-xs text-stone-400">{t("registrationModal.proofUploading")}</p>
-                      )}
+                      {uploadingProof && <p role="status" className="mt-2 text-xs text-stone-700">{t("registrationModal.proofUploading")}</p>}
                       {paymentProofPath && !uploadingProof && (
-                        <p className="text-xs text-green-600">✓ {paymentProofPath.split("/").pop()}</p>
+                        <p className="mt-2 text-xs text-petrol-600">✓ {paymentProofPath.split("/").pop()}</p>
                       )}
-                    </div>
+                    </Field>
                   </div>
                 )}
 
-                {/* Submit Button */}
-                <div className="border-t border-stone-100 pt-4">
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="lg"
-                    disabled={submitting || uploadingProof}
-                    className="w-full"
-                  >
+                <div className="border-t border-stone-200 pt-5">
+                  <Button type="submit" size="lg" disabled={submitting || uploadingProof} className="w-full">
                     {submitting ? (
                       <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        <Loader2 aria-hidden className="size-4 animate-spin" />
                         {t("registrationModal.submittingBtn")}
                       </>
                     ) : (
                       <>
                         {t("registrationModal.submitBtn")}
-                        <ArrowRight className="w-4 h-4 ml-1.5" />
+                        <ArrowRight aria-hidden className="size-4" />
                       </>
                     )}
                   </Button>
@@ -588,24 +397,20 @@ export default function DetailPelatihanPage() {
 
       {/* Banner Full Preview Dialog */}
       <Dialog open={!!previewImageUrl} onOpenChange={(open) => !open && setPreviewImageUrl(null)}>
-        <DialogContent className="sm:max-w-3xl rounded-2xl max-h-[90vh] overflow-y-auto p-4">
+        <DialogContent className="max-h-[90vh] overflow-y-auto p-4 sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>{training.title}</DialogTitle>
           </DialogHeader>
           {previewImageUrl && (
-            <div className="relative w-full flex items-center justify-center bg-stone-50 rounded-xl overflow-hidden mt-2">
+            <div className="relative mt-2 flex w-full items-center justify-center overflow-hidden rounded-lg bg-stone-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewImageUrl}
-                alt="Banner Preview"
-                className="w-full h-auto max-h-[75vh] object-contain rounded-xl"
-              />
+              <img src={previewImageUrl} alt="Banner Preview" className="h-auto max-h-[75vh] w-full object-contain" />
             </div>
           )}
         </DialogContent>
       </Dialog>
 
       <GoogleTranslateWidget />
-    </Section>
+    </>
   );
 }

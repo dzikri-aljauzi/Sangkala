@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Users, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Participant {
   id: string;
@@ -18,103 +18,81 @@ export default function ParticipantsSearch({ participants }: ParticipantsSearchP
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  const filtered = participants.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  const filtered = participants.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginated = filtered.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page on search
-  };
-
   return (
-    <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden mt-8">
-      <div className="p-6 sm:p-8 border-b border-stone-100 bg-stone-50/50">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-petrol-50 text-petrol-600 rounded-xl flex items-center justify-center">
-              <Users className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-stone-900">Daftar Penerima Sertifikat</h3>
-              <p className="text-xs text-stone-500 mt-0.5">
-                Total {participants.length} peserta terdaftar dalam sertifikasi kolektif ini
-              </p>
-            </div>
-          </div>
-          
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-            <input
-              type="text"
-              placeholder="Cari nama peserta..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-stone-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-petrol-500/20 focus:border-petrol-500 transition-all text-stone-800"
-            />
-          </div>
+    <section className="mt-14" aria-labelledby="penerima">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 id="penerima" className="type-card">Daftar Penerima Sertifikat</h2>
+          <p className="mt-1 text-sm text-stone-700">
+            Total {participants.length} peserta terdaftar dalam sertifikasi kolektif ini
+          </p>
+        </div>
+        <div className="relative w-full sm:w-72">
+          <Search aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-stone-600" />
+          <input
+            type="search"
+            aria-label="Cari nama peserta"
+            placeholder="Cari nama peserta..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="h-11 w-full rounded-lg border border-stone-200 bg-white pl-10 pr-4 text-sm text-ink outline-none placeholder:text-stone-500 focus-visible:border-petrol-600 focus-visible:ring-2 focus-visible:ring-petrol-600/30"
+          />
         </div>
       </div>
 
-      <div className="divide-y divide-stone-100">
-        {paginated.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-stone-100">
-            {paginated.map((p, idx) => (
-              <div
-                key={p.id || idx}
-                className="p-4 sm:p-5 flex items-center justify-between hover:bg-stone-50/50 transition-colors"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle className="w-3.5 h-3.5" />
-                  </div>
-                  <span className="text-sm font-semibold text-stone-800 truncate">
-                    {p.name}
-                  </span>
-                </div>
-                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/50">
-                  Terverifikasi
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="p-12 text-center text-stone-400 text-sm">
-            Tidak ada nama peserta yang cocok dengan pencarian &quot;{searchTerm}&quot;
-          </div>
-        )}
-      </div>
+      {paginated.length > 0 ? (
+        <ul className="border-t border-ink md:grid md:grid-cols-2 md:gap-x-10">
+          {paginated.map((p, idx) => (
+            <li key={p.id || idx} className="flex items-center justify-between gap-4 border-b border-stone-200 py-3.5">
+              <span className="truncate text-[0.9375rem] font-medium text-ink">{p.name}</span>
+              <span className="type-meta shrink-0 !tracking-normal text-petrol-600">✓ Terverifikasi</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="border-t border-ink py-10 text-sm text-stone-700">
+          Tidak ada nama peserta yang cocok dengan pencarian &quot;{searchTerm}&quot;
+        </p>
+      )}
 
       {totalPages > 1 && (
-        <div className="p-4 bg-stone-50/30 border-t border-stone-100 flex items-center justify-between">
-          <span className="text-xs text-stone-500">
+        <div className="mt-5 flex items-center justify-between">
+          <span className="text-sm text-stone-700">
             Menampilkan {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filtered.length)} dari {filtered.length} peserta
           </span>
           <div className="flex items-center gap-2">
             <button
+              type="button"
+              aria-label="Halaman sebelumnya"
               onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
-              className="p-1.5 border border-stone-200 rounded-lg hover:bg-white text-stone-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="rounded-lg border border-stone-200 p-2 text-ink transition-colors hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft aria-hidden className="size-4" />
             </button>
-            <span className="text-xs font-semibold text-stone-700 px-2">
+            <span className="px-2 text-sm font-medium text-ink">
               Halaman {currentPage} dari {totalPages}
             </span>
             <button
+              type="button"
+              aria-label="Halaman berikutnya"
               onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="p-1.5 border border-stone-200 rounded-lg hover:bg-white text-stone-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="rounded-lg border border-stone-200 p-2 text-ink transition-colors hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight aria-hidden className="size-4" />
             </button>
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
