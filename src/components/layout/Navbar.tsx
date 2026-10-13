@@ -2,271 +2,319 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Logo } from "@/components/brand/Logo";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Globe, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ArrowUpRight } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 import { useLanguage } from "@/context/LanguageContext";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// Main nav links (without dropdowns)
-const mainNavLinks = [
-  { href: "/", key: "nav.home" },
-  { href: "/about", key: "nav.about" },
-  { href: "/services", key: "nav.services" },
-  { href: "/industries", key: "nav.industries" },
+type Lang = "id" | "en";
+interface NavItem {
+  href: string;
+  label: Record<Lang, string>;
+  desc?: Record<Lang, string>;
+}
+interface NavGroup extends NavItem {
+  children?: NavItem[];
+}
+
+const navGroups: NavGroup[] = [
+  {
+    href: "/services",
+    label: { id: "Layanan", en: "Services" },
+    children: [
+      { href: "/services", label: { id: "Layanan Kami", en: "Our Services" }, desc: { id: "People, Process, Technology dalam satu kerangka", en: "People, Process, Technology in one framework" } },
+      { href: "/methodology", label: { id: "Metodologi", en: "Methodology" }, desc: { id: "Assess → Design → Build → Embed → Sustain", en: "Assess → Design → Build → Embed → Sustain" } },
+    ],
+  },
+  { href: "/industries", label: { id: "Industri", en: "Industries" } },
+  {
+    href: "/programs",
+    label: { id: "Program", en: "Programs" },
+    children: [
+      { href: "/programs", label: { id: "Program Unggulan", en: "Flagship Programs" }, desc: { id: "Academy, konsultasi, dan sertifikasi", en: "Academy, consulting, and certification" } },
+      { href: "/info-pelatihan", label: { id: "Jadwal Pelatihan", en: "Training Schedule" }, desc: { id: "Daftar langsung secara daring", en: "Register online" } },
+      { href: "/assessment-center", label: { id: "Assessment Center", en: "Assessment Center" }, desc: { id: "Portal asesmen multi-peran", en: "Multi-role assessment portal" } },
+    ],
+  },
+  {
+    href: "/insights",
+    label: { id: "Insight", en: "Insights" },
+    children: [
+      { href: "/insights", label: { id: "Insight & Whitepaper", en: "Insights & Whitepapers" }, desc: { id: "Riset, webinar, studi kasus", en: "Research, webinars, case studies" } },
+      { href: "/news-article", label: { id: "News & Article", en: "News & Articles" }, desc: { id: "Kabar dan artikel terbaru", en: "Latest news and articles" } },
+    ],
+  },
+  { href: "/about", label: { id: "Tentang", en: "About" } },
 ];
 
-// Program dropdown items
-const programDropdown = {
-  label: { id: "Program", en: "Programs" },
-  items: [
-    { href: "/programs", key: "nav.programs", label: { id: "Program Kami", en: "Our Programs" } },
-    { href: "/assessment-center", key: "nav.assessmentCenter", label: { id: "Assessment Center", en: "Assessment Center" } },
-    { href: "/info-pelatihan", key: "nav.infoPelatihan", label: { id: "Info Pelatihan", en: "Training Info" } },
-  ],
-};
+function isActive(pathname: string, item: NavGroup) {
+  const hrefs = [item.href, ...(item.children?.map((c) => c.href) ?? [])];
+  return hrefs.some((h) => pathname === h || pathname.startsWith(h + "/"));
+}
 
-// End nav links (after dropdowns)
-const endNavLinks = [
-  { href: "/methodology", key: "nav.methodology" },
-  { href: "/insights", key: "nav.insights" },
-  { href: "/news-article", key: "nav.newsArticle" },
-  { href: "/contact", key: "nav.contact" },
-];
-
-// All links for mobile menu
-const allMobileLinks = [
-  { href: "/", key: "nav.home" },
-  { href: "/about", key: "nav.about" },
-  { href: "/services", key: "nav.services" },
-  { href: "/industries", key: "nav.industries" },
-  { href: "/programs", key: "nav.programs" },
-  { href: "/assessment-center", key: "nav.assessmentCenter" },
-  { href: "/info-pelatihan", key: "nav.infoPelatihan" },
-  { href: "/methodology", key: "nav.methodology" },
-  { href: "/insights", key: "nav.insights" },
-  { href: "/news-article", key: "nav.newsArticle" },
-  { href: "/contact", key: "nav.contact" },
-];
+function LanguageToggle({ onDark }: { onDark: boolean }) {
+  const { language, setLanguage } = useLanguage();
+  return (
+    <div className="flex items-center gap-1 text-xs" role="group" aria-label="Bahasa / Language">
+      {(["id", "en"] as const).map((l, i) => (
+        <span key={l} className="flex items-center gap-1">
+          {i > 0 && <span aria-hidden className={onDark ? "text-petrol-300" : "text-stone-400"}>/</span>}
+          <button
+            type="button"
+            onClick={() => setLanguage(l)}
+            aria-pressed={language === l}
+            className={cn(
+              "type-meta !tracking-wider px-1 py-0.5 transition-colors",
+              language === l
+                ? cn("underline underline-offset-4", onDark ? "text-paper decoration-sogan-200" : "text-ink decoration-petrol-600")
+                : onDark
+                  ? "text-petrol-100 hover:text-paper"
+                  : "text-stone-700 hover:text-ink"
+            )}
+          >
+            {l}
+          </button>
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const { language, setLanguage, t } = useLanguage();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const { language, t } = useLanguage();
   const pathname = usePathname();
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+  const lastY = useRef(0);
+
+  // Tutup menu saat pindah halaman (penyesuaian state saat render, bukan di effect).
+  const [prevPath, setPrevPath] = useState(pathname);
+  if (prevPath !== pathname) {
+    setPrevPath(pathname);
+    setMobileOpen(false);
+    setOpenGroup(null);
+  }
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      // sembunyi saat turun jauh, muncul lagi saat naik
+      setHidden(y > 480 && y > lastY.current + 4);
+      if (y < lastY.current - 4 || y < 480) setHidden(false);
+      lastY.current = y;
     };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-  }, [isOpen]);
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null);
+    const onDown = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenGroup(null);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenGroup(null);
+        setMobileOpen(false);
       }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
   }, []);
 
-  const toggleLanguage = () => {
-    setLanguage(language === "id" ? "en" : "id");
-  };
-
-  const toggleDropdown = (name: string) => {
-    setOpenDropdown(openDropdown === name ? null : name);
-  };
-
-  const isDropdownActive = (items: typeof programDropdown.items) => {
-    return items.some(item => pathname === item.href);
-  };
+  // Di puncak halaman header transparan di atas hero gelap; setelah scroll jadi solid.
+  // Halaman login asesmen punya panel terang di kanan, jadi header selalu solid di sana.
+  const forceSolid = /\/assessment-center\/[^/]+\/login$/.test(pathname ?? "");
+  const solid = scrolled || !!openGroup || forceSolid;
+  const onDark = !solid || mobileOpen;
 
   return (
-    <header
-      className={cn(
-        "notranslate fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-stone-100"
-          : "bg-white/80 backdrop-blur-sm"
-      )}
-    >
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 lg:h-20">
-          {/* Logo */}
-          <Link href="/" className="relative z-50 flex items-center gap-2 sm:gap-3">
-            <Logo className="h-8 lg:h-9" priority />
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-0.5" ref={dropdownRef}>
-            {/* Main Links */}
-            {mainNavLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "px-2 py-1.5 text-xs 2xl:text-sm font-medium rounded-lg transition-all duration-200",
-                  pathname === link.href
-                    ? "text-petrol-600 bg-petrol-50"
-                    : "text-stone-600 hover:text-petrol-600 hover:bg-stone-50"
-                )}
-              >
-                {t(link.key)}
-              </Link>
-            ))}
-
-            {/* Program Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown("program")}
-                className={cn(
-                  "flex items-center gap-1 px-2 py-1.5 text-xs 2xl:text-sm font-medium rounded-lg transition-all duration-200",
-                  isDropdownActive(programDropdown.items)
-                    ? "text-petrol-600 bg-petrol-50"
-                    : "text-stone-600 hover:text-petrol-600 hover:bg-stone-50"
-                )}
-              >
-                {programDropdown.label[language]}
-                <ChevronDown className={cn(
-                  "w-4 h-4 transition-transform duration-200",
-                  openDropdown === "program" && "rotate-180"
-                )} />
-              </button>
-
-              <AnimatePresence>
-                {openDropdown === "program" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-lg border border-stone-100 overflow-hidden z-50"
-                  >
-                    {programDropdown.items.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setOpenDropdown(null)}
-                        className={cn(
-                          "block px-4 py-3 text-sm font-medium transition-all duration-200",
-                          pathname === item.href
-                            ? "text-petrol-600 bg-petrol-50"
-                            : "text-stone-600 hover:text-petrol-600 hover:bg-stone-50"
-                        )}
-                      >
-                        {item.label[language]}
-                      </Link>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* End Nav Links (Methodology, Insight, News & Article, Contact) */}
-            {endNavLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "px-2 py-1.5 text-xs 2xl:text-sm font-medium rounded-lg transition-all duration-200",
-                  pathname === link.href
-                    ? "text-petrol-600 bg-petrol-50"
-                    : "text-stone-600 hover:text-petrol-600 hover:bg-stone-50"
-                )}
-              >
-                {t(link.key)}
-              </Link>
-            ))}
-          </div>
-
-          {/* Right Section */}
-          <div className="flex items-center gap-3 relative z-50">
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all text-stone-600 hover:bg-stone-50 hover:text-petrol-600"
-            >
-              <Globe className="w-4 h-4" />
-              <span className="uppercase">{language}</span>
-            </button>
-
-            {/* CTA Button */}
-            <Link href="/contact" className="hidden md:block">
-              <Button variant="primary" size="sm">
-                {t("nav.cta")}
-              </Button>
+    <>
+      <a
+        href="#konten"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-md focus:bg-petrol-600 focus:px-4 focus:py-2 focus:text-white"
+      >
+        {t("nav.skip")}
+      </a>
+      <div
+        className={cn(
+          "notranslate fixed inset-x-0 top-0 z-50 transition-[transform,background-color,border-color] duration-500 [transition-timing-function:cubic-bezier(.2,.7,.2,1)]",
+          hidden && !mobileOpen && "-translate-y-full",
+          mobileOpen ? "bg-petrol-900" : solid ? "border-b border-stone-200 bg-paper/95 backdrop-blur-md" : "border-b border-white/10 bg-petrol-900/40"
+        )}
+      >
+        {/* Baris utilitas: hilang saat header menjadi solid */}
+        <div
+          className={cn(
+            "hidden overflow-hidden transition-[height,opacity] duration-300 lg:block",
+            solid ? "h-0 opacity-0" : "h-8 opacity-100"
+          )}
+        >
+          <div className="mx-auto flex h-8 max-w-content items-center justify-end gap-6 px-12 text-xs">
+            <Link href="/verify" className="text-petrol-100 transition-colors hover:text-paper">
+              {t("nav.verify")}
             </Link>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 rounded-lg transition-colors text-stone-700 hover:bg-stone-100"
-            >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            <Link href="/assessment-center" className="text-petrol-100 transition-colors hover:text-paper">
+              {t("nav.portal")}
+            </Link>
+            <span aria-hidden className="h-3 w-px bg-white/20" />
+            <LanguageToggle onDark />
           </div>
         </div>
-      </nav>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="lg:hidden absolute top-full left-0 right-0 w-full h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-5rem)] bg-white border-t border-stone-100 shadow-xl z-40 overflow-y-auto overflow-x-hidden will-change-[transform,opacity]"
-          >
-            <div className="container mx-auto px-4 py-6 sm:py-8 pb-12">
-              <div className="flex flex-col gap-2">
-                {allMobileLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
+        <header>
+          <nav aria-label="Utama" className="mx-auto flex h-16 max-w-content items-center justify-between px-5 md:px-8 lg:h-[72px] lg:px-12">
+            <Link href="/" aria-label="Sangkala, beranda" className="shrink-0">
+              <Logo className={cn("h-8 transition-[filter] duration-300 lg:h-9", onDark && "brightness-0 invert")} priority />
+            </Link>
+
+            <div ref={navRef} className="hidden items-stretch gap-1 self-stretch lg:flex">
+              {navGroups.map((g) => {
+                const active = isActive(pathname, g);
+                const open = openGroup === g.href;
+                const base = "relative flex items-center gap-1 px-4 text-[0.9375rem] font-medium transition-colors";
+                const state = onDark
+                  ? active ? "text-paper" : "text-petrol-100 hover:text-paper"
+                  : active ? "text-ink" : "text-stone-700 hover:text-petrol-600";
+                const underline = (
+                  <span
+                    aria-hidden
                     className={cn(
-                      "block px-4 py-3 text-lg font-medium rounded-lg transition-all duration-150",
-                      pathname === link.href
-                        ? "text-[#0d5c63] bg-[#0d5c63]/10"
-                        : "text-[#2c312f] hover:text-[#0d5c63] hover:bg-[#0d5c63]/5"
+                      "absolute inset-x-4 bottom-0 h-0.5 origin-left transition-transform duration-300",
+                      onDark ? "bg-sogan-200" : "bg-petrol-600",
+                      active || open ? "scale-x-100" : "scale-x-0"
                     )}
-                  >
-                    {t(link.key)}
-                  </Link>
-                ))}
-              </div>
+                  />
+                );
+                if (!g.children) {
+                  return (
+                    <Link key={g.href} href={g.href} aria-current={active ? "page" : undefined} className={cn(base, state, "group")}>
+                      {g.label[language]}
+                      {underline}
+                    </Link>
+                  );
+                }
+                return (
+                  <div key={g.href} className="relative flex">
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      aria-haspopup="true"
+                      onClick={() => setOpenGroup(open ? null : g.href)}
+                      className={cn(base, state)}
+                    >
+                      {g.label[language]}
+                      <ChevronDown aria-hidden className={cn("size-4 transition-transform duration-300", open && "rotate-180")} />
+                      {underline}
+                    </button>
+                    {open && (
+                      <div className="fade-in absolute left-0 top-full z-50 w-[22rem] border border-stone-200 bg-paper p-2 shadow-xl [--d:0ms]">
+                        {g.children.map((c) => (
+                          <Link
+                            key={c.href}
+                            href={c.href}
+                            className="group flex items-start justify-between gap-4 rounded-md px-4 py-3 transition-colors hover:bg-petrol-50"
+                          >
+                            <span>
+                              <span className={cn("block text-[0.9375rem] font-medium", pathname === c.href ? "text-petrol-600" : "text-ink")}>
+                                {c.label[language]}
+                              </span>
+                              {c.desc && <span className="mt-0.5 block text-sm text-stone-700">{c.desc[language]}</span>}
+                            </span>
+                            <ArrowUpRight aria-hidden className="mt-0.5 size-4 shrink-0 text-stone-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-petrol-600" />
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
 
-              <div className="mt-6 sm:mt-8 pb-6">
-                <Link href="/contact" onClick={() => setIsOpen(false)}>
-                  <Button variant="primary" size="lg" className="w-full">
-                    {t("nav.cta")}
-                  </Button>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/contact"
+                className={cn(
+                  "hidden h-10 items-center rounded-lg border px-5 text-[0.9375rem] font-semibold transition-colors md:inline-flex",
+                  onDark ? "border-paper/70 text-paper hover:bg-paper hover:text-petrol-900" : "border-ink text-ink hover:bg-ink hover:text-paper"
+                )}
+              >
+                {t("nav.contactUs")}
+              </Link>
+              <button
+                type="button"
+                onClick={() => setMobileOpen((v) => !v)}
+                aria-expanded={mobileOpen}
+                aria-controls="menu-mobile"
+                aria-label={mobileOpen ? t("nav.close") : t("nav.menu")}
+                className={cn("-mr-2 p-2 lg:hidden", onDark ? "text-paper" : "text-ink")}
+              >
+                {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+              </button>
+            </div>
+          </nav>
+        </header>
+
+        {mobileOpen && (
+          <div id="menu-mobile" className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-petrol-900 text-paper lg:hidden">
+            <div className="px-5 pb-12 pt-4">
+              <ul>
+                {navGroups.map((g, i) => (
+                  <li key={g.href} className="fade-in border-b border-white/10 py-5" style={{ ["--d" as string]: `${i * 60}ms` }}>
+                    <div className="flex items-baseline gap-4">
+                      <span className="type-meta w-8 shrink-0 !tracking-normal text-sogan-200">{String(i + 1).padStart(2, "0")}</span>
+                      <div className="flex-1">
+                        <Link href={g.href} className="font-serif text-[2rem] leading-tight text-paper">
+                          {g.label[language]}
+                        </Link>
+                        {g.children && (
+                          <ul className="mt-2 space-y-1">
+                            {g.children
+                              .filter((c) => c.href !== g.href)
+                              .map((c) => (
+                                <li key={c.href}>
+                                  <Link href={c.href} className="block py-1 text-[0.9375rem] text-petrol-200">
+                                    {c.label[language]}
+                                  </Link>
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <ul className="mt-8 space-y-3 text-[0.9375rem] text-petrol-200">
+                <li><Link href="/verify">{t("nav.verify")} →</Link></li>
+                <li><Link href="/assessment-center">{t("nav.portal")} →</Link></li>
+              </ul>
+              <div className="mt-10 flex items-center justify-between border-t border-white/10 pt-6">
+                <LanguageToggle onDark />
+                <Link href="/contact" className="inline-flex h-12 items-center rounded-lg bg-paper px-6 text-[0.9375rem] font-semibold text-petrol-900">
+                  {t("nav.contactUs")}
                 </Link>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </header>
+      </div>
+    </>
   );
 }

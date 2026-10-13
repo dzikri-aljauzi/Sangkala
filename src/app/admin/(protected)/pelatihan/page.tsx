@@ -263,7 +263,7 @@ export default function AdminPelatihanPage() {
               <Link
                 key={training.id}
                 href={`/admin/pelatihan/${training.id}`}
-                className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-md hover:border-petrol-200 transition-all"
+                className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:border-petrol-200 transition-all"
               >
                 <div className="relative h-40 bg-stone-100 flex items-center justify-center">
                   {training.imagePath ? (

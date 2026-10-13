@@ -120,7 +120,7 @@ export default function AdminGlobalDashboardPage() {
               >
                 <Link
                   href={`/assessment-center/${assessment.id}/overview`}
-                  className="group block overflow-hidden rounded-lg border border-hairline bg-white transition-all duration-300 hover:border-primary/40 hover:shadow-lg"
+                  className="group block overflow-hidden rounded-lg border border-hairline bg-white transition-all duration-300 hover:border-primary/40"
                 >
                   <div className="p-6">
                     {/* Logo */}

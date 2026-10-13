@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { IBM_Plex_Sans, IBM_Plex_Mono, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import SessionProvider from "@/components/providers/SessionProvider";
@@ -9,6 +9,14 @@ const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-plex-sans",
+  display: "swap",
+});
+
+const plexSerif = IBM_Plex_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  variable: "--font-plex-serif",
   display: "swap",
 });
 
@@ -59,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`scroll-smooth ${plexSans.variable} ${plexMono.variable}`}>
+    <html lang="id" className={`scroll-smooth ${plexSans.variable} ${plexSerif.variable} ${plexMono.variable}`}>
       <body className="antialiased font-sans">
         <SessionProvider>
           <LanguageProvider>{children}</LanguageProvider>

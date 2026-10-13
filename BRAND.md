@@ -173,7 +173,8 @@ Sama dengan produk, supaya keduanya satu keluarga.
 
 | Peran | Font | Dipakai untuk |
 |---|---|---|
-| Sans | IBM Plex Sans | Semua teks |
+| Serif | IBM Plex Serif (400) | Judul halaman publik. Tidak pernah bold. Lihat `DESIGN.md` |
+| Sans | IBM Plex Sans | Teks isi, navigasi, tombol, dan semua UI aplikasi |
 | Mono | IBM Plex Mono | Nomor bagian, label kecil, contoh nomor sertifikat dan hash |
 
 Mono untuk nomor bagian "01", "02" dan label kecil adalah detail murah

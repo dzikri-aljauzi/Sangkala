@@ -166,7 +166,7 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
                 className="bg-white rounded-xl border border-stone-200 p-6"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-green-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-petrol-600 flex items-center justify-center">
                     <CheckCircle2 className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -183,7 +183,7 @@ export default function StaffKlienDashboard({ assessmentId, embedded, initialTab
                 className="bg-white rounded-xl border border-stone-200 p-6"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-orange-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-petrol-600 flex items-center justify-center">
                     <Clock className="w-6 h-6 text-white" />
                   </div>
                   <div>

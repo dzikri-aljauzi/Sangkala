@@ -3,13 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { Mail, Lock, AlertCircle, Shield } from "lucide-react";
-import { PasswordToggleButton } from "@/components/ui/password-toggle-button";
+import { AuthFields, AuthError } from "@/components/layout/AuthForm";
 
 export default function AdminLoginPage() {
   const { data: session, status } = useSession();
@@ -31,8 +29,8 @@ export default function AdminLoginPage() {
   // Show loading while checking session
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-petrol-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
+      <div className="flex min-h-screen items-center justify-center bg-paper">
+        <p role="status" className="text-stone-700">Memuat…</p>
       </div>
     );
   }
@@ -40,8 +38,8 @@ export default function AdminLoginPage() {
   // Hide login form if already authenticated (will redirect)
   if (status === "authenticated" && (session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN")) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-petrol-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600" />
+      <div className="flex min-h-screen items-center justify-center bg-paper">
+        <p role="status" className="text-stone-700">Memuat…</p>
       </div>
     );
   }
@@ -76,116 +74,35 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-petrol-50 flex items-center justify-center p-4 pt-20 sm:pt-32">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
-        <div className="bg-white rounded-2xl shadow-xl border border-stone-200 overflow-hidden">
-          {/* Header */}
-          <div className="bg-petrol-600 px-6 py-8 sm:px-8 sm:py-10 text-center">
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                <Shield className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-              </div>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">
-              Admin Login
-            </h1>
-            <p className="text-petrol-100 text-sm">
-              Sangkala
-            </p>
-          </div>
-
-          {/* Login Form */}
-          <div className="px-6 py-6 sm:px-8 sm:py-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Error Message */}
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3"
-                >
-                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-800">{error}</p>
-                </motion.div>
-              )}
-
-              {/* Email Field */}
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-stone-700 mb-2"
-                >
-                  {t("assessmentCenter.email")}
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full pl-10 pr-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent transition-all"
-                    placeholder="example@example.com"
-                  />
-                </div>
-              </div>
-
-              {/* Password Field */}
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-stone-700 mb-2"
-                >
-                  {t("assessmentCenter.password")}
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 pointer-events-none" />
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="w-full pl-10 pr-11 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent transition-all"
-                    placeholder="••••••••"
-                  />
-                  <PasswordToggleButton
-                    visible={showPassword}
-                    onToggle={() => setShowPassword(!showPassword)}
-                  />
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                className="w-full"
-                isLoading={loading}
-                disabled={loading}
-              >
-                {t("assessmentCenter.loginButton")}
-              </Button>
-            </form>
-
-            {/* Footer */}
-            <div className="mt-6 pt-6 border-t border-stone-100 text-center">
-              <Link
-                href="/"
-                className="text-sm text-petrol-600 hover:text-petrol-800 transition-colors"
-              >
-                ← Kembali ke Beranda
-              </Link>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+    <div className="flex min-h-screen flex-col bg-paper">
+      <header className="mx-auto flex h-16 w-full max-w-content items-center px-5 md:px-8">
+        <Link href="/" aria-label="Sangkala, beranda">
+          <Logo className="h-8" />
+        </Link>
+      </header>
+      <main className="mx-auto w-full max-w-md grow px-5 pb-20 pt-12 md:pt-20">
+        <p className="type-meta mb-4 text-petrol-600">Sangkala</p>
+        <h1 className="type-h1 !text-[2rem] !leading-[2.5rem]">Admin Login</h1>
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5 border-t border-ink pt-8">
+          <AuthError message={error} />
+          <AuthFields
+            email={email}
+            onEmail={setEmail}
+            password={password}
+            onPassword={setPassword}
+            showPassword={showPassword}
+            onTogglePassword={() => setShowPassword(!showPassword)}
+            emailLabel={t("assessmentCenter.email")}
+            passwordLabel={t("assessmentCenter.password")}
+          />
+          <Button type="submit" size="lg" className="w-full" isLoading={loading} disabled={loading}>
+            {t("assessmentCenter.loginButton")}
+          </Button>
+        </form>
+        <Link href="/" className="mt-8 inline-block text-[0.9375rem] text-petrol-600 underline-offset-4 hover:underline">
+          ← Kembali ke Beranda
+        </Link>
+      </main>
     </div>
   );
 }

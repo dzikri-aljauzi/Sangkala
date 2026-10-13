@@ -9,7 +9,8 @@ export function formatRupiah(price: string | null | undefined): string {
   if (!price) return "";
   const trimmed = price.trim();
   if (!trimmed) return "";
-  if (/^rp/i.test(trimmed)) {
+  // Sudah berawalan "Rp", atau teks tanpa angka seperti "Gratis".
+  if (/^rp/i.test(trimmed) || !/\d/.test(trimmed)) {
     return trimmed;
   }
   return `Rp ${trimmed}`;

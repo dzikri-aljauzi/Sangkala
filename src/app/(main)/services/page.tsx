@@ -1,8 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
-import { Section, SectionHeader } from "@/components/ui/section";
+import { Container, PageHeader } from "@/components/ui/layout";
+import { Reveal } from "@/components/ui/reveal";
+import { Pattern } from "@/components/art/Pattern";
+import { Venn } from "@/components/art/Venn";
+import ClosingCTA from "@/components/sections/ClosingCTA";
 import {
   Users,
   Cog,
@@ -17,8 +20,6 @@ import {
   Cloud,
   Lock,
   Database,
-  BarChart3,
-  Brain,
 } from "lucide-react";
 
 const services = {
@@ -137,172 +138,117 @@ const services = {
   },
 };
 
-const colorMap = {
-  blue: {
-    gradient: "bg-petrol-500",
-    bg: "bg-petrol-50",
-    border: "border-petrol-200",
-    text: "text-petrol-600",
-    iconBg: "bg-petrol-100",
-  },
-  teal: {
-    gradient: "bg-petrol-500",
-    bg: "bg-petrol-50",
-    border: "border-petrol-200",
-    text: "text-petrol-600",
-    iconBg: "bg-petrol-100",
-  },
-  cyan: {
-    gradient: "bg-petrol-500",
-    bg: "bg-petrol-50",
-    border: "border-petrol-200",
-    text: "text-petrol-600",
-    iconBg: "bg-petrol-100",
-  },
-};
+const integration = [
+  { pillars: "People + Process", result: { id: "Risk Culture Program", en: "Risk Culture Program" }, desc: { id: "Budaya risiko yang tertanam di proses harian, bukan hanya di pelatihan.", en: "Risk culture embedded in daily processes, not only in training." } },
+  { pillars: "Process + Technology", result: { id: "Automated Compliance Monitoring", en: "Automated Compliance Monitoring" }, desc: { id: "Kontrol kepatuhan yang berjalan otomatis dan bisa diaudit.", en: "Compliance controls that run automatically and are auditable." } },
+  { pillars: "People + Technology", result: { id: "Digital Leadership Development", en: "Digital Leadership Development" }, desc: { id: "Pemimpin yang siap mengambil keputusan berbasis data.", en: "Leaders ready to make data-driven decisions." } },
+];
+
+const art = { people: { variant: "orbits", seed: 21 }, process: { variant: "grid", seed: 8 }, technology: { variant: "bars", seed: 5 } } as const;
 
 export default function ServicesPage() {
   const { language } = useLanguage();
+  const id = language === "id";
+  const entries = Object.entries(services) as [keyof typeof art, (typeof services)[keyof typeof services]][];
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-stone-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-4xl"
-          >
-            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-petrol-600 mb-3 sm:mb-4">
-              {language === "id" ? "Layanan Kami" : "Our Services"}
-            </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-stone-800">
-              The Integrated People, Process, Technology Framework
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl text-stone-600 max-w-3xl">
-              {language === "id"
-                ? "Arsitektur layanan berbasis matriks People, Process, Technology untuk transformasi organisasi yang holistik dan berkelanjutan."
-                : "People, Process, Technology matrix-based service architecture for holistic and sustainable organizational transformation."}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        crumbs={[{ href: "/services", label: id ? "Layanan" : "Services" }]}
+        eyebrow={id ? "Layanan Kami" : "Our Services"}
+        title="The Integrated People, Process, Technology Framework"
+        art={{ variant: "waves", seed: 2 }}
+        lead={
+          id
+            ? "Arsitektur layanan berbasis matriks People, Process, Technology untuk transformasi organisasi yang holistik dan berkelanjutan."
+            : "People, Process, Technology matrix-based service architecture for holistic and sustainable organizational transformation."
+        }
+        aside={
+          <nav aria-label={id ? "Di halaman ini" : "On this page"} className="flex flex-wrap gap-3">
+            {[...entries.map(([key, s]) => ({ id: key, label: s.title[language] })), { id: "integrasi", label: id ? "Integrasi 3P" : "3P Integration" }].map((a, n) => (
+              <a key={a.id} href={`#${a.id}`} className="group flex items-center gap-3 rounded-full border border-white/20 px-5 py-2.5 text-sm text-paper transition-colors hover:border-paper hover:bg-white/5">
+                <span className="type-meta !tracking-normal text-sogan-200">0{n + 1}</span>
+                {a.label}
+              </a>
+            ))}
+          </nav>
+        }
+      />
 
-      {/* Services Sections */}
-      {Object.entries(services).map(([key, service], sectionIndex) => {
-        const colors = colorMap[service.color as keyof typeof colorMap];
-
-        return (
-          <Section
-            key={key}
-            id={key}
-            variant={sectionIndex % 2 === 0 ? "default" : "light"}
-            padding="xl"
-          >
-            {/* Service Header */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-8 sm:mb-10 md:mb-12"
-            >
-              <div
-                className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl ${colors.gradient} flex items-center justify-center flex-shrink-0`}
-              >
-                <service.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-stone-800">
+      {entries.map(([key, service], i) => (
+        <section key={key} id={key} className={`scroll-mt-20 py-24 md:py-32 ${i % 2 === 1 ? "bg-stone-100" : "bg-paper"}`}>
+          <Container className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <Reveal>
+                <p className="type-meta mb-5 flex items-center gap-3 text-petrol-600">
+                  <span className="text-sogan-600">0{i + 1}</span>
                   {service.title[language]}
-                </h2>
-                <p className="text-sm sm:text-base text-stone-500">{service.desc[language]}</p>
-              </div>
-            </motion.div>
-
-            {/* Service Items */}
-            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-              {service.items.map((item, index) => (
-                <motion.div
-                  key={item.title.en}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={`bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border ${colors.border} hover:shadow-xl transition-shadow`}
-                >
-                  <div className="flex items-start gap-3 sm:gap-4">
-                    <div
-                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl ${colors.iconBg} flex items-center justify-center flex-shrink-0`}
-                    >
-                      <item.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${colors.text}`} />
-                    </div>
-                    <div>
-                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-stone-800 mb-1 sm:mb-2">
-                        {item.title[language]}
-                      </h3>
-                      <p className="text-xs sm:text-sm md:text-base text-stone-500">{item.desc[language]}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+                </p>
+                <h2 className="type-h1">{service.desc[language]}</h2>
+                <div className="relative mt-10 aspect-[4/3] overflow-hidden rounded-2xl bg-petrol-900">
+                  <Pattern variant={art[key].variant} seed={art[key].seed} tone="dark" animate />
+                  <span className="absolute bottom-5 left-6 font-serif text-[2.75rem] italic text-paper">{service.title[language].split(" ")[0]}</span>
+                </div>
+              </Reveal>
             </div>
-          </Section>
-        );
-      })}
+            <ol className="space-y-4">
+              {service.items.map((it, n) => {
+                const Icon = it.icon;
+                return (
+                  <li key={it.title.en}>
+                    <Reveal delay={n * 90}>
+                    <div className="group rounded-2xl border border-stone-200 bg-paper p-7 transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-petrol-300 md:p-8">
+                      <div className="flex items-start gap-5">
+                        <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-petrol-50 text-petrol-600 transition-colors duration-300 group-hover:bg-petrol-600 group-hover:text-paper">
+                          <Icon aria-hidden className="size-5" />
+                        </span>
+                        <div>
+                          <p className="type-meta mb-2 !tracking-normal text-stone-700">{String(n + 1).padStart(2, "0")}</p>
+                          <h3 className="type-card">{it.title[language]}</h3>
+                          <p className="mt-3 text-[0.9375rem] leading-relaxed text-stone-700">{it.desc[language]}</p>
+                        </div>
+                      </div>
+                    </div>
+                    </Reveal>
+                  </li>
+                );
+              })}
+            </ol>
+          </Container>
+        </section>
+      ))}
 
-      {/* Integration Section */}
-      <Section variant="dark" padding="xl">
-        <div className="max-w-4xl mx-auto text-center px-2">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
-              {language === "id" ? "Integrasi 3P" : "3P Integration"}
+      <section id="integrasi" className="scroll-mt-20 bg-petrol-900 py-24 text-paper md:py-32">
+        <Container>
+          <Reveal>
+            <p className="type-meta mb-5 flex items-center gap-3 text-sogan-200">
+              <span>04</span> {id ? "Integrasi 3P" : "3P Integration"}
+            </p>
+            <h2 className="type-display max-w-[20ch] !text-paper">
+              {id ? "Kekuatannya ada di irisan antarpilar." : "The strength lies where the pillars meet."}
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-stone-300 mb-8 sm:mb-10 md:mb-12">
-              {language === "id"
+            <p className="mt-6 max-w-[48ch] text-lg leading-relaxed text-petrol-200">
+              {id
                 ? "Kekuatan framework kami terletak pada integrasi ketiga pilar yang menciptakan sinergi dan dampak transformasi yang holistik."
                 : "The strength of our framework lies in the integration of all three pillars creating synergy and holistic transformation impact."}
             </p>
+          </Reveal>
+          <div className="mt-14 grid gap-5 md:grid-cols-3">
+            {integration.map((x, n) => (
+              <Reveal key={x.pillars} delay={n * 120}>
+                <article className="h-full rounded-2xl border border-white/10 bg-petrol-800/50 p-8 transition-colors duration-300 hover:border-sogan-200/60">
+                  <Venn className="mb-8 h-24 w-auto" />
+                  <p className="type-meta text-petrol-300">{x.pillars}</p>
+                  <h3 className="mt-3 font-serif text-[1.75rem] leading-tight text-paper">{x.result[language]}</h3>
+                  <p className="mt-4 text-[0.9375rem] leading-relaxed text-petrol-200">{x.desc[language]}</p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </Container>
+      </section>
 
-            {/* Integration Examples */}
-            <div className="grid sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-              {[
-                {
-                  pillars: "People + Process",
-                  result: { id: "Risk Culture Program", en: "Risk Culture Program" },
-                },
-                {
-                  pillars: "Process + Technology",
-                  result: { id: "Automated Compliance Monitoring", en: "Automated Compliance Monitoring" },
-                },
-                {
-                  pillars: "People + Technology",
-                  result: { id: "Digital Leadership Development", en: "Digital Leadership Development" },
-                },
-              ].map((item, index) => (
-                <motion.div
-                  key={item.pillars}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-4 sm:p-6 border border-white/10"
-                >
-                  <div className="text-petrol-400 font-semibold text-sm sm:text-base mb-1 sm:mb-2">{item.pillars}</div>
-                  <div className="text-white text-sm sm:text-base md:text-lg">{item.result[language]}</div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </Section>
+      <ClosingCTA />
     </>
   );
 }

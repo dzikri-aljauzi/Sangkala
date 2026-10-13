@@ -431,7 +431,7 @@ export default function AdminInsightsPage() {
                 key={article.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-xl border border-stone-200 p-6 hover:shadow-md transition-shadow"
+                className="bg-white rounded-xl border border-stone-200 p-6 hover:border-petrol-300 transition-colors"
               >
                 <div className="flex items-start gap-4">
                   {/* Cover Image */}

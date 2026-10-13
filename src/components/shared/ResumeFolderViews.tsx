@@ -50,7 +50,7 @@ export function FoldersView({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-lg transition-shadow"
+          className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:border-petrol-300 transition-colors"
         >
           <div className="bg-petrol-500 p-6 text-white">
             <div className="flex items-center gap-4">
@@ -104,7 +104,7 @@ export function FoldersView({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+          className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:border-petrol-300 transition-colors cursor-pointer"
           onClick={() => setCurrentView("individu")}
         >
           <div className="bg-green-500 p-6 text-white">
@@ -198,7 +198,7 @@ export function BatchListView({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => onSelect(batch.id)}
-                className="bg-white rounded-xl border border-stone-200 p-6 text-left hover:shadow-lg hover:border-stone-300 transition-all group"
+                className="bg-white rounded-xl border border-stone-200 p-6 text-left hover:border-stone-300 transition-all group"
               >
                 <div className="flex items-center gap-4">
                   <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center ${colors.hover} transition-colors`}>

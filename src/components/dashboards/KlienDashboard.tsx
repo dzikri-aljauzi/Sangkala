@@ -186,7 +186,7 @@ export default function KlienDashboard({ assessmentId, embedded, initialTab }: K
                 className="bg-white rounded-xl border border-stone-200 p-6"
               >
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-green-500 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-lg bg-petrol-600 flex items-center justify-center">
                     <ImageIcon className="w-6 h-6 text-white" />
                   </div>
                 </div>
@@ -309,7 +309,7 @@ function FilesList({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:shadow-xl transition-all group"
+              className="bg-white rounded-xl border border-stone-200 overflow-hidden hover:border-petrol-300 transition-all group"
             >
               {/* Header — Image Preview or Gradient */}
               {isImage ? (
@@ -379,7 +379,7 @@ function FilesList({
                   <a
                     href={`${file.filePath.startsWith('/api/files') ? file.filePath : `/api/files${file.filePath.replace('/uploads/', '/')}`}?filename=${encodeURIComponent(file.fileName)}`}
                     download={file.fileName}
-                    className={`flex items-center justify-center gap-2 flex-1 py-3 px-4 rounded-lg ${colors.bg} ${colors.text} ${colors.hover} font-medium transition-all text-sm group-hover:shadow-md`}
+                    className={`flex items-center justify-center gap-2 flex-1 py-3 px-4 rounded-lg ${colors.bg} ${colors.text} ${colors.hover} font-medium transition-all text-sm group-`}
                   >
                     <Download className="w-4 h-4" />
                     {t("assessmentCenter.download")}
@@ -622,7 +622,7 @@ function ResumeFolderView({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   onClick={() => setSelectedEchelonId(echelon.id)}
-                  className="bg-white rounded-xl border border-stone-200 p-6 text-left hover:shadow-lg hover:border-purple-300 transition-all group"
+                  className="bg-white rounded-xl border border-stone-200 p-6 text-left hover:border-purple-300 transition-all group"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
@@ -850,7 +850,7 @@ function ResumeFileCard({ file, color }: { file: any; color: "blue" | "purple" |
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`${colors.bg} rounded-xl p-5 hover:shadow-md transition-all`}
+      className={`${colors.bg} rounded-xl p-5 transition-all`}
     >
       <div className="flex items-start gap-4">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colors.icon}`}>

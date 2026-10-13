@@ -6,9 +6,10 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, AlertCircle, UserCheck, Building2, Users, type LucideIcon } from "lucide-react";
-import { PasswordToggleButton } from "@/components/ui/password-toggle-button";
+import { Container } from "@/components/ui/layout";
+import { AuthFields, AuthError } from "@/components/layout/AuthForm";
+import { cn } from "@/lib/utils";
+import { Pattern, hashSeed } from "@/components/art/Pattern";
 
 interface Assessment {
   id: string;
@@ -19,28 +20,10 @@ interface Assessment {
 
 type LoginRole = "ASESOR" | "KLIEN" | "STAFF_KLIEN";
 
-const roleTabs: { role: LoginRole; label: string; icon: LucideIcon; color: string; description: string }[] = [
-  {
-    role: "ASESOR",
-    label: "Asesor",
-    icon: UserCheck,
-    color: "bg-petrol-500",
-    description: "Login sebagai asesor",
-  },
-  {
-    role: "KLIEN",
-    label: "Klien",
-    icon: Building2,
-    color: "bg-emerald-500",
-    description: "Login sebagai klien",
-  },
-  {
-    role: "STAFF_KLIEN",
-    label: "Staff",
-    icon: Users,
-    color: "bg-orange-500",
-    description: "Login sebagai staff klien (hanya lihat progress)",
-  },
+const roleTabs: { role: LoginRole; label: string; description: string }[] = [
+  { role: "ASESOR", label: "Asesor", description: "Login sebagai asesor" },
+  { role: "KLIEN", label: "Klien", description: "Login sebagai klien" },
+  { role: "STAFF_KLIEN", label: "Staff", description: "Login sebagai staff klien (hanya lihat progress)" },
 ];
 
 export default function AssessmentLoginPage({
@@ -110,201 +93,96 @@ export default function AssessmentLoginPage({
     }
   };
 
-  // Get current role tab config
   const currentTab = roleTabs.find((tab) => tab.role === selectedRole)!;
 
   if (!assessment) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-petrol-600"></div>
+      <div className="pt-header min-h-[70vh] bg-petrol-900">
+        <Container className="py-24">
+          <p role="status" className="text-petrol-200">Memuat…</p>
+        </Container>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
-        <div className="bg-white rounded-2xl shadow-xl border border-stone-200 overflow-hidden">
-          {/* Header with Logo & Assessment Info */}
-          <div className={`${currentTab.color} px-6 py-6 sm:px-8 sm:py-8 text-center transition-all duration-500`}>
-            <div className="flex justify-center mb-4">
-              {assessment.clientLogo ? (
-                <div className="bg-white rounded-xl p-3 shadow-lg">
-                  <Image
-                    src={assessment.clientLogo}
-                    alt={assessment.clientName}
-                    width={100}
-                    height={100}
-                    className="object-contain w-16 h-16 sm:w-[100px] sm:h-[100px]"
-                  />
-                </div>
-              ) : (
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-2xl sm:text-3xl font-bold text-white">
-                    {assessment.clientName.charAt(0)}
-                  </span>
-                </div>
-              )}
-            </div>
-            <h1 className="text-lg sm:text-xl font-bold text-white mb-1">
-              {assessment.name}
-            </h1>
-            <p className="text-white/80 text-sm">
-              {assessment.clientName}
-            </p>
-          </div>
-
-          {/* Role Selection Tabs */}
-          <div className="px-4 pt-5 sm:px-6 sm:pt-6">
-            <p className="text-xs font-medium text-stone-500 uppercase tracking-wider mb-3 text-center">
-              Login Sebagai
-            </p>
-            <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-xl">
-              {roleTabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = selectedRole === tab.role;
-                return (
-                  <button
-                    key={tab.role}
-                    onClick={() => {
-                      setSelectedRole(tab.role);
-                      setError("");
-                    }}
-                    className={`relative flex flex-col items-center gap-0.5 py-2.5 px-1.5 rounded-lg text-[11px] font-medium transition-all duration-300 ${
-                      isActive
-                        ? "bg-white shadow-md text-stone-900"
-                        : "text-stone-500 hover:text-stone-700 hover:bg-white/50"
-                    }`}
-                  >
-                    <Icon className={`w-4 h-4 ${isActive ? "text-petrol-600" : ""}`} />
-                    <span>{tab.label}</span>
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute inset-0 bg-white rounded-lg shadow-md -z-10"
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Login Form */}
-          <div className="px-5 py-5 sm:px-8 sm:py-6">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedRole}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
-              >
-                {/* Role description */}
-                <p className="text-sm text-stone-500 mb-5 text-center">
-                  {currentTab.description}
-                </p>
-
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Error Message */}
-                    {error && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-3"
-                      >
-                        <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-red-800">{error}</p>
-                      </motion.div>
-                    )}
-
-                    {/* Email Field */}
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-stone-700 mb-2"
-                      >
-                        {t("assessmentCenter.email")}
-                      </label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
-                        <input
-                          id="email"
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                          className="w-full pl-10 pr-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent transition-all"
-                          placeholder="example@example.com"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Password Field */}
-                    <div>
-                      <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-stone-700 mb-2"
-                      >
-                        {t("assessmentCenter.password")}
-                      </label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 pointer-events-none" />
-                        <input
-                          id="password"
-                          type={showPassword ? "text" : "password"}
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          className="w-full pl-10 pr-11 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-petrol-500 focus:border-transparent transition-all"
-                          placeholder="••••••••"
-                        />
-                        <PasswordToggleButton
-                          visible={showPassword}
-                          onToggle={() => setShowPassword(!showPassword)}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <Button
-                      type="submit"
-                      variant="primary"
-                      size="lg"
-                      className="w-full"
-                      isLoading={loading}
-                      disabled={loading}
-                    >
-                      {t("assessmentCenter.loginButton")}
-                    </Button>
-                  </form>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Footer */}
-            <div className="mt-6 pt-5 border-t border-stone-100 text-center">
-              <p className="text-xs text-stone-500">
-                Sangkala — Assessment Center
-              </p>
-            </div>
-          </div>
+    <div className="grid min-h-screen lg:grid-cols-2">
+      <section className="pt-header relative isolate flex flex-col justify-end overflow-hidden bg-petrol-900 text-paper">
+        <div aria-hidden className="absolute inset-0 -z-10 opacity-80">
+          <Pattern variant="orbits" seed={hashSeed(assessment.name)} tone="dark" animate />
         </div>
-
-        {/* Back Link */}
-        <div className="mt-4 text-center">
+        <div className="px-5 pb-12 pt-16 md:px-12 lg:pb-20">
           <button
+            type="button"
             onClick={() => router.push("/assessment-center")}
-            className="text-sm text-stone-600 hover:text-petrol-600 transition-colors"
+            className="mb-12 text-[0.9375rem] text-petrol-200 transition-colors hover:text-paper"
           >
             ← {t("assessmentCenter.listTitle")}
           </button>
+          {assessment.clientLogo ? (
+            <div className="mb-8 grid size-20 place-items-center rounded-2xl bg-white p-3">
+              <Image src={assessment.clientLogo} alt={assessment.clientName} width={80} height={80} className="size-full object-contain" />
+            </div>
+          ) : (
+            <div className="mb-8 grid size-20 place-items-center rounded-2xl border border-white/20 bg-petrol-800/60 font-serif text-4xl text-sogan-200 backdrop-blur-sm">
+              {assessment.clientName.charAt(0)}
+            </div>
+          )}
+          <p className="type-meta text-sogan-200">{assessment.clientName}</p>
+          <h1 className="type-h1 mt-4 max-w-[16ch] !text-paper">{assessment.name}</h1>
+          <p className="mt-6 max-w-md text-petrol-200">{t("assessmentCenter.subtitle")}</p>
         </div>
-      </motion.div>
+      </section>
+
+    <div className="flex items-center bg-paper px-5 py-14 md:px-12 lg:pt-header">
+      <div className="mx-auto w-full max-w-md lg:pt-16">
+        <fieldset className="mt-10">
+          <legend className="type-meta mb-3 text-stone-700">Login sebagai</legend>
+          <div role="radiogroup" className="flex gap-6 border-b border-stone-200">
+            {roleTabs.map((tab) => {
+              const active = selectedRole === tab.role;
+              return (
+                <button
+                  key={tab.role}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => {
+                    setSelectedRole(tab.role);
+                    setError("");
+                  }}
+                  className={cn(
+                    "-mb-px border-b-2 py-3 text-[0.9375rem] transition-colors",
+                    active ? "border-petrol-600 font-medium text-ink" : "border-transparent text-stone-700 hover:text-ink"
+                  )}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        <p className="mt-5 text-sm text-stone-700">{currentTab.description}</p>
+
+        <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+          <AuthError message={error} />
+          <AuthFields
+            email={email}
+            onEmail={setEmail}
+            password={password}
+            onPassword={setPassword}
+            showPassword={showPassword}
+            onTogglePassword={() => setShowPassword(!showPassword)}
+            emailLabel={t("assessmentCenter.email")}
+            passwordLabel={t("assessmentCenter.password")}
+          />
+          <Button type="submit" size="lg" className="w-full" isLoading={loading} disabled={loading}>
+            {t("assessmentCenter.loginButton")}
+          </Button>
+        </form>
+      </div>
+    </div>
     </div>
   );
 }

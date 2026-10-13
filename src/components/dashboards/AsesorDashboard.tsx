@@ -170,7 +170,7 @@ export default function AsesorDashboard({
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="bg-white rounded-xl border border-stone-200 p-6 hover:shadow-lg transition-all group"
+                      className="bg-white rounded-xl border border-stone-200 p-6 hover:border-petrol-300 transition-all group"
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div className="w-12 h-12 rounded-lg bg-petrol-100 flex items-center justify-center group-hover:bg-petrol-200 transition-colors">
@@ -272,7 +272,7 @@ export default function AsesorDashboard({
                     key={doc.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-xl border border-stone-200 p-6 hover:shadow-lg transition-shadow"
+                    className="bg-white rounded-xl border border-stone-200 p-6 hover:border-petrol-300 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">

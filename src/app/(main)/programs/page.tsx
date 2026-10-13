@@ -1,21 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { Check, Clock, Users } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { Section } from "@/components/ui/section";
+import { Container, PageHeader } from "@/components/ui/layout";
+import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
-import {
-  GraduationCap,
-  ArrowRight,
-  Clock,
-  Users,
-  Award,
-  CheckCircle,
-  Calendar,
-  Target,
-  Briefcase,
-} from "lucide-react";
+import { Pattern } from "@/components/art/Pattern";
+import ClosingCTA from "@/components/sections/ClosingCTA";
+import { cn } from "@/lib/utils";
 
 const programs = [
   {
@@ -156,185 +148,90 @@ const programs = [
   },
 ];
 
-const colorMap = {
-  blue: {
-    gradient: "bg-petrol-500",
-    bg: "bg-petrol-50",
-    border: "border-petrol-200",
-    text: "text-petrol-600",
-  },
-  teal: {
-    gradient: "bg-petrol-500",
-    bg: "bg-petrol-50",
-    border: "border-petrol-200",
-    text: "text-petrol-600",
-  },
-  cyan: {
-    gradient: "bg-petrol-500",
-    bg: "bg-petrol-50",
-    border: "border-petrol-200",
-    text: "text-petrol-600",
-  },
-  gold: {
-    gradient: "bg-stone-700",
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    text: "text-amber-600",
-  },
-};
+const covers = ["orbits", "grid", "waves", "bars", "arcs", "rings"] as const;
 
 export default function ProgramsPage() {
   const { language } = useLanguage();
+  const id = language === "id";
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 bg-stone-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-4xl"
-          >
-            <span className="inline-block text-xs sm:text-sm font-semibold uppercase tracking-wider text-petrol-600 mb-3 sm:mb-4">
-              {language === "id" ? "Program Unggulan" : "Flagship Programs"}
-            </span>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-stone-800">
-              {language === "id"
-                ? "Program Unggulan Kami"
-                : "Our Flagship Programs"}
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl text-stone-600 max-w-3xl">
-              {language === "id"
-                ? "Program signature dengan dampak terukur untuk transformasi organisasi Anda."
-                : "Signature programs with measurable impact for your organizational transformation."}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        crumbs={[{ href: "/programs", label: id ? "Program" : "Programs" }]}
+        eyebrow={id ? "Program Unggulan" : "Flagship Programs"}
+        title={id ? "Program Unggulan Kami" : "Our Flagship Programs"}
+        art={{ variant: "grid", seed: 19 }}
+        lead={
+          id
+            ? "Program signature dengan dampak terukur untuk transformasi organisasi Anda."
+            : "Signature programs with measurable impact for your organizational transformation."
+        }
+      >
+        <Button href="/info-pelatihan" size="lg" className="bg-paper text-petrol-900 hover:bg-petrol-50">
+          {id ? "Lihat jadwal pelatihan" : "See training schedule"}
+        </Button>
+      </PageHeader>
 
-      {/* Programs List */}
-      <Section variant="default" padding="xl">
-        <div className="space-y-8 sm:space-y-12 lg:space-y-16">
-          {programs.map((program, index) => {
-            const colors = colorMap[program.color as keyof typeof colorMap];
-
-            return (
-              <motion.div
-                key={program.id}
-                id={program.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border border-stone-100"
-              >
-                {/* Header */}
-                <div className={`${colors.gradient} p-4 sm:p-6 md:p-8 text-white`}>
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
-                    <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-                        <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
-                      </div>
-                      <div>
-                        <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">
-                          {program.title[language]}
-                        </h2>
-                        <div className="flex items-center gap-2 mt-1 text-white/80 text-xs sm:text-sm">
-                          <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                          <span>{program.duration[language]}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                      {program.highlights.map((highlight) => (
-                        <span
-                          key={highlight.en}
-                          className="px-2 sm:px-3 py-0.5 sm:py-1 bg-white/20 rounded-full text-xs sm:text-sm"
-                        >
-                          {highlight[language]}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+      {programs.map((program, i) => (
+        <section key={program.id} id={program.id} className={cn("scroll-mt-20 py-20 md:py-28", i % 2 === 1 ? "bg-stone-100" : "bg-paper")}>
+          <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+            <Reveal className={cn(i % 2 === 1 && "lg:order-2")}>
+              <div className="group relative aspect-[5/4] overflow-hidden rounded-3xl bg-petrol-900">
+                <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+                  <Pattern variant={covers[i % covers.length]} seed={30 + i} tone="dark" animate />
                 </div>
-
-                {/* Content */}
-                <div className="p-4 sm:p-6 md:p-8">
-                  <div className="grid lg:grid-cols-2 gap-6 sm:gap-8">
-                    {/* Description */}
-                    <div>
-                      <p className="text-sm sm:text-base md:text-lg text-stone-500 mb-4 sm:mb-6">
-                        {program.desc[language]}
-                      </p>
-
-                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-stone-500 mb-4 sm:mb-6">
-                        <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-                        <span className="font-medium">
-                          {language === "id" ? "Target Peserta:" : "Target Audience:"}
-                        </span>
-                        <span>{program.audience[language]}</span>
-                      </div>
-
-                      <Link href="/contact" className="block sm:inline-block">
-                        <Button variant="primary" size="lg" className="group w-full sm:w-auto justify-center">
-                          {language === "id" ? "Daftar Sekarang" : "Register Now"}
-                          <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                      </Link>
-                    </div>
-
-                    {/* Features */}
-                    <div className={`${colors.bg} rounded-lg sm:rounded-xl p-4 sm:p-6`}>
-                      <h3 className="font-semibold text-stone-800 mb-3 sm:mb-4 text-sm sm:text-base">
-                        {language === "id" ? "Yang Akan Anda Dapatkan:" : "What You'll Get:"}
-                      </h3>
-                      <ul className="space-y-2 sm:space-y-3">
-                        {program.features[language].map((feature, i) => (
-                          <li key={i} className="flex items-start gap-2 sm:gap-3">
-                            <CheckCircle className={`w-4 h-4 sm:w-5 sm:h-5 ${colors.text} mt-0.5 flex-shrink-0`} />
-                            <span className="text-xs sm:text-sm md:text-base text-stone-500">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
+                <span className="absolute left-6 top-6 font-serif text-[5rem] leading-none text-transparent [-webkit-text-stroke:1px_#e2cdb0]">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="absolute inset-x-6 bottom-6 flex flex-wrap gap-2">
+                  {program.highlights.map((h) => (
+                    <span key={h.en} className="rounded-full bg-paper/95 px-3 py-1.5 text-xs font-medium text-petrol-900">
+                      {h[language]}
+                    </span>
+                  ))}
                 </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </Section>
-
-      {/* Custom Program CTA */}
-      <Section variant="dark" padding="xl">
-        <div className="max-w-4xl mx-auto text-center px-2">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
-              {language === "id"
-                ? "Butuh Program Khusus?"
-                : "Need a Custom Program?"}
-            </h2>
-            <p className="text-sm sm:text-base md:text-lg text-stone-300 mb-6 sm:mb-8">
-              {language === "id"
-                ? "Kami dapat merancang program yang disesuaikan dengan kebutuhan spesifik organisasi Anda."
-                : "We can design programs tailored to your organization's specific needs."}
-            </p>
-            <Link href="/contact" className="block sm:inline-block">
-              <Button variant="gold" size="xl" className="group w-full sm:w-auto justify-center">
-                {language === "id" ? "Diskusikan Kebutuhan Anda" : "Discuss Your Needs"}
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Reveal>
+            <Reveal delay={120}>
+              <h2 className="type-h1">{program.title[language]}</h2>
+              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[0.9375rem] text-stone-700">
+                <span className="flex items-center gap-2">
+                  <Clock aria-hidden className="size-4 text-petrol-600" />
+                  {program.duration[language]}
+                </span>
+                <span className="flex items-center gap-2">
+                  <Users aria-hidden className="size-4 text-petrol-600" />
+                  {program.audience[language]}
+                </span>
+              </div>
+              <p className="mt-6 text-lg leading-relaxed text-stone-700">{program.desc[language]}</p>
+              <h3 className="type-meta mb-4 mt-10 text-stone-700">{id ? "Yang akan Anda dapatkan" : "What you'll get"}</h3>
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {program.features[language].map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-[0.9375rem] text-ink">
+                    <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-petrol-600 text-paper">
+                      <Check aria-hidden className="size-3" />
+                    </span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Button href="/contact" variant="secondary" size="lg" className="mt-10">
+                {id ? "Daftar Sekarang" : "Register Now"}
               </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </Section>
+            </Reveal>
+          </Container>
+        </section>
+      ))}
+
+      <ClosingCTA
+        title={id ? "Butuh program khusus?" : "Need a custom program?"}
+        lead={
+          id
+            ? "Kami dapat merancang program yang disesuaikan dengan kebutuhan spesifik organisasi Anda."
+            : "We can design programs tailored to your organization's specific needs."
+        }
+      />
     </>
   );
 }
