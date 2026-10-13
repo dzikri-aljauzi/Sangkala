@@ -1,5 +1,8 @@
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
+import { Pattern } from "@/components/art/Pattern";
+import { RiseText } from "@/components/motion/RiseText";
 
 /** Lebar isi 1240px dengan gutter 20/32/48 (DESIGN.md). */
 export function Container({ className, children }: { className?: string; children: ReactNode }) {
@@ -47,25 +50,79 @@ export function Band({
   );
 }
 
-/** Pembuka halaman dalam: label Mono, H1 serif, lead, aksi opsional. */
+type ArtVariant = "orbits" | "rings" | "grid" | "waves" | "bars" | "arcs";
+
+/**
+ * Pembuka halaman dalam: gelap, imersif, dengan ilustrasi generatif yang bergerak
+ * pelan di sisi kanan. Header situs transparan di atasnya.
+ */
 export function PageHeader({
   eyebrow,
   title,
   lead,
   children,
+  crumbs,
+  art = { variant: "orbits", seed: 3 },
+  aside,
 }: {
   eyebrow?: string;
-  title: ReactNode;
+  title: string;
   lead?: ReactNode;
   children?: ReactNode;
+  crumbs?: { href: string; label: string }[];
+  art?: { variant: ArtVariant; seed: number };
+  /** Konten tambahan di bawah judul, mis. statistik atau indeks anchor. */
+  aside?: ReactNode;
 }) {
   return (
-    <section className="border-b border-stone-200 bg-paper pb-14 pt-14 md:pb-20 md:pt-20">
-      <Container>
-        {eyebrow && <p className="type-meta mb-5 text-petrol-600">{eyebrow}</p>}
-        <h1 className="type-h1 prose-width">{title}</h1>
-        {lead && <p className="type-lead prose-width mt-6">{lead}</p>}
-        {children && <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">{children}</div>}
+    <section className="pt-header relative isolate overflow-hidden bg-petrol-900 text-paper">
+      <div aria-hidden className="absolute inset-y-0 right-0 -z-10 w-full opacity-80 [mask-image:linear-gradient(to_left,black_35%,transparent_95%)] lg:w-[70%]">
+        <Pattern variant={art.variant} seed={art.seed} tone="dark" animate />
+      </div>
+      <Container className="pb-16 pt-14 md:pb-24 md:pt-20">
+        {crumbs && (
+          <nav aria-label="Breadcrumb" className="fade-in mb-10 text-sm text-petrol-200">
+            <ol className="flex flex-wrap items-center gap-2">
+              <li>
+                <Link href="/" className="hover:text-paper">
+                  Beranda
+                </Link>
+              </li>
+              {crumbs.map((c) => (
+                <li key={c.href} className="flex items-center gap-2">
+                  <span aria-hidden className="text-petrol-400">/</span>
+                  <Link href={c.href} className="hover:text-paper">
+                    {c.label}
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
+        {eyebrow && (
+          <p className="type-meta fade-in mb-6 flex items-center gap-3 text-sogan-200" style={{ ["--d" as string]: "60ms" }}>
+            <span aria-hidden className="h-px w-8 bg-sogan-200" />
+            {eyebrow}
+          </p>
+        )}
+        <h1 className="type-display max-w-[18ch] !text-paper">
+          <RiseText text={title} />
+        </h1>
+        {lead && (
+          <p className="type-lead fade-in mt-8 max-w-[52ch] !text-petrol-200" style={{ ["--d" as string]: "450ms" }}>
+            {lead}
+          </p>
+        )}
+        {children && (
+          <div className="fade-in mt-10 flex flex-wrap items-center gap-x-6 gap-y-3" style={{ ["--d" as string]: "600ms" }}>
+            {children}
+          </div>
+        )}
+        {aside && (
+          <div className="fade-in mt-14" style={{ ["--d" as string]: "750ms" }}>
+            {aside}
+          </div>
+        )}
       </Container>
     </section>
   );

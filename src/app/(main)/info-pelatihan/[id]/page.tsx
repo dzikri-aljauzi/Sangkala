@@ -14,6 +14,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Pattern, hashSeed } from "@/components/art/Pattern";
+import { RiseText } from "@/components/motion/RiseText";
 import GoogleTranslateWidget from "@/components/google-translate/GoogleTranslateWidget";
 import { formatRupiah, formatTrainingDateRange } from "@/lib/utils";
 import type { Training as BaseTraining } from "@/types/training";
@@ -177,18 +179,20 @@ export default function DetailPelatihanPage() {
 
   if (loading) {
     return (
-      <Band>
-        <p role="status" className="notranslate text-stone-700">Memuat…</p>
-      </Band>
+      <div className="pt-header min-h-[70vh] bg-petrol-900">
+        <Container className="py-24">
+          <p role="status" className="notranslate text-petrol-200">Memuat…</p>
+        </Container>
+      </div>
     );
   }
 
   if (error || !training) {
     return (
-      <Band>
+      <Band tone="dark" className="pt-header">
         <div className="max-w-xl">
-          <p className="type-h2 mb-6">{t("trainingDetail.notFound")}</p>
-          <Button href="/info-pelatihan" variant="secondary" size="lg">
+          <p className="type-h2 mb-6 !text-paper">{t("trainingDetail.notFound")}</p>
+          <Button href="/info-pelatihan" variant="secondary" size="lg" className="border-paper/50 text-paper hover:bg-paper/10">
               <ArrowLeft aria-hidden className="size-4" />
               {t("trainingDetail.back")}
             </Button>
@@ -210,19 +214,30 @@ export default function DetailPelatihanPage() {
 
   return (
     <>
-      <Container className="pb-[72px] pt-10 md:pb-[112px] md:pt-14">
-        <Link
-          href="/info-pelatihan"
-          className="notranslate mb-10 inline-flex items-center gap-2 text-[0.9375rem] text-stone-700 transition-colors hover:text-petrol-600"
-        >
-          <ArrowLeft aria-hidden className="size-4" />
-          {t("trainingDetail.back")}
-        </Link>
+      <section className="pt-header relative isolate overflow-hidden bg-petrol-900 text-paper">
+        <div aria-hidden className="absolute inset-y-0 right-0 -z-10 w-full opacity-70 [mask-image:linear-gradient(to_left,black_30%,transparent_90%)] lg:w-[60%]">
+          <Pattern variant="bars" seed={hashSeed(training.title)} tone="dark" animate />
+        </div>
+        <Container className="pb-16 pt-12 md:pb-20 md:pt-16">
+          <Link
+            href="/info-pelatihan"
+            className="notranslate mb-10 inline-flex items-center gap-2 text-[0.9375rem] text-petrol-200 transition-colors hover:text-paper"
+          >
+            <ArrowLeft aria-hidden className="size-4" />
+            {t("trainingDetail.back")}
+          </Link>
+          <p className="notranslate type-meta mb-6 text-sogan-200">{t("trainingDetail.program")}</p>
+          <h1 className="type-h1 max-w-[24ch] !text-paper">
+            <RiseText text={training.title} />
+          </h1>
+          <p className="notranslate fade-in mt-8 text-lg text-petrol-200" style={{ ["--d" as string]: "400ms" }}>
+            {dateRange} · {training.location}
+          </p>
+        </Container>
+      </section>
 
-        <p className="notranslate type-meta mb-5 text-petrol-600">{t("trainingDetail.program")}</p>
-        <h1 className="type-h1 max-w-[28ch]">{training.title}</h1>
-
-        <div className="mt-12 grid gap-12 lg:grid-cols-[1fr_22rem] lg:gap-16">
+      <Container className="pb-[72px] pt-14 md:pb-[112px] md:pt-20">
+        <div className="grid gap-12 lg:grid-cols-[1fr_22rem] lg:gap-16">
           <div className="min-w-0">
             {poster && (
               <div className="relative mb-12 overflow-hidden rounded-lg border border-stone-200 bg-stone-100">

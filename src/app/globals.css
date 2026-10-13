@@ -193,9 +193,18 @@
   --color-sogan-700: #5c3b1b;
 }
 
-/* Skala tipografi editorial (DESIGN.md). Judul serif tidak pernah bold.
-   Ukuran mobile di bawah 768px, desktop di atasnya. */
+/* Ruang untuk header tetap (utilitas 32px + header 72px di desktop). */
+@utility pt-header {
+  padding-top: 4rem;
+  @media (min-width: 1024px) {
+    padding-top: 6.5rem;
+  }
+}
+
+/* Skala tipografi (DESIGN.md v2). Fluid: tumbuh mulus dari mobile ke desktop.
+   Judul serif tidak pernah bold; tekanan datang dari ukuran. */
 @layer components {
+  .type-hero,
   .type-display,
   .type-h1,
   .type-h2,
@@ -203,14 +212,16 @@
     font-family: var(--font-serif);
     font-weight: 400;
     color: var(--ink);
+    text-wrap: balance;
   }
 
-  .type-display { font-size: 2.375rem; line-height: 2.75rem; letter-spacing: -0.01em; }
-  .type-h1 { font-size: 2.125rem; line-height: 2.5rem; letter-spacing: -0.01em; }
-  .type-h2 { font-size: 1.6875rem; line-height: 2.125rem; }
-  .type-card { font-size: 1.25rem; line-height: 1.75rem; }
-  .type-h3 { font-size: 1.1875rem; line-height: 1.75rem; font-weight: 600; color: var(--ink); }
-  .type-lead { font-size: 1.0625rem; line-height: 1.75rem; color: var(--ink-muted); }
+  .type-hero { font-size: clamp(2.75rem, 1.2rem + 5.2vw, 6.25rem); line-height: 1.02; letter-spacing: -0.025em; }
+  .type-display { font-size: clamp(2.5rem, 1.6rem + 3.6vw, 5rem); line-height: 1.05; letter-spacing: -0.02em; }
+  .type-h1 { font-size: clamp(2.25rem, 1.5rem + 3vw, 4.25rem); line-height: 1.08; letter-spacing: -0.02em; }
+  .type-h2 { font-size: clamp(1.875rem, 1.35rem + 2vw, 3.25rem); line-height: 1.12; letter-spacing: -0.015em; }
+  .type-card { font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem); line-height: 1.3; }
+  .type-h3 { font-size: clamp(1.1875rem, 1.1rem + 0.3vw, 1.375rem); line-height: 1.4; font-weight: 600; color: var(--ink); }
+  .type-lead { font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.3125rem); line-height: 1.65; color: var(--ink-muted); }
 
   /* Label dan meta: Plex Mono huruf kapital, ciri brand (BRAND.md) */
   .type-meta {
@@ -224,17 +235,36 @@
 
   .prose-width { max-width: 68ch; }
 
-  /* Dipakai <Reveal>. Terlihat secara default; data-reveal hanya diset oleh JS. */
-  .reveal { transition: opacity 300ms ease-out, transform 300ms ease-out; }
-  .reveal[data-reveal="pending"] { opacity: 0; transform: translateY(8px); }
 
-  @media (min-width: 768px) {
-    .type-display { font-size: 3.75rem; line-height: 4.125rem; }
-    .type-h1 { font-size: 2.875rem; line-height: 3.375rem; }
-    .type-h2 { font-size: 2.125rem; line-height: 2.625rem; }
-    .type-card { font-size: 1.375rem; line-height: 1.875rem; }
-    .type-h3 { font-size: 1.3125rem; line-height: 1.875rem; }
-    .type-lead { font-size: 1.1875rem; line-height: 2rem; }
+  /* Dipakai <Reveal>. Terlihat secara default; data-reveal hanya diset oleh JS. */
+  .reveal { transition: opacity 700ms cubic-bezier(.2,.7,.2,1), transform 700ms cubic-bezier(.2,.7,.2,1); }
+  .reveal[data-reveal="pending"] { opacity: 0; transform: translateY(28px); }
+
+  /* Kata per kata naik saat halaman dimuat. CSS murni: tetap jalan tanpa JS. */
+  .rise-word { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .rise-word > span { display: inline-block; animation: rise 900ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 70ms + 120ms); }
+  @keyframes rise { from { transform: translateY(105%); } to { transform: translateY(0); } }
+
+  .fade-in { animation: fade-in 900ms ease-out both; animation-delay: var(--d, 0ms); }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  /* Marquee tanpa henti; berhenti saat hover dan saat reduced motion. */
+  .marquee-track { display: flex; width: max-content; animation: marquee var(--marquee-dur, 40s) linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
+  /* Garis bawah tautan yang tumbuh dari kiri. */
+  .link-grow { background-image: linear-gradient(currentColor, currentColor); background-size: 0% 1px; background-repeat: no-repeat; background-position: 0 100%; transition: background-size 300ms ease; }
+  .link-grow:hover, .group:hover .link-grow { background-size: 100% 1px; }
+
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .pattern-drift { transform-origin: 60% 50%; animation: drift 60s linear infinite; }
+  @keyframes drift { to { transform: rotate(360deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise-word > span, .fade-in, .marquee-track, .pattern-drift { animation: none !important; }
+    .reveal[data-reveal="pending"] { opacity: 1; transform: none; }
   }
 }
 

@@ -1,10 +1,13 @@
 "use client";
 
+import { Check, Clock, Users } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { Band, PageHeader } from "@/components/ui/layout";
+import { Container, PageHeader } from "@/components/ui/layout";
 import { Reveal } from "@/components/ui/reveal";
 import { Button } from "@/components/ui/button";
+import { Pattern } from "@/components/art/Pattern";
 import ClosingCTA from "@/components/sections/ClosingCTA";
+import { cn } from "@/lib/utils";
 
 const programs = [
   {
@@ -145,6 +148,8 @@ const programs = [
   },
 ];
 
+const covers = ["orbits", "grid", "waves", "bars", "arcs", "rings"] as const;
+
 export default function ProgramsPage() {
   const { language } = useLanguage();
   const id = language === "id";
@@ -152,61 +157,71 @@ export default function ProgramsPage() {
   return (
     <>
       <PageHeader
+        crumbs={[{ href: "/programs", label: id ? "Program" : "Programs" }]}
         eyebrow={id ? "Program Unggulan" : "Flagship Programs"}
         title={id ? "Program Unggulan Kami" : "Our Flagship Programs"}
+        art={{ variant: "grid", seed: 19 }}
         lead={
           id
             ? "Program signature dengan dampak terukur untuk transformasi organisasi Anda."
             : "Signature programs with measurable impact for your organizational transformation."
         }
       >
-        <Button href="/info-pelatihan" variant="text">{id ? "Lihat jadwal pelatihan →" : "See training schedule →"}</Button>
+        <Button href="/info-pelatihan" size="lg" className="bg-paper text-petrol-900 hover:bg-petrol-50">
+          {id ? "Lihat jadwal pelatihan" : "See training schedule"}
+        </Button>
       </PageHeader>
 
       {programs.map((program, i) => (
-        <Band key={program.id} id={program.id} tone={i % 2 === 0 ? "paper" : "stone"}>
-          <Reveal>
-            <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
-              <div>
-                <p className="type-meta mb-4 flex items-center gap-3">
-                  <span className="text-sogan-600">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="text-petrol-600">{program.duration[language]}</span>
-                </p>
-                <h2 className="type-h2">{program.title[language]}</h2>
-                <p className="mt-5 text-[1.0625rem] leading-relaxed text-stone-700">{program.desc[language]}</p>
-
-                <dl className="mt-8 space-y-4 border-t border-ink pt-5 text-[0.9375rem]">
-                  <div className="flex gap-4">
-                    <dt className="type-meta w-28 shrink-0 pt-0.5 text-stone-700">{id ? "Peserta" : "Audience"}</dt>
-                    <dd className="text-ink">{program.audience[language]}</dd>
-                  </div>
-                  <div className="flex gap-4">
-                    <dt className="type-meta w-28 shrink-0 pt-0.5 text-stone-700">{id ? "Sorotan" : "Highlights"}</dt>
-                    <dd className="text-ink">{program.highlights.map((h) => h[language]).join(" · ")}</dd>
-                  </div>
-                </dl>
-
-                <Button href="/contact" variant="secondary" size="lg" className="mt-8 inline-block">
-                    {id ? "Daftar Sekarang" : "Register Now"}
-                  </Button>
-              </div>
-
-              <div>
-                <h3 className="type-meta mb-4 text-stone-700">{id ? "Yang akan Anda dapatkan" : "What you'll get"}</h3>
-                <ul className="border-t border-ink">
-                  {program.features[language].map((f, n) => (
-                    <li key={f} className="flex gap-4 border-b border-stone-200 py-4 text-[0.9375rem] text-ink">
-                      <span className="type-meta w-8 shrink-0 pt-0.5 !tracking-normal text-stone-700">
-                        {String(n + 1).padStart(2, "0")}
-                      </span>
-                      {f}
-                    </li>
+        <section key={program.id} id={program.id} className={cn("scroll-mt-20 py-20 md:py-28", i % 2 === 1 ? "bg-stone-100" : "bg-paper")}>
+          <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+            <Reveal className={cn(i % 2 === 1 && "lg:order-2")}>
+              <div className="group relative aspect-[5/4] overflow-hidden rounded-3xl bg-petrol-900">
+                <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+                  <Pattern variant={covers[i % covers.length]} seed={30 + i} tone="dark" animate />
+                </div>
+                <span className="absolute left-6 top-6 font-serif text-[5rem] leading-none text-transparent [-webkit-text-stroke:1px_#e2cdb0]">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="absolute inset-x-6 bottom-6 flex flex-wrap gap-2">
+                  {program.highlights.map((h) => (
+                    <span key={h.en} className="rounded-full bg-paper/95 px-3 py-1.5 text-xs font-medium text-petrol-900">
+                      {h[language]}
+                    </span>
                   ))}
-                </ul>
+                </div>
               </div>
-            </div>
-          </Reveal>
-        </Band>
+            </Reveal>
+            <Reveal delay={120}>
+              <h2 className="type-h1">{program.title[language]}</h2>
+              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[0.9375rem] text-stone-700">
+                <span className="flex items-center gap-2">
+                  <Clock aria-hidden className="size-4 text-petrol-600" />
+                  {program.duration[language]}
+                </span>
+                <span className="flex items-center gap-2">
+                  <Users aria-hidden className="size-4 text-petrol-600" />
+                  {program.audience[language]}
+                </span>
+              </div>
+              <p className="mt-6 text-lg leading-relaxed text-stone-700">{program.desc[language]}</p>
+              <h3 className="type-meta mb-4 mt-10 text-stone-700">{id ? "Yang akan Anda dapatkan" : "What you'll get"}</h3>
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {program.features[language].map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-[0.9375rem] text-ink">
+                    <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-petrol-600 text-paper">
+                      <Check aria-hidden className="size-3" />
+                    </span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Button href="/contact" variant="secondary" size="lg" className="mt-10">
+                {id ? "Daftar Sekarang" : "Register Now"}
+              </Button>
+            </Reveal>
+          </Container>
+        </section>
       ))}
 
       <ClosingCTA

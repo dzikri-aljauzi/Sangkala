@@ -45,7 +45,7 @@ function Column({ title, links, lang }: { title: string; links: FooterLink[]; la
       <ul className="space-y-3">
         {links.map((l) => (
           <li key={l.href}>
-            <Link href={l.href} className="text-[0.9375rem] text-petrol-200 transition-colors hover:text-paper hover:underline underline-offset-4">
+            <Link href={l.href} className="link-grow text-[0.9375rem] text-petrol-200 transition-colors hover:text-paper">
               {l.label[lang]}
             </Link>
           </li>
@@ -57,30 +57,41 @@ function Column({ title, links, lang }: { title: string; links: FooterLink[]; la
 
 export default function Footer() {
   const { language, t } = useLanguage();
+  const id = language === "id";
   const year = new Date().getFullYear();
 
   return (
-    <footer className="notranslate bg-petrol-900 text-paper">
-      <div className="mx-auto max-w-content px-5 pb-10 pt-16 md:px-8 lg:px-12 lg:pt-20">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(4,1fr)] lg:gap-10">
+    <footer className="notranslate relative overflow-hidden bg-petrol-900 text-paper">
+      <div className="mx-auto max-w-content px-5 pt-20 md:px-8 lg:px-12 lg:pt-28">
+        {/* Pernyataan besar + kontak langsung */}
+        <div className="grid gap-10 border-b border-petrol-800 pb-16 lg:grid-cols-[1.5fr_1fr] lg:items-end">
+          <p className="type-h1 max-w-[16ch] !text-paper">
+            {id ? "Mari bicara tentang tata kelola organisasi Anda." : "Let's talk about your organization's governance."}
+          </p>
+          <div className="space-y-3 lg:text-right">
+            <a href="mailto:hello@sangkala.example" className="link-grow inline-block font-serif text-2xl text-paper md:text-3xl">
+              hello@sangkala.example
+            </a>
+            <p className="text-petrol-300">+62 000 0000 0000 · Jakarta, Indonesia</p>
+            <p className="text-sm text-petrol-400">{id ? "(alamat fiktif untuk portofolio)" : "(fictional address, for portfolio)"}</p>
+          </div>
+        </div>
+
+        <div className="grid gap-12 py-16 lg:grid-cols-[1.4fr_repeat(4,1fr)] lg:gap-10">
           <div>
             <Link href="/" aria-label="Sangkala, beranda">
-              {/* Logo satu warna petrol; dirender putih di atas Petrol 900. */}
               <Logo className="h-9 brightness-0 invert" />
             </Link>
-            <p className="mt-6 max-w-xs text-[0.9375rem] leading-relaxed text-petrol-300">
-              {t("footer.tagline")}
-            </p>
-            <div className="mt-6 flex gap-4 text-petrol-300">
-              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="transition-colors hover:text-paper">
-                <Linkedin className="size-5" />
+            <p className="mt-6 max-w-xs text-[0.9375rem] leading-relaxed text-petrol-300">{t("footer.tagline")}</p>
+            <div className="mt-6 flex gap-3 text-petrol-200">
+              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="grid size-10 place-items-center rounded-full border border-petrol-700 transition-colors hover:border-paper hover:text-paper">
+                <Linkedin className="size-4" />
               </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="transition-colors hover:text-paper">
-                <Instagram className="size-5" />
+              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="grid size-10 place-items-center rounded-full border border-petrol-700 transition-colors hover:border-paper hover:text-paper">
+                <Instagram className="size-4" />
               </a>
             </div>
           </div>
-
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 lg:contents">
             <Column title={t("footer.links.services")} links={serviceLinks} lang={language} />
             <Column title={t("footer.links.industries")} links={industryLinks} lang={language} />
@@ -89,35 +100,24 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 grid gap-8 border-t border-petrol-800 pt-8 md:grid-cols-2">
-          <address className="not-italic text-[0.9375rem] leading-relaxed text-petrol-300">
-            <span className="type-meta mb-3 block text-sogan-200">{t("footer.links.contact")}</span>
-            Jakarta, Indonesia
-            <br />
-            <span className="text-petrol-400">(alamat fiktif untuk portofolio)</span>
-            <br />
-            <a href="mailto:hello@sangkala.example" className="hover:text-paper hover:underline underline-offset-4">
-              hello@sangkala.example
-            </a>
-            <br />
-            <a href="tel:+620000000000" className="hover:text-paper hover:underline underline-offset-4">
-              +62 000 0000 0000
-            </a>
-          </address>
-        </div>
-
-        <div className="mt-10 flex flex-col gap-4 border-t border-petrol-800 pt-6 text-sm text-petrol-300 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-t border-petrol-800 py-6 text-sm text-petrol-300 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {year} Sangkala. {t("footer.rights")}
           </p>
-          <Link
-            href="/admin/login"
-            className="inline-flex items-center gap-2 transition-colors hover:text-paper"
-          >
-            <Lock aria-hidden className="size-4" />
-            Portal Admin
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link href="/tentang-proyek" className="transition-colors hover:text-paper">
+              {id ? "Tentang proyek ini" : "About this project"}
+            </Link>
+            <Link href="/admin/login" className="inline-flex items-center gap-2 transition-colors hover:text-paper">
+              <Lock aria-hidden className="size-4" />
+              Portal Admin
+            </Link>
+          </div>
         </div>
+      </div>
+      {/* Wordmark raksasa sebagai penutup halaman */}
+      <div aria-hidden className="pointer-events-none mx-auto -mb-[4vw] max-w-content select-none px-5 md:px-8 lg:px-12">
+        <Logo className="!h-auto w-full opacity-[0.07] brightness-0 invert" />
       </div>
     </footer>
   );

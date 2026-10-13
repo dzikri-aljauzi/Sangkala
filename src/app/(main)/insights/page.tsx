@@ -23,10 +23,10 @@ export default function InsightsPage() {
   const featured = !selected ? visible.find((r) => r.isFeatured) : undefined;
   const rest = featured ? visible.filter((r) => r.id !== featured.id) : visible;
 
-  const card = (a: ArticleSummary, className?: string) => (
+  const card = (a: ArticleSummary, featuredCard?: boolean) => (
     <InsightCard
       key={a.id}
-      className={className}
+      featured={featuredCard}
       href={`/insights/${a.slug}`}
       title={id ? a.titleId : a.titleEn}
       summary={(id ? a.excerptId : a.excerptEn) ?? undefined}
@@ -49,6 +49,8 @@ export default function InsightsPage() {
   return (
     <>
       <PageHeader
+        crumbs={[{ href: "/insights", label: "Insight" }]}
+        art={{ variant: "arcs", seed: 27 }}
         eyebrow={t("insights.subtitle")}
         title={t("insights.title")}
         lead={
@@ -96,11 +98,9 @@ export default function InsightsPage() {
         ) : (
           <>
             {featured && (
-              <div className="mb-14 border-t border-ink pt-6 lg:grid lg:grid-cols-[1.2fr_1fr] lg:gap-12">
-                {card(featured, "!border-0 !pt-0 lg:col-span-2")}
-              </div>
+              <div className="mb-16">{card(featured, true)}</div>
             )}
-            <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-3">{rest.map((a) => card(a))}</div>
+            <div className="grid gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3">{rest.map((a) => card(a))}</div>
           </>
         )}
       </Band>

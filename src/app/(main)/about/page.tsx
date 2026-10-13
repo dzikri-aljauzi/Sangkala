@@ -1,10 +1,9 @@
 "use client";
 
 import { useLanguage } from "@/context/LanguageContext";
-import { Band, PageHeader } from "@/components/ui/layout";
-import { SectionIntro } from "@/components/ui/section-intro";
-import { IndexList } from "@/components/ui/index-list";
+import { Container, PageHeader } from "@/components/ui/layout";
 import { Reveal } from "@/components/ui/reveal";
+import { Pattern } from "@/components/art/Pattern";
 import ClosingCTA from "@/components/sections/ClosingCTA";
 import { Users, Cog, Cpu, Target, Award, Shield, CheckCircle } from "lucide-react";
 
@@ -79,6 +78,12 @@ const credentials = [
   { title: "BNSP Accredited", desc: { id: "Terakreditasi BNSP", en: "BNSP Accredited" } },
 ];
 
+const pillarArt = [
+  { variant: "orbits" as const, seed: 21 },
+  { variant: "grid" as const, seed: 8 },
+  { variant: "bars" as const, seed: 5 },
+];
+
 export default function AboutPage() {
   const { language } = useLanguage();
   const id = language === "id";
@@ -86,8 +91,10 @@ export default function AboutPage() {
   return (
     <>
       <PageHeader
+        crumbs={[{ href: "/about", label: id ? "Tentang" : "About" }]}
         eyebrow={id ? "Tentang Kami" : "About Us"}
         title={id ? "Integrator Ekosistem Kinerja Berkelanjutan" : "Sustainable Performance Ecosystem Integrator"}
+        art={{ variant: "rings", seed: 17 }}
         lead={
           id
             ? "Kami tidak hanya melatih atau mengaudit—kami mengintegrasikan people capability, process optimization, dan technology enablement menjadi satu ekosistem kinerja berkelanjutan yang terukur, compliant, dan adaptif."
@@ -95,50 +102,63 @@ export default function AboutPage() {
         }
       />
 
-      <Band>
-        <Reveal>
-          <SectionIntro
-            number="01"
-            eyebrow={id ? "Filosofi" : "Philosophy"}
-            title={id ? "Filosofi Kami" : "Our Philosophy"}
-            lead={
-              id
-                ? "Di era dinamika regulasi, Lifestyle customer, era sosial finance dan transformasi digital (AI, open banking, fintech disruption), organisasi membutuhkan lebih dari sekadar training ad-hoc atau konsultan yang hanya fokus satu dimensi."
-                : "In an era of regulatory dynamics, Lifestyle customers, the era of social finance and digital transformation (AI, open banking, fintech disruption), organizations need more than just ad-hoc training or one-dimensional consultants."
-            }
-          />
-          <p className="prose-width mb-8 text-lg text-stone-700">
-            {id
-              ? "Sangkala hadir sebagai integrator ekosistem kinerja yang menyatukan ketiga pilar fundamental:"
-              : "Sangkala serves as a performance ecosystem integrator that unifies three fundamental pillars:"}
-          </p>
-          <div className="grid gap-10 md:grid-cols-3">
-            {pillars.map((p) => (
-              <div key={p.title} className="border-t border-ink pt-5">
-                <h3 className="type-card mb-2">{p.title}</h3>
-                <p className="text-[0.9375rem] leading-relaxed text-stone-700">{p.desc[language]}</p>
-              </div>
+      {/* Filosofi */}
+      <section className="bg-paper py-24 md:py-32">
+        <Container>
+          <Reveal>
+            <p className="type-meta mb-8 flex items-center gap-3 text-petrol-600">
+              <span className="text-sogan-600">01</span> {id ? "Filosofi Kami" : "Our Philosophy"}
+            </p>
+            <p className="type-h1 max-w-[26ch]">
+              {id
+                ? "Organisasi membutuhkan lebih dari training ad-hoc atau konsultan yang hanya fokus satu dimensi."
+                : "Organizations need more than ad-hoc training or one-dimensional consultants."}
+            </p>
+            <p className="mt-8 max-w-[60ch] text-lg leading-relaxed text-stone-700">
+              {id
+                ? "Di era dinamika regulasi, Lifestyle customer, era sosial finance dan transformasi digital (AI, open banking, fintech disruption), Sangkala hadir sebagai integrator ekosistem kinerja yang menyatukan ketiga pilar fundamental:"
+                : "In an era of regulatory dynamics, Lifestyle customers, social finance and digital transformation (AI, open banking, fintech disruption), Sangkala serves as a performance ecosystem integrator that unifies three fundamental pillars:"}
+            </p>
+          </Reveal>
+          <div className="mt-14 grid gap-5 md:grid-cols-3">
+            {pillars.map((p, n) => (
+              <Reveal key={p.title} delay={n * 120}>
+                <article className="group h-full overflow-hidden rounded-2xl border border-stone-200 bg-paper transition-colors hover:border-petrol-300">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-petrol-900">
+                    <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+                      <Pattern variant={pillarArt[n].variant} seed={pillarArt[n].seed} tone="dark" />
+                    </div>
+                    <span className="absolute bottom-4 left-5 font-serif text-[2.25rem] italic text-paper">{p.title}</span>
+                  </div>
+                  <p className="p-6 text-[0.9375rem] leading-relaxed text-stone-700">{p.desc[language]}</p>
+                </article>
+              </Reveal>
             ))}
           </div>
-          <p className="mt-12 max-w-[68ch] border-l-2 border-sogan-600 pl-5 font-serif text-[1.25rem] leading-[1.7] text-ink">
-            {id
-              ? "Kami percaya kinerja berkelanjutan hanya tercapai bila ketiga pilar ini didesain, diimplementasikan, dan dimonitor sebagai satu sistem terintegrasi."
-              : "We believe sustainable performance is only achieved when these three pillars are designed, implemented, and monitored as one integrated system."}
-          </p>
-        </Reveal>
-      </Band>
+          <Reveal>
+            <blockquote className="mt-16 max-w-[48ch] border-l-2 border-sogan-600 pl-6 font-serif text-[1.5rem] leading-[1.6] text-ink md:text-[1.75rem]">
+              {id
+                ? "Kami percaya kinerja berkelanjutan hanya tercapai bila ketiga pilar ini didesain, diimplementasikan, dan dimonitor sebagai satu sistem terintegrasi."
+                : "We believe sustainable performance is only achieved when these three pillars are designed, implemented, and monitored as one integrated system."}
+            </blockquote>
+          </Reveal>
+        </Container>
+      </section>
 
-      {/* Konsep brand: satu-satunya tempat sogan tampil lebih dari detail kecil (BRAND.md) */}
-      <Band tone="stone">
-        <Reveal>
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
-            <SectionIntro
-              className="!mb-0"
-              number="02"
-              eyebrow={id ? "Nama kami" : "Our name"}
-              title={id ? "Sangkala, dari sengkalan" : "Sangkala, from sengkalan"}
-            />
-            <div className="space-y-5 text-lg leading-relaxed text-stone-700">
+      {/* Konsep brand: Sangkala dari sengkalan */}
+      <section className="relative isolate overflow-hidden bg-petrol-900 py-28 text-paper md:py-40">
+        <div aria-hidden className="absolute inset-0 -z-10 opacity-70 [mask-image:linear-gradient(to_left,black_30%,transparent_90%)]">
+          <Pattern variant="rings" seed={31} tone="dark" animate />
+        </div>
+        <Container>
+          <Reveal>
+            <p className="type-meta mb-8 flex items-center gap-3 text-sogan-200">
+              <span>02</span> {id ? "Nama kami" : "Our name"}
+            </p>
+            <h2 className="type-hero max-w-[12ch] !text-paper">
+              Sangkala, <span className="italic text-sogan-200">{id ? "dari sengkalan." : "from sengkalan."}</span>
+            </h2>
+            <div className="mt-12 grid max-w-[60rem] gap-8 text-lg leading-relaxed text-petrol-100 md:grid-cols-2">
               <p>
                 {id
                   ? "Sengkalan adalah rangkaian kata penanda tahun dalam tradisi Jawa: waktu yang dicatat dengan hati-hati, dalam bentuk yang bisa dibaca dan diperiksa ulang."
@@ -150,50 +170,73 @@ export default function AboutPage() {
                   : "That is our work too. We look after validity periods, time markers, and verifiable evidence, from training certificates to assessment results."}
               </p>
             </div>
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* Nilai */}
+      <section className="bg-stone-100 py-24 md:py-32">
+        <Container>
+          <Reveal>
+            <p className="type-meta mb-5 flex items-center gap-3 text-petrol-600">
+              <span className="text-sogan-600">03</span> {id ? "Prinsip Yang Kami Pegang" : "Principles We Uphold"}
+            </p>
+            <h2 className="type-display mb-14">{id ? "Nilai-Nilai Kami" : "Our Values"}</h2>
+          </Reveal>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {values.map((v, n) => {
+              const Icon = v.icon;
+              return (
+                <Reveal key={v.title.en} delay={n * 100}>
+                  <article className="group flex h-full flex-col rounded-2xl bg-paper p-7 transition-colors duration-300 hover:bg-petrol-900">
+                    <div className="flex items-start justify-between">
+                      <span className="font-serif text-[3.5rem] leading-none text-petrol-400 transition-colors group-hover:text-sogan-200">0{n + 1}</span>
+                      <Icon aria-hidden className="size-6 text-petrol-600 transition-colors group-hover:text-petrol-300" />
+                    </div>
+                    <h3 className="mt-10 font-serif text-[1.75rem] text-ink transition-colors group-hover:text-paper">{v.title[language]}</h3>
+                    <p className="mt-3 text-[0.9375rem] leading-relaxed text-stone-700 transition-colors group-hover:text-petrol-200">{v.desc[language]}</p>
+                  </article>
+                </Reveal>
+              );
+            })}
           </div>
-        </Reveal>
-      </Band>
+        </Container>
+      </section>
 
-      <Band>
-        <Reveal>
-          <SectionIntro
-            number="03"
-            eyebrow={id ? "Prinsip Yang Kami Pegang" : "Principles We Uphold"}
-            title={id ? "Nilai-Nilai Kami" : "Our Values"}
-          />
-          <IndexList
-            columns={1}
-            items={values.map((v) => ({ title: v.title[language], description: v.desc[language] }))}
-          />
-        </Reveal>
-      </Band>
-
-      <Band tone="stone">
-        <Reveal>
-          <SectionIntro
-            number="04"
-            eyebrow={id ? "Standar Kualitas Kami" : "Our Quality Standards"}
-            title={id ? "Apa yang Membedakan Kami?" : "What Makes Us Different?"}
-            lead={
-              id
-                ? "Bukan sekadar pelatihan—kami membangun performance DNA organisasi Anda."
-                : "Not just training—we build your organization's performance DNA."
-            }
-          />
-          <p className="prose-width mb-12 text-lg leading-relaxed text-stone-700">
-            {id
-              ? "Kompetitor umumnya menjual training terpisah atau konsultan proses atau IT implementation—Sangkala menawarkan orchestration ketiga pilar dengan framework terintegrasi. Positioning sebagai 'performance sustainability architect' bukan sekadar trainer/konsultan generik."
-              : "Competitors typically sell separate training or process consulting or IT implementation—Sangkala offers orchestration of all three pillars with an integrated framework. Positioned as a 'performance sustainability architect' not just a generic trainer/consultant."}
-          </p>
-          <h3 className="type-meta mb-4 text-stone-700">
-            {id ? "Kredensial & Sertifikasi" : "Credentials & Certifications"}
-          </h3>
-          <IndexList
-            columns={1}
-            items={credentials.map((c) => ({ title: c.title, description: c.desc[language] }))}
-          />
-        </Reveal>
-      </Band>
+      {/* Pembeda + kredensial */}
+      <section className="bg-paper py-24 md:py-32">
+        <Container className="grid gap-14 lg:grid-cols-[1.2fr_1fr] lg:gap-20">
+          <Reveal>
+            <p className="type-meta mb-5 flex items-center gap-3 text-petrol-600">
+              <span className="text-sogan-600">04</span> {id ? "Apa yang Membedakan Kami?" : "What Makes Us Different?"}
+            </p>
+            <p className="type-h1">
+              {id ? "Bukan sekadar pelatihan—kami membangun performance DNA organisasi Anda." : "Not just training—we build your organization's performance DNA."}
+            </p>
+            <p className="mt-8 text-lg leading-relaxed text-stone-700">
+              {id
+                ? "Kompetitor umumnya menjual training terpisah atau konsultan proses atau IT implementation—Sangkala menawarkan orchestration ketiga pilar dengan framework terintegrasi. Positioning sebagai 'performance sustainability architect' bukan sekadar trainer/konsultan generik."
+                : "Competitors typically sell separate training or process consulting or IT implementation—Sangkala offers orchestration of all three pillars with an integrated framework. Positioned as a 'performance sustainability architect' not just a generic trainer/consultant."}
+            </p>
+          </Reveal>
+          <Reveal delay={150}>
+            <h3 className="type-meta mb-6 text-stone-700">{id ? "Kredensial & Sertifikasi" : "Credentials & Certifications"}</h3>
+            <ul className="space-y-4">
+              {credentials.map((c) => (
+                <li key={c.title} className="flex items-center gap-5 rounded-2xl border border-stone-200 p-5 transition-colors hover:border-petrol-300">
+                  <span className="grid size-14 shrink-0 place-items-center rounded-full border-2 border-petrol-600 text-petrol-600">
+                    <Award aria-hidden className="size-6" />
+                  </span>
+                  <span>
+                    <span className="block font-serif text-[1.375rem] text-ink">{c.title}</span>
+                    <span className="block text-sm text-stone-700">{c.desc[language]}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </Container>
+      </section>
 
       <ClosingCTA />
     </>

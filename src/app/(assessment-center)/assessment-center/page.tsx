@@ -47,6 +47,8 @@ export default function AssessmentCenterPage() {
   return (
     <>
       <PageHeader
+        crumbs={[{ href: "/assessment-center", label: "Assessment Center" }]}
+        art={{ variant: "grid", seed: 33 }}
         eyebrow={t("assessmentCenter.subtitle")}
         title={t("assessmentCenter.title")}
         lead={t("assessmentCenter.pageDescription")}

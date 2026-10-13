@@ -31,7 +31,7 @@ export default function NewsArticlePage() {
 
   return (
     <>
-      <PageHeader eyebrow={t("newsArticle.subtitle")} title={t("newsArticle.title")} lead={t("newsArticle.description")} />
+      <PageHeader crumbs={[{ href: "/news-article", label: "News & Article" }]} art={{ variant: "waves", seed: 41 }} eyebrow={t("newsArticle.subtitle")} title={t("newsArticle.title")} lead={t("newsArticle.description")} />
 
       {loading ? (
         <Band>

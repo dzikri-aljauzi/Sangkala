@@ -181,3 +181,15 @@ export const methodologySteps = [
     },
   },
 ];
+
+/**
+ * Identitas pembuat untuk halaman /tentang-proyek. Isi untuk menampilkan nama
+ * dan tautan profil; kosongkan untuk menyembunyikannya.
+ */
+export const projectAuthor: { name: string; role: string; github: string; linkedin: string; email: string } = {
+  name: "",
+  role: "",
+  github: "",
+  linkedin: "",
+  email: "",
+};

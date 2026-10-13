@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/layout";
 import { AuthFields, AuthError } from "@/components/layout/AuthForm";
 import { cn } from "@/lib/utils";
+import { Pattern, hashSeed } from "@/components/art/Pattern";
 
 interface Assessment {
   id: string;
@@ -96,39 +97,45 @@ export default function AssessmentLoginPage({
 
   if (!assessment) {
     return (
-      <Container className="py-32">
-        <p role="status" className="text-stone-700">Memuat…</p>
-      </Container>
+      <div className="pt-header min-h-[70vh] bg-petrol-900">
+        <Container className="py-24">
+          <p role="status" className="text-petrol-200">Memuat…</p>
+        </Container>
+      </div>
     );
   }
 
   return (
-    <Container className="py-14 md:py-20">
-      <div className="mx-auto w-full max-w-md">
-        <button
-          type="button"
-          onClick={() => router.push("/assessment-center")}
-          className="mb-10 text-[0.9375rem] text-stone-700 transition-colors hover:text-petrol-600"
-        >
-          ← {t("assessmentCenter.listTitle")}
-        </button>
-
-        <div className="flex items-center gap-4">
+    <div className="grid min-h-screen lg:grid-cols-2">
+      <section className="pt-header relative isolate flex flex-col justify-end overflow-hidden bg-petrol-900 text-paper">
+        <div aria-hidden className="absolute inset-0 -z-10 opacity-80">
+          <Pattern variant="orbits" seed={hashSeed(assessment.name)} tone="dark" animate />
+        </div>
+        <div className="px-5 pb-12 pt-16 md:px-12 lg:pb-20">
+          <button
+            type="button"
+            onClick={() => router.push("/assessment-center")}
+            className="mb-12 text-[0.9375rem] text-petrol-200 transition-colors hover:text-paper"
+          >
+            ← {t("assessmentCenter.listTitle")}
+          </button>
           {assessment.clientLogo ? (
-            <div className="grid size-16 shrink-0 place-items-center rounded-lg border border-stone-200 bg-white p-2">
-              <Image src={assessment.clientLogo} alt={assessment.clientName} width={64} height={64} className="size-full object-contain" />
+            <div className="mb-8 grid size-20 place-items-center rounded-2xl bg-white p-3">
+              <Image src={assessment.clientLogo} alt={assessment.clientName} width={80} height={80} className="size-full object-contain" />
             </div>
           ) : (
-            <div className="grid size-16 shrink-0 place-items-center rounded-lg bg-petrol-900 font-serif text-2xl text-paper">
+            <div className="mb-8 grid size-20 place-items-center rounded-2xl border border-white/20 bg-petrol-800/60 font-serif text-4xl text-sogan-200 backdrop-blur-sm">
               {assessment.clientName.charAt(0)}
             </div>
           )}
-          <div className="min-w-0">
-            <p className="type-meta text-stone-700">{assessment.clientName}</p>
-            <h1 className="type-card mt-1">{assessment.name}</h1>
-          </div>
+          <p className="type-meta text-sogan-200">{assessment.clientName}</p>
+          <h1 className="type-h1 mt-4 max-w-[16ch] !text-paper">{assessment.name}</h1>
+          <p className="mt-6 max-w-md text-petrol-200">{t("assessmentCenter.subtitle")}</p>
         </div>
+      </section>
 
+    <div className="flex items-center bg-paper px-5 py-14 md:px-12 lg:pt-header">
+      <div className="mx-auto w-full max-w-md lg:pt-16">
         <fieldset className="mt-10">
           <legend className="type-meta mb-3 text-stone-700">Login sebagai</legend>
           <div role="radiogroup" className="flex gap-6 border-b border-stone-200">
@@ -175,6 +182,7 @@ export default function AssessmentLoginPage({
           </Button>
         </form>
       </div>
-    </Container>
+    </div>
+    </div>
   );
 }

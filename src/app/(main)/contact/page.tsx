@@ -113,6 +113,8 @@ ${formData.message}
   return (
     <>
       <PageHeader
+        crumbs={[{ href: "/contact", label: id ? "Kontak" : "Contact" }]}
+        art={{ variant: "waves", seed: 23 }}
         eyebrow={id ? "Hubungi Kami" : "Contact Us"}
         title={id ? "Siap Membangun Kinerja Berkelanjutan?" : "Ready to Build Sustainable Performance?"}
         lead={

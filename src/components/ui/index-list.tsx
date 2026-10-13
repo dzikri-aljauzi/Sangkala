@@ -36,7 +36,7 @@ function Row({ item, index, onDark }: { item: IndexItem; index: number; onDark: 
       <span className="min-w-0 flex-1">
         <span
           className={cn(
-            "block text-lg font-medium transition-colors",
+            "block text-lg font-medium transition-[color,transform] duration-300 group-hover:translate-x-1",
             onDark ? "text-paper" : "text-ink",
             item.href && (onDark ? "group-hover:text-petrol-300" : "group-hover:text-petrol-600")
           )}
@@ -70,8 +70,9 @@ function Row({ item, index, onDark }: { item: IndexItem; index: number; onDark: 
   );
 
   const rowClass = cn(
-    "group flex items-start gap-4 border-b py-5 min-h-16",
-    onDark ? "border-petrol-800" : "border-stone-200"
+    "group -mx-3 flex min-h-16 items-start gap-4 rounded-lg border-b px-3 py-5 transition-colors duration-300",
+    onDark ? "border-petrol-800" : "border-stone-200",
+    item.href && (onDark ? "hover:bg-white/5" : "hover:bg-petrol-50")
   );
 
   return item.href ? (

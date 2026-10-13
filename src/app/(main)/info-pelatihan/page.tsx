@@ -64,7 +64,7 @@ export default function InfoPelatihanPage() {
   return (
     <>
       <div className="notranslate">
-        <PageHeader eyebrow="Training" title={t("nav.infoPelatihan")} lead="Jadwal pelatihan dan program pengembangan" />
+        <PageHeader crumbs={[{ href: "/programs", label: "Program" }, { href: "/info-pelatihan", label: t("nav.infoPelatihan") }]} art={{ variant: "bars", seed: 44 }} eyebrow="Training" title={t("nav.infoPelatihan")} lead="Jadwal pelatihan dan program pengembangan" />
       </div>
 
       <Band>
@@ -115,14 +115,24 @@ export default function InfoPelatihanPage() {
                 <li key={tr.id} className="border-b border-stone-200">
                   <Link
                     href={`/info-pelatihan/${tr.id}`}
-                    className="group grid gap-x-8 gap-y-3 py-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petrol-600 md:grid-cols-[13rem_1fr_11rem]"
+                    className="group -mx-3 grid gap-x-8 gap-y-4 rounded-2xl px-3 py-7 transition-colors duration-300 hover:bg-petrol-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petrol-600 md:grid-cols-[6rem_1fr_11rem] md:items-start"
                   >
-                    <p className="notranslate type-meta !tracking-normal text-stone-700 md:pt-1.5">
-                      {formatTrainingDateRange(tr.startDate, tr.endDate, language === "en" ? "en-US" : "id-ID")}
-                    </p>
+                    {(() => {
+                      const d = new Date(tr.startDate);
+                      const loc = language === "en" ? "en-US" : "id-ID";
+                      return (
+                        <div className="notranslate flex w-20 flex-col items-center overflow-hidden rounded-xl border border-stone-200 bg-paper text-center transition-colors group-hover:border-petrol-600">
+                          <span className="type-meta w-full bg-petrol-900 py-1 !tracking-widest text-sogan-200">{d.toLocaleDateString(loc, { month: "short" })}</span>
+                          <span className="py-1 font-serif text-[2rem] leading-none text-ink">{d.toLocaleDateString(loc, { day: "2-digit" })}</span>
+                          <span className="pb-1.5 font-mono text-[0.6875rem] text-stone-700">{d.getFullYear()}</span>
+                        </div>
+                      );
+                    })()}
                     <div className="min-w-0">
                       <h2 className="type-card transition-colors group-hover:text-petrol-600">{tr.title}</h2>
-                      <p className="notranslate mt-1 text-sm text-stone-700">{tr.location}</p>
+                      <p className="notranslate mt-1 text-sm text-stone-700">
+                        {formatTrainingDateRange(tr.startDate, tr.endDate, language === "en" ? "en-US" : "id-ID")} · {tr.location}
+                      </p>
                       <p className="mt-2 line-clamp-2 text-[0.9375rem] leading-relaxed text-stone-700">{tr.description}</p>
                     </div>
                     <div className="notranslate flex items-start justify-between gap-4 md:flex-col md:items-end md:text-right">

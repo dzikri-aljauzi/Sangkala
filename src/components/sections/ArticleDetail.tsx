@@ -6,6 +6,8 @@ import { useParams } from "next/navigation";
 import { ArrowLeft, Link2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Container } from "@/components/ui/layout";
+import { Pattern, hashSeed } from "@/components/art/Pattern";
+import { RiseText } from "@/components/motion/RiseText";
 import { Button } from "@/components/ui/button";
 import { articleImageUrl, categoryLabel, formatDate, readTime, type ArticleSummary } from "@/lib/articles";
 
@@ -56,22 +58,26 @@ export default function ArticleDetail({ backHref, backLabel }: { backHref: strin
 
   if (state === "loading") {
     return (
-      <Container className="py-32">
-        <p role="status" className="text-stone-700">{id ? "Memuat…" : "Loading…"}</p>
-      </Container>
+      <div className="pt-header min-h-[70vh] bg-petrol-900">
+        <Container className="py-24">
+          <p role="status" className="text-petrol-200">{id ? "Memuat…" : "Loading…"}</p>
+        </Container>
+      </div>
     );
   }
 
   if (state === "error" || !article) {
     return (
+      <div className="pt-header bg-petrol-900 text-paper">
       <Container className="py-24 md:py-32">
-        <p className="type-meta mb-4 text-petrol-600">404</p>
-        <h1 className="type-h1 mb-4">{id ? "Artikel tidak ditemukan" : "Article not found"}</h1>
-        <p className="prose-width mb-8 text-lg text-stone-700">
+        <p className="type-meta mb-4 text-sogan-200">404</p>
+        <h1 className="type-h1 mb-4 !text-paper">{id ? "Artikel tidak ditemukan" : "Article not found"}</h1>
+        <p className="prose-width mb-8 text-lg text-petrol-200">
           {id ? "Artikel yang Anda cari tidak tersedia." : "The article you're looking for is not available."}
         </p>
-        <Button href={backHref} variant="secondary" size="lg">← {backLabel[language]}</Button>
+        <Button href={backHref} variant="secondary" size="lg" className="border-paper/50 text-paper hover:bg-paper/10">← {backLabel[language]}</Button>
       </Container>
+      </div>
     );
   }
 
@@ -89,19 +95,27 @@ export default function ArticleDetail({ backHref, backLabel }: { backHref: strin
 
   return (
     <article>
-      <header className="border-b border-stone-200 pb-12 pt-10 md:pb-16 md:pt-14">
-        <Container>
-          <Link href={backHref} className="mb-10 inline-flex items-center gap-2 text-[0.9375rem] text-stone-700 transition-colors hover:text-petrol-600">
+      <header className="pt-header relative isolate overflow-hidden bg-petrol-900 text-paper">
+        <div aria-hidden className="absolute inset-y-0 right-0 -z-10 w-full opacity-70 [mask-image:linear-gradient(to_left,black_30%,transparent_90%)] lg:w-[65%]">
+          <Pattern variant={(["orbits", "waves", "grid", "bars", "arcs", "rings"] as const)[hashSeed(title) % 6]} seed={hashSeed(title)} tone="dark" animate />
+        </div>
+        <Container className="pb-16 pt-12 md:pb-24 md:pt-16">
+          <Link href={backHref} className="mb-10 inline-flex items-center gap-2 text-[0.9375rem] text-petrol-200 transition-colors hover:text-paper">
             <ArrowLeft aria-hidden className="size-4" />
             {backLabel[language]}
           </Link>
-          <p className="type-meta mb-5 text-petrol-600">{meta}</p>
-          <h1 className="type-h1 max-w-[24ch] md:max-w-[28ch]">{title}</h1>
-          {excerpt && <p className="type-lead prose-width mt-6">{excerpt}</p>}
-          <p className="mt-8 text-[0.9375rem] text-stone-700">
+          <p className="type-meta mb-6 text-sogan-200">{meta}</p>
+          <h1 className="type-h1 max-w-[22ch] !text-paper">
+            <RiseText text={title} />
+          </h1>
+          {excerpt && <p className="type-lead fade-in mt-8 max-w-[56ch] !text-petrol-200" style={{ ["--d" as string]: "400ms" }}>{excerpt}</p>}
+          <p className="mt-10 flex items-center gap-3 text-[0.9375rem] text-petrol-200">
+            <span className="grid size-10 place-items-center rounded-full bg-petrol-700 font-serif text-paper">{article.authorName.charAt(0)}</span>
+            <span>
             {id ? "Oleh " : "By "}
-            <span className="font-medium text-ink">{article.authorName}</span>
+            <span className="font-medium text-paper">{article.authorName}</span>
             {article.authorPosition && `, ${article.authorPosition}`}
+            </span>
           </p>
         </Container>
       </header>
