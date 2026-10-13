@@ -66,7 +66,7 @@ export default function PlatformShowcase() {
               <p className="type-meta mb-5 flex items-center gap-3 text-petrol-600">
                 <span className="text-sogan-600">04</span> Platform
               </p>
-              <h2 className="type-display max-w-[20ch]">{id ? "Bukan hanya saran. Kami menjalankan perangkat lunaknya." : "Not just advice. We run the software."}</h2>
+              <h2 className="type-h1 max-w-[22ch]">{id ? "Bukan hanya saran. Kami menjalankan perangkat lunaknya." : "Not just advice. We run the software."}</h2>
             </div>
             <p className="type-lead max-w-[34rem]">
               {id
