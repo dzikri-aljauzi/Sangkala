@@ -40,7 +40,7 @@ export function InsightCard({
             <Image src={image} alt={imageAlt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
           </div>
         )}
-        {meta && <p className="type-meta mb-3 text-stone-600">{meta}</p>}
+        {meta && <p className="type-meta mb-3 text-stone-700">{meta}</p>}
         <h3 className="type-card line-clamp-3 transition-colors group-hover:text-petrol-600">{title}</h3>
         {summary && (
           <p className="mt-3 line-clamp-2 text-[0.9375rem] leading-relaxed text-stone-700">{summary}</p>

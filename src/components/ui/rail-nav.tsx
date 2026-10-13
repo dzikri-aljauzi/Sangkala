@@ -36,7 +36,7 @@ export function RailNav({ items, className }: { items: RailItem[]; className?: s
 
   return (
     <nav aria-label="Di halaman ini" className={cn("lg:sticky lg:top-24", className)}>
-      <p className="type-meta mb-4 hidden text-stone-600 lg:block">Di halaman ini</p>
+      <p className="type-meta mb-4 hidden text-stone-700 lg:block">Di halaman ini</p>
       <ul className="-mx-5 flex gap-6 overflow-x-auto border-b border-stone-200 px-5 lg:mx-0 lg:block lg:space-y-1 lg:overflow-visible lg:border-0 lg:px-0">
         {items.map((item) => {
           const isActive = item.id === active;
@@ -50,7 +50,7 @@ export function RailNav({ items, className }: { items: RailItem[]; className?: s
                   "border-b-2 lg:border-b-0",
                   isActive
                     ? "border-petrol-600 font-medium text-ink"
-                    : "border-transparent text-stone-600 hover:text-ink"
+                    : "border-transparent text-stone-700 hover:text-ink"
                 )}
               >
                 {item.label}

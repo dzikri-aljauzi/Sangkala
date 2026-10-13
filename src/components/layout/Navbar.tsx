@@ -67,7 +67,7 @@ function LanguageToggle({ className }: { className?: string }) {
             aria-pressed={language === l}
             className={cn(
               "type-meta !tracking-wider px-1 py-0.5 transition-colors",
-              language === l ? "text-ink underline underline-offset-4 decoration-petrol-600" : "text-stone-600 hover:text-ink"
+              language === l ? "text-ink underline underline-offset-4 decoration-petrol-600" : "text-stone-700 hover:text-ink"
             )}
           >
             {l}
@@ -239,7 +239,7 @@ export default function Navbar() {
                 {navGroups.map((g, i) => (
                   <li key={g.href} className="border-b border-stone-200 py-4">
                     <div className="flex items-baseline gap-4">
-                      <span className="type-meta w-8 shrink-0 !tracking-normal text-stone-600">
+                      <span className="type-meta w-8 shrink-0 !tracking-normal text-stone-700">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <div className="flex-1">

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { Band } from "@/components/ui/layout";
 import { SectionIntro } from "@/components/ui/section-intro";
@@ -40,11 +39,9 @@ export default function PillarsOverview() {
                 columns={1}
                 items={[0, 1, 2].map((n) => ({ title: t(`services.${p.key}.items.${n}.title`) }))}
               />
-              <Link href={`/services#${p.anchor}`} className="mt-5 inline-block">
-                <Button variant="text" size="sm">
+              <Button href={`/services#${p.anchor}`} variant="text" size="sm" className="mt-5 inline-block">
                   {id ? "Lihat layanan →" : "View services →"}
                 </Button>
-              </Link>
             </div>
           ))}
         </div>

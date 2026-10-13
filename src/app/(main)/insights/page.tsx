@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { Band, PageHeader } from "@/components/ui/layout";
 import { InsightCard } from "@/components/ui/insight-card";
@@ -74,7 +73,7 @@ export default function InsightsPage() {
                   active ? "border-petrol-600 font-medium text-ink" : "border-transparent text-stone-700 hover:text-ink"
                 )}
               >
-                {tab.label} <span className="type-meta ml-1 !tracking-normal text-stone-600">{tab.count}</span>
+                {tab.label} <span className="type-meta ml-1 !tracking-normal text-stone-700">{tab.count}</span>
               </button>
             );
           })}
@@ -92,9 +91,7 @@ export default function InsightsPage() {
                 ? "Konten sedang disiapkan. Hubungi kami jika Anda membutuhkan materi tertentu."
                 : "Content is being prepared. Contact us if you need specific materials."}
             </p>
-            <Link href="/contact">
-              <Button variant="secondary" size="lg">{id ? "Hubungi Kami" : "Contact Us"}</Button>
-            </Link>
+            <Button href="/contact" variant="secondary" size="lg">{id ? "Hubungi Kami" : "Contact Us"}</Button>
           </div>
         ) : (
           <>

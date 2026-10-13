@@ -24,7 +24,7 @@ function renderContent(content: string): ReactNode[] {
     if (p.startsWith("### ")) return <h3 key={i} className="type-h3 mb-3 mt-8">{p.slice(4)}</h3>;
     if (p.includes("\n- ")) {
       return (
-        <ul key={i} className="my-6 list-disc space-y-2 pl-6 marker:text-stone-600">
+        <ul key={i} className="my-6 list-disc space-y-2 pl-6 marker:text-stone-700">
           {p.split("\n- ").filter(Boolean).map((it, n) => <li key={n}>{inline(it.replace(/^- /, ""))}</li>)}
         </ul>
       );
@@ -70,9 +70,7 @@ export default function ArticleDetail({ backHref, backLabel }: { backHref: strin
         <p className="prose-width mb-8 text-lg text-stone-700">
           {id ? "Artikel yang Anda cari tidak tersedia." : "The article you're looking for is not available."}
         </p>
-        <Link href={backHref}>
-          <Button variant="secondary" size="lg">← {backLabel[language]}</Button>
-        </Link>
+        <Button href={backHref} variant="secondary" size="lg">← {backLabel[language]}</Button>
       </Container>
     );
   }
@@ -135,9 +133,7 @@ export default function ArticleDetail({ backHref, backLabel }: { backHref: strin
             {id ? "Salin tautan" : "Copy link"}
             <span role="status" className="text-petrol-600">{copied ? (id ? "· Tautan disalin" : "· Link copied") : ""}</span>
           </button>
-          <Link href={backHref}>
-            <Button variant="text">{id ? "Lihat artikel lainnya →" : "View more articles →"}</Button>
-          </Link>
+          <Button href={backHref} variant="text">{id ? "Lihat artikel lainnya →" : "View more articles →"}</Button>
         </div>
       </Container>
     </article>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { Band } from "@/components/ui/layout";
 import { SectionIntro } from "@/components/ui/section-intro";
@@ -51,9 +50,7 @@ export default function InsightsTeaser() {
           />
         ))}
       </div>
-      <Link href="/insights" className="mt-10 inline-block">
-        <Button variant="text">{id ? "Semua insight →" : "All insights →"}</Button>
-      </Link>
+      <Button href="/insights" variant="text" className="mt-10 inline-block">{id ? "Semua insight →" : "All insights →"}</Button>
     </Band>
   );
 }

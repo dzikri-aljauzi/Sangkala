@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { Container, PageHeader } from "@/components/ui/layout";
 import { SectionIntro } from "@/components/ui/section-intro";
@@ -54,11 +53,9 @@ export default function IndustriesPage() {
                         </li>
                       ))}
                     </ul>
-                    <Link href="/contact" className="mt-6 inline-block">
-                      <Button variant="secondary" size="lg">
+                    <Button href="/contact" variant="secondary" size="lg" className="mt-6 inline-block">
                         {id ? "Diskusikan Kebutuhan Anda" : "Discuss Your Needs"}
                       </Button>
-                    </Link>
                   </div>
                   <div>
                     <h3 className="type-meta mb-4 text-stone-700">

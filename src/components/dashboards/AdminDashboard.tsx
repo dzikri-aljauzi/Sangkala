@@ -619,17 +619,18 @@ function StatsCard({
   color: string;
 }) {
   const colors: Record<string, string> = {
-    blue: "bg-petrol-500",
-    green: "bg-green-500",
-    purple: "bg-purple-500",
-    orange: "bg-orange-500",
+    // Ubin statistik hanya hiasan: satu hue (BRAND.md). Warna lain milik status.
+    blue: "bg-petrol-600",
+    green: "bg-petrol-600",
+    purple: "bg-petrol-600",
+    orange: "bg-petrol-600",
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl border border-stone-200 p-6 hover:shadow-lg transition-shadow"
+      className="bg-white rounded-xl border border-stone-200 p-6 hover:border-petrol-300 transition-colors"
     >
       <div className="flex items-center justify-between mb-4">
         <div
@@ -1877,7 +1878,7 @@ function ResumeBatchAdminView({
   };
 
   const renderCard = (doc: ResumeItem) => (
-    <div key={doc.id} className={`bg-white rounded-lg border ${selectedDocs.includes(doc.id) ? "border-petrol-400 ring-1 ring-petrol-400" : "border-stone-200"} p-4 hover:shadow-md transition-all relative group w-full`}>
+    <div key={doc.id} className={`bg-white rounded-lg border ${selectedDocs.includes(doc.id) ? "border-petrol-400 ring-1 ring-petrol-400" : "border-stone-200"} p-4 hover:border-petrol-300 transition-all relative group w-full`}>
       <div className="absolute top-4 left-4 z-10">
         <input type="checkbox" className="w-4 h-4 rounded border-stone-300 text-petrol-600 focus:ring-petrol-500 cursor-pointer" checked={selectedDocs.includes(doc.id)} onChange={() => handleToggleSelect(doc.id)} />
       </div>
@@ -1955,7 +1956,7 @@ function ResumeBatchAdminView({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {batchEselonGrouped.map((eg) => (
-              <motion.button key={eg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => setSelectedEchelonId(eg.id)} className="bg-white rounded-xl border border-stone-200 p-6 text-left hover:shadow-lg hover:border-purple-300 transition-all group">
+              <motion.button key={eg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => setSelectedEchelonId(eg.id)} className="bg-white rounded-xl border border-stone-200 p-6 text-left hover:border-purple-300 transition-all group">
                 <div className="flex items-center gap-4"><div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors"><Layers className="w-6 h-6 text-purple-600" /></div><div><p className="font-semibold text-stone-900">{eg.name}</p><p className="text-sm text-stone-500">{eg.resumes.length} file</p></div></div>
               </motion.button>
             ))}

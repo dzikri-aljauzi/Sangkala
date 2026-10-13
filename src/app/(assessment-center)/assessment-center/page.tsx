@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
-import { Section } from "@/components/ui/section";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { FileText, Users, Calendar } from "lucide-react";
+import { Band, PageHeader } from "@/components/ui/layout";
 
 interface Assessment {
   id: string;
@@ -49,140 +46,54 @@ export default function AssessmentCenterPage() {
 
   return (
     <>
-      {/* Hero Section */}
-      <Section className="pt-32 pb-16 bg-petrol-50">
-        <div className="text-center max-w-3xl mx-auto">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold text-stone-900 mb-4"
-          >
-            {t("assessmentCenter.title")}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-lg text-stone-600"
-          >
-            {t("assessmentCenter.pageDescription")}
-          </motion.p>
-        </div>
-      </Section>
+      <PageHeader
+        eyebrow={t("assessmentCenter.subtitle")}
+        title={t("assessmentCenter.title")}
+        lead={t("assessmentCenter.pageDescription")}
+      />
 
-      {/* Assessment List Section */}
-      <Section className="py-16">
-        <div className="mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-stone-900 mb-2">
-            {t("assessmentCenter.listTitle")}
-          </h2>
-          <p className="text-stone-600">
-            {t("assessmentCenter.selectAssessment")}
-          </p>
-        </div>
+      <Band>
+        <h2 className="type-meta mb-2 text-stone-700">{t("assessmentCenter.listTitle")}</h2>
+        <p className="mb-8 text-stone-700">{t("assessmentCenter.selectAssessment")}</p>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="bg-white rounded-xl border border-stone-200 p-6 animate-pulse"
-              >
-                <div className="h-16 w-16 bg-stone-200 rounded-lg mb-4"></div>
-                <div className="h-6 bg-stone-200 rounded mb-3"></div>
-                <div className="h-4 bg-stone-200 rounded mb-2"></div>
-                <div className="h-4 bg-stone-200 rounded w-2/3"></div>
-              </div>
-            ))}
-          </div>
+          <p role="status" className="text-stone-700">Memuat…</p>
         ) : assessments.length === 0 ? (
-          <div className="text-center py-16">
-            <FileText className="w-16 h-16 text-stone-300 mx-auto mb-4" />
-            <p className="text-stone-500 text-lg">
-              {t("assessmentCenter.noAssessments")}
-            </p>
-          </div>
+          <p className="border-t border-ink pt-6 text-lg text-stone-700">{t("assessmentCenter.noAssessments")}</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {assessments.map((assessment, index) => (
-              <motion.div
-                key={assessment.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
+          <ul className="border-t border-ink">
+            {assessments.map((a) => (
+              <li key={a.id} className="border-b border-stone-200">
                 <Link
-                  href={`/assessment-center/${assessment.id}/login`}
-                  className="block bg-white rounded-xl border border-stone-200 hover:border-petrol-300 hover:shadow-lg transition-all duration-300 overflow-hidden group"
+                  href={`/assessment-center/${a.id}/login`}
+                  className="group flex items-center gap-5 py-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-petrol-600"
                 >
-                  <div className="p-6">
-                    {/* Logo */}
-                    <div
-                      className={`flex items-center justify-center h-20 w-20 rounded-lg mb-4 group-hover:scale-110 transition-transform ${
-                        assessment.clientLogo
-                          ? "bg-white border border-stone-200"
-                          : "bg-petrol-500"
-                      }`}
-                    >
-                      {assessment.clientLogo ? (
-                        <Image
-                          src={assessment.clientLogo}
-                          alt={assessment.clientName}
-                          width={80}
-                          height={80}
-                          className="object-contain p-2"
-                        />
-                      ) : (
-                        <FileText className="w-10 h-10 text-white" />
-                      )}
+                  {a.clientLogo ? (
+                    <div className="grid size-14 shrink-0 place-items-center rounded-lg border border-stone-200 bg-white p-1.5">
+                      <Image src={a.clientLogo} alt={a.clientName} width={56} height={56} className="size-full object-contain" />
                     </div>
-
-                    {/* Content */}
-                    <h3 className="text-xl font-bold text-stone-900 mb-2 group-hover:text-petrol-600 transition-colors">
-                      {assessment.name}
-                    </h3>
-                    <p className="text-sm text-stone-600 mb-1">
-                      {assessment.clientName}
-                    </p>
-                    {assessment.description && (
-                      <p className="text-sm text-stone-500 mb-4 line-clamp-2">
-                        {assessment.description}
-                      </p>
-                    )}
-
-                    {/* Stats */}
-                    <div className="flex items-center gap-4 pt-4 border-t border-stone-100">
-                      <div className="flex items-center gap-1 text-sm text-stone-600">
-                        <Users className="w-4 h-4" />
-                        <span>{assessment._count.users}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-sm text-stone-600">
-                        <FileText className="w-4 h-4" />
-                        <span>{assessment._count.documents}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-sm text-stone-600">
-                        <Calendar className="w-4 h-4" />
-                        <span className="text-xs">
-                          {new Date(assessment.createdAt).toLocaleDateString(
-                            "id-ID"
-                          )}
-                        </span>
-                      </div>
+                  ) : (
+                    <div className="grid size-14 shrink-0 place-items-center rounded-lg bg-petrol-900 font-serif text-xl text-paper">
+                      {a.clientName.charAt(0)}
                     </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="type-meta text-stone-700">{a.clientName}</p>
+                    <h3 className="type-card mt-1 transition-colors group-hover:text-petrol-600">{a.name}</h3>
+                    {a.description && <p className="mt-1 line-clamp-1 text-[0.9375rem] text-stone-700">{a.description}</p>}
                   </div>
-
-                  {/* Login Indicator */}
-                  <div className="px-6 py-3 bg-petrol-500 group-hover:bg-petrol-700 transition-all">
-                    <p className="text-white text-sm font-medium text-center">
-                      {t("assessmentCenter.login")} →
-                    </p>
-                  </div>
+                  <p className="type-meta hidden shrink-0 !tracking-normal text-stone-700 md:block">
+                    {a._count.users} user · {a._count.documents} dok · {new Date(a.createdAt).toLocaleDateString("id-ID")}
+                  </p>
+                  <span className="shrink-0 text-[0.9375rem] font-semibold text-petrol-600">
+                    {t("assessmentCenter.login")} →
+                  </span>
                 </Link>
-              </motion.div>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
-      </Section>
+      </Band>
     </>
   );
 }

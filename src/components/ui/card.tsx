@@ -14,7 +14,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       default: "bg-white rounded-xl",
       glass: "bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl",
       bordered: "bg-white border-2 border-petrol-500/10 rounded-xl",
-      elevated: "bg-white rounded-xl shadow-xl",
+      elevated: "bg-white rounded-xl border border-stone-200",
     };
 
     return (
@@ -22,7 +22,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         className={cn(
           variants[variant],
-          hover && "transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
+          hover && "transition-colors duration-150 hover:border-petrol-300",
           className
         )}
         {...props}

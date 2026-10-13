@@ -28,7 +28,7 @@ function Row({ item, index, onDark }: { item: IndexItem; index: number; onDark: 
       <span
         className={cn(
           "type-meta w-12 shrink-0 pt-1 !tracking-normal",
-          onDark ? "text-sogan-200" : "text-stone-600"
+          onDark ? "text-sogan-200" : "text-stone-700"
         )}
       >
         {number}
@@ -55,14 +55,14 @@ function Row({ item, index, onDark }: { item: IndexItem; index: number; onDark: 
         )}
       </span>
       {item.meta && (
-        <span className="type-meta hidden shrink-0 pt-1.5 text-stone-600 sm:block">{item.meta}</span>
+        <span className="type-meta hidden shrink-0 pt-1.5 text-stone-700 sm:block">{item.meta}</span>
       )}
       {item.href && (
         <ArrowRight
           aria-hidden
           className={cn(
             "mt-1.5 size-5 shrink-0 transition-transform group-hover:translate-x-1",
-            onDark ? "text-petrol-300" : "text-stone-600"
+            onDark ? "text-petrol-300" : "text-stone-700"
           )}
         />
       )}

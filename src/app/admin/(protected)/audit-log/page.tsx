@@ -814,7 +814,7 @@ export default function AdminAuditLogPage() {
                   key={user.id}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-xl border border-stone-200 p-5 space-y-4 hover:shadow-md hover:border-petrol-300 transition-all flex flex-col justify-between"
+                  className="bg-white rounded-xl border border-stone-200 p-5 space-y-4 hover:border-petrol-300 transition-all flex flex-col justify-between"
                 >
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">

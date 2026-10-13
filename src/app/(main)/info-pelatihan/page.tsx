@@ -70,7 +70,7 @@ export default function InfoPelatihanPage() {
       <Band>
         <div className="notranslate mb-10 flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative max-w-xl flex-1">
-            <Search aria-hidden className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-stone-600" />
+            <Search aria-hidden className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-stone-700" />
             <input
               type="search"
               aria-label="Cari pelatihan"

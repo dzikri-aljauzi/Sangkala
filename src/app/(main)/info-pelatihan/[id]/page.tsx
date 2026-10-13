@@ -188,12 +188,10 @@ export default function DetailPelatihanPage() {
       <Band>
         <div className="max-w-xl">
           <p className="type-h2 mb-6">{t("trainingDetail.notFound")}</p>
-          <Link href="/info-pelatihan">
-            <Button variant="secondary" size="lg">
+          <Button href="/info-pelatihan" variant="secondary" size="lg">
               <ArrowLeft aria-hidden className="size-4" />
               {t("trainingDetail.back")}
             </Button>
-          </Link>
         </div>
       </Band>
     );

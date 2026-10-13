@@ -372,10 +372,10 @@ Halaman publik paling sensitif soal kepercayaan.
   tidak boleh hanya dibedakan warna
 - Data sertifikat sebagai daftar definisi dua kolom: nama, program,
   tanggal terbit, masa berlaku, nomor (Mono)
-- Lini waktu `Terbit → Refreshment I → Refreshment II → Kedaluwarsa`
+- Lini waktu masa berlaku **tidak** ditampilkan: model `Certificate` publik hanya menyimpan tanggal terbit. Data kedaluwarsa dan refreshment ada di `CertificationHolder` (admin), bukan di halaman verifikasi. Tambahkan lini waktu hanya bila datanya tersedia di sana
   dengan posisi saat ini
 - Hash verifikasi dalam Mono di bawah, kecil
-- Dua halaman verifikasi hardcoded dipindah ke template `[id]` yang sama
+- Dua halaman verifikasi statis tetap ada sebagai rute (QR cetak mungkin sudah menautkannya) tetapi dirender lewat `VerifyView` yang sama dengan `/verify/[id]`. Halaman `/verify` menerima kode verifikasi
 
 ### Assessment Center dan Admin
 
@@ -447,3 +447,34 @@ dipakai dialog yang dibagi dengan admin.
 - [ ] Setiap angka bukti punya sumber
 - [ ] Kontras teks lolos 4,5 (lihat tabel pasangan warna di `BRAND.md`)
 - [ ] Layout benar di 390px tanpa scroll horizontal
+
+---
+
+## Status Implementasi
+
+Semua fase 0–6 sudah dikerjakan pada branch pengerjaan. Ringkasan dan keputusan
+yang menyimpang dari rencana awal:
+
+| Fase | Status | Catatan |
+|---|---|---|
+| 0 | Selesai | Token `type-*`, Plex Serif, `SectionIntro`, `IndexList`, `InsightCard`, `RailNav`, `Reveal`, `Container`/`Band`/`PageHeader`, `Field` |
+| 1 | Selesai | Header 5 item dengan dropdown, baris utilitas, menu mobile berupa indeks, footer Petrol 900 |
+| 2 | Selesai | Beranda, Layanan, Industri, Tentang, Metodologi, Program, Kontak |
+| 3 | Selesai | Insight, News & Article, `ArticleDetail` bersama, Info Pelatihan (daftar dan detail) |
+| 4 | Selesai | `VerifyView`, `/verify`, daftar penerima |
+| 5 | Selesai (token) | Halaman masuk dan daftar Assessment Center ditulis ulang; struktur dashboard tidak diubah |
+| 6 | Selesai (token) | Hover kartu tanpa bayangan, ubin statistik satu hue, halaman login admin |
+
+**Penyimpangan dari rencana**
+
+- `Button` menerima `href` dan merender `<a>` langsung. Pola lama `<Link><Button/></Link>` menghasilkan `<button>` di dalam `<a>`. Kode publik baru memakai `<Button href>`
+- Kelas `type-*` dipakai alih-alih utilitas `text-*` karena ukuran mobile dan desktop berbeda
+- Angka di beranda (100+, 15.000+, 99%, ISO 9001) tetap ditampilkan dengan catatan "Angka ilustrasi untuk portofolio". Klien dan testimoni tetap berlabel fiktif. Aturan "tanpa sumber tidak ditampilkan" berlaku untuk situs sungguhan
+- Halaman Tentang memuat bagian "Sangkala, dari sengkalan" (konsep brand dari `BRAND.md`), satu-satunya tempat sogan dipakai lebih dari detail kecil
+- Dihapus: `ui/animated.tsx`, `ui/section.tsx` (tidak dipakai), form newsletter tanpa handler, peta Google ke alamat fiktif, tautan `/privacy` dan `/terms` yang tidak punya halaman
+- Warna pembeda jenis data di dashboard (ungu untuk eselon, oranye untuk dokumentasi) dibiarkan karena berfungsi sebagai penanda kategori. Keputusan lanjutan: seragamkan atau pertahankan
+
+**Terverifikasi** pada 15 halaman publik di 1440px dan 390px: tanpa scroll horizontal,
+nol pelanggaran WCAG 2.1 AA pada pemeriksaan otomatis (axe-core), dropdown dan menu mobile
+bisa dioperasikan keyboard (Escape menutup), bahasa ID/EN berganti, dan dialog registrasi
+memvalidasi bukti bayar.

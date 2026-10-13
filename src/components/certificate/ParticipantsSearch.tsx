@@ -33,7 +33,7 @@ export default function ParticipantsSearch({ participants }: ParticipantsSearchP
           </p>
         </div>
         <div className="relative w-full sm:w-72">
-          <Search aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-stone-600" />
+          <Search aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-stone-700" />
           <input
             type="search"
             aria-label="Cari nama peserta"

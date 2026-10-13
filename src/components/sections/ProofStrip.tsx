@@ -26,7 +26,7 @@ export default function ProofStrip() {
             </div>
           ))}
         </dl>
-        <p className="type-meta mt-8 text-stone-600">
+        <p className="type-meta mt-8 text-stone-700">
           {language === "id" ? "Angka ilustrasi untuk portofolio" : "Illustrative figures for portfolio"}
         </p>
       </Container>

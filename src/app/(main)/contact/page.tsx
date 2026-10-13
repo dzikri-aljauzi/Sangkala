@@ -165,19 +165,19 @@ ${formData.message}
               <h2 className="type-meta mb-4 text-stone-700">{id ? "Kontak langsung" : "Direct contact"}</h2>
               <ul className="space-y-4 border-t border-ink pt-5 text-[0.9375rem] text-ink">
                 <li className="flex gap-3">
-                  <Mail aria-hidden className="mt-0.5 size-5 shrink-0 text-stone-600" />
+                  <Mail aria-hidden className="mt-0.5 size-5 shrink-0 text-stone-700" />
                   <a href="mailto:hello@sangkala.example" className="break-all underline-offset-4 hover:text-petrol-600 hover:underline">
                     hello@sangkala.example
                   </a>
                 </li>
                 <li className="flex gap-3">
-                  <Phone aria-hidden className="mt-0.5 size-5 shrink-0 text-stone-600" />
+                  <Phone aria-hidden className="mt-0.5 size-5 shrink-0 text-stone-700" />
                   <a href="tel:+620000000000" className="underline-offset-4 hover:text-petrol-600 hover:underline">
                     +62 000 0000 0000
                   </a>
                 </li>
                 <li className="flex gap-3">
-                  <MapPin aria-hidden className="mt-0.5 size-5 shrink-0 text-stone-600" />
+                  <MapPin aria-hidden className="mt-0.5 size-5 shrink-0 text-stone-700" />
                   <span>
                     Kantor Sangkala, Jakarta, Indonesia
                     <br />

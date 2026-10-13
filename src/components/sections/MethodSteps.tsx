@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { Band } from "@/components/ui/layout";
 import { SectionIntro } from "@/components/ui/section-intro";
@@ -39,9 +38,7 @@ export default function MethodSteps() {
             </li>
           ))}
         </ol>
-        <Link href="/methodology" className="mt-10 inline-block">
-          <Button variant="text">{id ? "Pelajari metodologi →" : "Explore the methodology →"}</Button>
-        </Link>
+        <Button href="/methodology" variant="text" className="mt-10 inline-block">{id ? "Pelajari metodologi →" : "Explore the methodology →"}</Button>
       </Reveal>
     </Band>
   );

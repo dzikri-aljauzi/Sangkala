@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { Band } from "@/components/ui/layout";
 import { Button } from "@/components/ui/button";
@@ -28,14 +27,10 @@ export default function ClosingCTA({
               : "Free 30-minute consultation to discuss your organization's transformation needs.")}
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-          <Link href="/contact">
-            <Button size="lg">{id ? "Jadwalkan Konsultasi" : "Schedule Consultation"}</Button>
-          </Link>
-          <Link href="/programs">
-            <Button variant="text" size="lg">
+          <Button href="/contact" size="lg">{id ? "Jadwalkan Konsultasi" : "Schedule Consultation"}</Button>
+          <Button href="/programs" variant="text" size="lg">
               {id ? "Lihat program kami →" : "View our programs →"}
             </Button>
-          </Link>
         </div>
       </div>
     </Band>

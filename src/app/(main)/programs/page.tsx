@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { Band, PageHeader } from "@/components/ui/layout";
 import { Reveal } from "@/components/ui/reveal";
@@ -161,9 +160,7 @@ export default function ProgramsPage() {
             : "Signature programs with measurable impact for your organizational transformation."
         }
       >
-        <Link href="/info-pelatihan">
-          <Button variant="text">{id ? "Lihat jadwal pelatihan →" : "See training schedule →"}</Button>
-        </Link>
+        <Button href="/info-pelatihan" variant="text">{id ? "Lihat jadwal pelatihan →" : "See training schedule →"}</Button>
       </PageHeader>
 
       {programs.map((program, i) => (
@@ -189,11 +186,9 @@ export default function ProgramsPage() {
                   </div>
                 </dl>
 
-                <Link href="/contact" className="mt-8 inline-block">
-                  <Button variant="secondary" size="lg">
+                <Button href="/contact" variant="secondary" size="lg" className="mt-8 inline-block">
                     {id ? "Daftar Sekarang" : "Register Now"}
                   </Button>
-                </Link>
               </div>
 
               <div>
@@ -201,7 +196,7 @@ export default function ProgramsPage() {
                 <ul className="border-t border-ink">
                   {program.features[language].map((f, n) => (
                     <li key={f} className="flex gap-4 border-b border-stone-200 py-4 text-[0.9375rem] text-ink">
-                      <span className="type-meta w-8 shrink-0 pt-0.5 !tracking-normal text-stone-600">
+                      <span className="type-meta w-8 shrink-0 pt-0.5 !tracking-normal text-stone-700">
                         {String(n + 1).padStart(2, "0")}
                       </span>
                       {f}
