@@ -1,204 +1,122 @@
 "use client";
 
 import Link from "next/link";
+import { Linkedin, Instagram, Lock } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { useLanguage } from "@/context/LanguageContext";
-import { Button } from "@/components/ui/button";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Linkedin,
-  Instagram,
-  Lock,
-} from "lucide-react";
 
-const quickLinks = [
-  { href: "/about", key: "nav.about" },
-  { href: "/services", key: "nav.services" },
-  { href: "/programs", key: "nav.programs" },
-  { href: "/methodology", key: "nav.methodology" },
-  { href: "/insights", key: "nav.insights" },
-  { href: "/news-article", key: "nav.newsArticle" },
-];
+type Lang = "id" | "en";
+interface FooterLink {
+  href: string;
+  label: Record<Lang, string>;
+}
 
-const serviceLinks = [
+const serviceLinks: FooterLink[] = [
   { href: "/services#people", label: { id: "People Excellence", en: "People Excellence" } },
   { href: "/services#process", label: { id: "Process Optimization", en: "Process Optimization" } },
   { href: "/services#technology", label: { id: "Technology Enablement", en: "Technology Enablement" } },
+  { href: "/methodology", label: { id: "Metodologi", en: "Methodology" } },
 ];
 
-const industryLinks = [
+const industryLinks: FooterLink[] = [
   { href: "/industries#banking", label: { id: "Perbankan", en: "Banking" } },
   { href: "/industries#soe", label: { id: "BUMN", en: "SOE" } },
   { href: "/industries#fintech", label: { id: "Fintech", en: "Fintech" } },
 ];
 
+const companyLinks: FooterLink[] = [
+  { href: "/about", label: { id: "Tentang Kami", en: "About Us" } },
+  { href: "/programs", label: { id: "Program", en: "Programs" } },
+  { href: "/insights", label: { id: "Insight", en: "Insights" } },
+  { href: "/news-article", label: { id: "News & Article", en: "News & Articles" } },
+  { href: "/contact", label: { id: "Kontak", en: "Contact" } },
+];
+
+const platformLinks: FooterLink[] = [
+  { href: "/verify", label: { id: "Verifikasi Sertifikat", en: "Verify Certificate" } },
+  { href: "/assessment-center", label: { id: "Assessment Center", en: "Assessment Center" } },
+  { href: "/info-pelatihan", label: { id: "Info Pelatihan", en: "Training Info" } },
+];
+
+function Column({ title, links, lang }: { title: string; links: FooterLink[]; lang: Lang }) {
+  return (
+    <div>
+      <h2 className="type-meta mb-5 text-sogan-200">{title}</h2>
+      <ul className="space-y-3">
+        {links.map((l) => (
+          <li key={l.href}>
+            <Link href={l.href} className="text-[0.9375rem] text-petrol-200 transition-colors hover:text-paper hover:underline underline-offset-4">
+              {l.label[lang]}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function Footer() {
   const { language, t } = useLanguage();
-  const currentYear = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="notranslate bg-white border-t border-stone-100">
-      {/* CTA Section */}
-      <div className="border-b border-stone-100">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 md:py-16">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-5 sm:gap-6 text-center md:text-left">
-            <div>
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-stone-800 mb-1 sm:mb-2">
-                {t("footer.cta")}
-              </h3>
-              <p className="text-sm sm:text-base text-stone-500">{t("footer.tagline")}</p>
-            </div>
-            <Link href="/contact" className="w-full md:w-auto">
-              <Button variant="gold" size="lg" className="shadow-lg w-full md:w-auto justify-center">
-                {t("nav.cta")}
-              </Button>
+    <footer className="notranslate bg-petrol-900 text-paper">
+      <div className="mx-auto max-w-content px-5 pb-10 pt-16 md:px-8 lg:px-12 lg:pt-20">
+        <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(4,1fr)] lg:gap-10">
+          <div>
+            <Link href="/" aria-label="Sangkala, beranda">
+              {/* Logo satu warna petrol; dirender putih di atas Petrol 900. */}
+              <Logo className="h-9 brightness-0 invert" />
             </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Footer */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 md:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-10">
-          {/* Brand Column */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-2 mb-4 lg:mb-0">
-            <Link href="/" className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <Logo className="h-9" />
-            </Link>
-            <p className="text-sm sm:text-base text-stone-500 mb-5 sm:mb-6 max-w-sm">
-              {language === "id"
-                ? "Sustainable Performance through Integrated People, Process, Technology Excellence. People · Process · Technology – Engineered for Resilient Growth."
-                : "Sustainable Performance through Integrated People, Process, Technology Excellence. People · Process · Technology – Engineered for Resilient Growth."}
+            <p className="mt-6 max-w-xs text-[0.9375rem] leading-relaxed text-petrol-300">
+              {t("footer.tagline")}
             </p>
-            <div className="flex gap-3">
-              <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-petrol-600 hover:text-white transition-colors"
-              >
-                <Linkedin className="w-4 h-4 sm:w-5 sm:h-5" />
+            <div className="mt-6 flex gap-4 text-petrol-300">
+              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="transition-colors hover:text-paper">
+                <Linkedin className="size-5" />
               </a>
-              <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 hover:bg-pink-500 hover:text-white transition-colors"
-              >
-                <Instagram className="w-4 h-4 sm:w-5 sm:h-5" />
+              <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="transition-colors hover:text-paper">
+                <Instagram className="size-5" />
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-semibold text-sm sm:text-base text-stone-800 mb-3 sm:mb-4">{t("footer.links.quickLinks")}</h4>
-            <ul className="space-y-2 sm:space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-xs sm:text-sm text-stone-500 hover:text-petrol-600 transition-colors"
-                  >
-                    {t(link.key)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h4 className="font-semibold text-sm sm:text-base text-stone-800 mb-3 sm:mb-4">{t("footer.links.services")}</h4>
-            <ul className="space-y-2 sm:space-y-3">
-              {serviceLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-xs sm:text-sm text-stone-500 hover:text-petrol-600 transition-colors"
-                  >
-                    {link.label[language]}
-                  </Link>
-                </li>
-              ))}
-              {industryLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-xs sm:text-sm text-stone-500 hover:text-petrol-600 transition-colors"
-                  >
-                    {link.label[language]}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div className="col-span-2 sm:col-span-1">
-            <h4 className="font-semibold text-sm sm:text-base text-stone-800 mb-3 sm:mb-4">{t("footer.links.contact")}</h4>
-            <ul className="space-y-3 sm:space-y-4">
-              <li className="flex items-start gap-2.5 sm:gap-3">
-                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-petrol-500 flex-shrink-0 mt-0.5" />
-                <span className="text-xs sm:text-sm text-stone-500">
-                  Jakarta, Indonesia<br />
-                  (alamat fiktif untuk portofolio)
-                </span>
-              </li>
-              <li className="flex items-center gap-2.5 sm:gap-3">
-                <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-petrol-500 flex-shrink-0" />
-                <a
-                  href="tel:+620000000000"
-                  className="text-xs sm:text-sm text-stone-500 hover:text-petrol-600 transition-colors"
-                >
-                  +62 000 0000 0000
-                </a>
-              </li>
-              <li className="flex items-start gap-2.5 sm:gap-3">
-                <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-petrol-500 flex-shrink-0 mt-0.5" />
-                <a
-                  href="mailto:hello@sangkala.example"
-                  className="text-xs sm:text-sm text-stone-500 hover:text-petrol-600 transition-colors break-all sm:break-normal"
-                >
-                  hello@sangkala.example
-                </a>
-              </li>
-            </ul>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 lg:contents">
+            <Column title={t("footer.links.services")} links={serviceLinks} lang={language} />
+            <Column title={t("footer.links.industries")} links={industryLinks} lang={language} />
+            <Column title={t("footer.links.company")} links={companyLinks} lang={language} />
+            <Column title={t("footer.links.platform")} links={platformLinks} lang={language} />
           </div>
         </div>
-      </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-stone-100 bg-stone-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-            <p className="text-stone-500 text-xs sm:text-sm text-center sm:text-left">
-              © {currentYear} Sangkala. {t("footer.rights")}
-            </p>
-            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-4 sm:gap-6 text-xs sm:text-sm">
-              <Link
-                href="/privacy"
-                className="text-stone-500 hover:text-petrol-600 transition-colors"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                href="/terms"
-                className="text-stone-500 hover:text-petrol-600 transition-colors"
-              >
-                Terms of Service
-              </Link>
-              <Link
-                href="/admin/login"
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium text-stone-600 bg-white border border-stone-200 hover:border-petrol-300 hover:text-petrol-600 hover:bg-petrol-50/50 shadow-xs transition-all"
-              >
-                <Lock className="w-4 h-4 text-stone-400" />
-                Portal Admin
-              </Link>
-            </div>
-          </div>
+        <div className="mt-14 grid gap-8 border-t border-petrol-800 pt-8 md:grid-cols-2">
+          <address className="not-italic text-[0.9375rem] leading-relaxed text-petrol-300">
+            <span className="type-meta mb-3 block text-sogan-200">{t("footer.links.contact")}</span>
+            Jakarta, Indonesia
+            <br />
+            <span className="text-petrol-400">(alamat fiktif untuk portofolio)</span>
+            <br />
+            <a href="mailto:hello@sangkala.example" className="hover:text-paper hover:underline underline-offset-4">
+              hello@sangkala.example
+            </a>
+            <br />
+            <a href="tel:+620000000000" className="hover:text-paper hover:underline underline-offset-4">
+              +62 000 0000 0000
+            </a>
+          </address>
+        </div>
+
+        <div className="mt-10 flex flex-col gap-4 border-t border-petrol-800 pt-6 text-sm text-petrol-300 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year} Sangkala. {t("footer.rights")}
+          </p>
+          <Link
+            href="/admin/login"
+            className="inline-flex items-center gap-2 transition-colors hover:text-paper"
+          >
+            <Lock aria-hidden className="size-4" />
+            Portal Admin
+          </Link>
         </div>
       </div>
     </footer>

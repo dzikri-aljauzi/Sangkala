@@ -9,7 +9,7 @@ export default function MainLayout({
   return (
     <>
       <Navbar />
-      <main className="min-h-screen">{children}</main>
+      <main id="konten" className="min-h-screen">{children}</main>
       <Footer />
     </>
   );

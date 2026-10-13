@@ -15,6 +15,12 @@ export const translations = {
     newsArticle: { id: "News & Article", en: "News & Article" },
     contact: { id: "Kontak", en: "Contact" },
     cta: { id: "Daftar Sekarang", en: "Register Now" },
+    contactUs: { id: "Hubungi Kami", en: "Contact Us" },
+    verify: { id: "Verifikasi Sertifikat", en: "Verify Certificate" },
+    portal: { id: "Portal", en: "Portal" },
+    menu: { id: "Menu", en: "Menu" },
+    close: { id: "Tutup", en: "Close" },
+    skip: { id: "Lewati ke konten", en: "Skip to content" },
   },
 
   // Hero Section
@@ -396,6 +402,9 @@ export const translations = {
       quickLinks: { id: "Link Cepat", en: "Quick Links" },
       services: { id: "Layanan", en: "Services" },
       contact: { id: "Kontak", en: "Contact" },
+      company: { id: "Perusahaan", en: "Company" },
+      industries: { id: "Industri", en: "Industries" },
+      platform: { id: "Platform", en: "Platform" },
     },
     cta: { id: "Siap membangun kinerja berkelanjutan? Hubungi kami hari ini.", en: "Ready to build sustainable performance? Contact us today." },
     copyright: { id: "Hak Cipta", en: "Copyright" },

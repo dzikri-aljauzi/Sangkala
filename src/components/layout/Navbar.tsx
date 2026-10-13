@@ -2,271 +2,295 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Logo } from "@/components/brand/Logo";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Globe, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, ArrowRight } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 import { useLanguage } from "@/context/LanguageContext";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// Main nav links (without dropdowns)
-const mainNavLinks = [
-  { href: "/", key: "nav.home" },
-  { href: "/about", key: "nav.about" },
-  { href: "/services", key: "nav.services" },
-  { href: "/industries", key: "nav.industries" },
+type Lang = "id" | "en";
+interface NavItem {
+  href: string;
+  label: Record<Lang, string>;
+}
+interface NavGroup extends NavItem {
+  /** Jika ada, grup tampil sebagai dropdown dan `href` jadi item pertamanya. */
+  children?: NavItem[];
+}
+
+// Lima item utama (DESIGN.md). Halaman lain dicapai lewat dropdown dan footer.
+const navGroups: NavGroup[] = [
+  {
+    href: "/services",
+    label: { id: "Layanan", en: "Services" },
+    children: [
+      { href: "/services", label: { id: "Layanan Kami", en: "Our Services" } },
+      { href: "/methodology", label: { id: "Metodologi", en: "Methodology" } },
+    ],
+  },
+  { href: "/industries", label: { id: "Industri", en: "Industries" } },
+  {
+    href: "/programs",
+    label: { id: "Program", en: "Programs" },
+    children: [
+      { href: "/programs", label: { id: "Program Kami", en: "Our Programs" } },
+      { href: "/info-pelatihan", label: { id: "Info Pelatihan", en: "Training Info" } },
+      { href: "/assessment-center", label: { id: "Assessment Center", en: "Assessment Center" } },
+    ],
+  },
+  {
+    href: "/insights",
+    label: { id: "Insight", en: "Insights" },
+    children: [
+      { href: "/insights", label: { id: "Insight & Whitepaper", en: "Insights & Whitepapers" } },
+      { href: "/news-article", label: { id: "News & Article", en: "News & Articles" } },
+    ],
+  },
+  { href: "/about", label: { id: "Tentang", en: "About" } },
 ];
 
-// Program dropdown items
-const programDropdown = {
-  label: { id: "Program", en: "Programs" },
-  items: [
-    { href: "/programs", key: "nav.programs", label: { id: "Program Kami", en: "Our Programs" } },
-    { href: "/assessment-center", key: "nav.assessmentCenter", label: { id: "Assessment Center", en: "Assessment Center" } },
-    { href: "/info-pelatihan", key: "nav.infoPelatihan", label: { id: "Info Pelatihan", en: "Training Info" } },
-  ],
-};
+function isActive(pathname: string, item: NavGroup) {
+  const hrefs = [item.href, ...(item.children?.map((c) => c.href) ?? [])];
+  return hrefs.some((h) => pathname === h || pathname.startsWith(h + "/"));
+}
 
-// End nav links (after dropdowns)
-const endNavLinks = [
-  { href: "/methodology", key: "nav.methodology" },
-  { href: "/insights", key: "nav.insights" },
-  { href: "/news-article", key: "nav.newsArticle" },
-  { href: "/contact", key: "nav.contact" },
-];
+function LanguageToggle({ className }: { className?: string }) {
+  const { language, setLanguage } = useLanguage();
+  return (
+    <div className={cn("flex items-center gap-1 text-xs", className)} role="group" aria-label="Bahasa / Language">
+      {(["id", "en"] as const).map((l, i) => (
+        <span key={l} className="flex items-center gap-1">
+          {i > 0 && <span aria-hidden className="text-stone-400">/</span>}
+          <button
+            type="button"
+            onClick={() => setLanguage(l)}
+            aria-pressed={language === l}
+            className={cn(
+              "type-meta !tracking-wider px-1 py-0.5 transition-colors",
+              language === l ? "text-ink underline underline-offset-4 decoration-petrol-600" : "text-stone-600 hover:text-ink"
+            )}
+          >
+            {l}
+          </button>
+        </span>
+      ))}
+    </div>
+  );
+}
 
-// All links for mobile menu
-const allMobileLinks = [
-  { href: "/", key: "nav.home" },
-  { href: "/about", key: "nav.about" },
-  { href: "/services", key: "nav.services" },
-  { href: "/industries", key: "nav.industries" },
-  { href: "/programs", key: "nav.programs" },
-  { href: "/assessment-center", key: "nav.assessmentCenter" },
-  { href: "/info-pelatihan", key: "nav.infoPelatihan" },
-  { href: "/methodology", key: "nav.methodology" },
-  { href: "/insights", key: "nav.insights" },
-  { href: "/news-article", key: "nav.newsArticle" },
-  { href: "/contact", key: "nav.contact" },
-];
+/** Baris utilitas: fungsi khas Sangkala yang bukan navigasi utama. Hanya desktop. */
+function UtilityBar() {
+  const { t } = useLanguage();
+  return (
+    <div className="notranslate hidden border-b border-stone-200 bg-stone-100 lg:block">
+      <div className="mx-auto flex h-8 max-w-content items-center justify-end gap-6 px-12 text-xs text-stone-700">
+        <Link href="/verify" className="transition-colors hover:text-petrol-600">
+          {t("nav.verify")}
+        </Link>
+        <Link href="/assessment-center" className="transition-colors hover:text-petrol-600">
+          {t("nav.portal")}
+        </Link>
+        <span aria-hidden className="h-3 w-px bg-stone-200" />
+        <LanguageToggle />
+      </div>
+    </div>
+  );
+}
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const { language, setLanguage, t } = useLanguage();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const { language, t } = useLanguage();
   const pathname = usePathname();
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
+
+  // Tutup menu saat pindah halaman.
+  useEffect(() => {
+    setMobileOpen(false);
+    setOpenGroup(null);
+  }, [pathname]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
     };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [mobileOpen]);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-  }, [isOpen]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setOpenDropdown(null);
+    const onDown = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenGroup(null);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenGroup(null);
+        setMobileOpen(false);
       }
     };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
   }, []);
 
-  const toggleLanguage = () => {
-    setLanguage(language === "id" ? "en" : "id");
-  };
-
-  const toggleDropdown = (name: string) => {
-    setOpenDropdown(openDropdown === name ? null : name);
-  };
-
-  const isDropdownActive = (items: typeof programDropdown.items) => {
-    return items.some(item => pathname === item.href);
-  };
-
   return (
-    <header
-      className={cn(
-        "notranslate fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-stone-100"
-          : "bg-white/80 backdrop-blur-sm"
-      )}
-    >
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 lg:h-20">
-          {/* Logo */}
-          <Link href="/" className="relative z-50 flex items-center gap-2 sm:gap-3">
+    <>
+      <a
+        href="#konten"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-petrol-600 focus:px-4 focus:py-2 focus:text-white"
+      >
+        {t("nav.skip")}
+      </a>
+      <UtilityBar />
+      <header className="notranslate sticky top-0 z-50 border-b border-stone-200 bg-paper">
+        <nav
+          aria-label="Utama"
+          className="mx-auto flex h-16 max-w-content items-center justify-between px-5 md:px-8 lg:h-[72px] lg:px-12"
+        >
+          <Link href="/" aria-label="Sangkala, beranda" className="shrink-0">
             <Logo className="h-8 lg:h-9" priority />
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-0.5" ref={dropdownRef}>
-            {/* Main Links */}
-            {mainNavLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "px-2 py-1.5 text-xs 2xl:text-sm font-medium rounded-lg transition-all duration-200",
-                  pathname === link.href
-                    ? "text-petrol-600 bg-petrol-50"
-                    : "text-stone-600 hover:text-petrol-600 hover:bg-stone-50"
-                )}
-              >
-                {t(link.key)}
-              </Link>
-            ))}
-
-            {/* Program Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => toggleDropdown("program")}
-                className={cn(
-                  "flex items-center gap-1 px-2 py-1.5 text-xs 2xl:text-sm font-medium rounded-lg transition-all duration-200",
-                  isDropdownActive(programDropdown.items)
-                    ? "text-petrol-600 bg-petrol-50"
-                    : "text-stone-600 hover:text-petrol-600 hover:bg-stone-50"
-                )}
-              >
-                {programDropdown.label[language]}
-                <ChevronDown className={cn(
-                  "w-4 h-4 transition-transform duration-200",
-                  openDropdown === "program" && "rotate-180"
-                )} />
-              </button>
-
-              <AnimatePresence>
-                {openDropdown === "program" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-lg border border-stone-100 overflow-hidden z-50"
-                  >
-                    {programDropdown.items.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setOpenDropdown(null)}
-                        className={cn(
-                          "block px-4 py-3 text-sm font-medium transition-all duration-200",
-                          pathname === item.href
-                            ? "text-petrol-600 bg-petrol-50"
-                            : "text-stone-600 hover:text-petrol-600 hover:bg-stone-50"
-                        )}
-                      >
-                        {item.label[language]}
-                      </Link>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* End Nav Links (Methodology, Insight, News & Article, Contact) */}
-            {endNavLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "px-2 py-1.5 text-xs 2xl:text-sm font-medium rounded-lg transition-all duration-200",
-                  pathname === link.href
-                    ? "text-petrol-600 bg-petrol-50"
-                    : "text-stone-600 hover:text-petrol-600 hover:bg-stone-50"
-                )}
-              >
-                {t(link.key)}
-              </Link>
-            ))}
-          </div>
-
-          {/* Right Section */}
-          <div className="flex items-center gap-3 relative z-50">
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all text-stone-600 hover:bg-stone-50 hover:text-petrol-600"
-            >
-              <Globe className="w-4 h-4" />
-              <span className="uppercase">{language}</span>
-            </button>
-
-            {/* CTA Button */}
-            <Link href="/contact" className="hidden md:block">
-              <Button variant="primary" size="sm">
-                {t("nav.cta")}
-              </Button>
-            </Link>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 rounded-lg transition-colors text-stone-700 hover:bg-stone-100"
-            >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="lg:hidden absolute top-full left-0 right-0 w-full h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-5rem)] bg-white border-t border-stone-100 shadow-xl z-40 overflow-y-auto overflow-x-hidden will-change-[transform,opacity]"
-          >
-            <div className="container mx-auto px-4 py-6 sm:py-8 pb-12">
-              <div className="flex flex-col gap-2">
-                {allMobileLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className={cn(
-                      "block px-4 py-3 text-lg font-medium rounded-lg transition-all duration-150",
-                      pathname === link.href
-                        ? "text-[#0d5c63] bg-[#0d5c63]/10"
-                        : "text-[#2c312f] hover:text-[#0d5c63] hover:bg-[#0d5c63]/5"
-                    )}
-                  >
-                    {t(link.key)}
+          {/* Desktop */}
+          <div ref={navRef} className="hidden items-stretch gap-1 self-stretch lg:flex">
+            {navGroups.map((g) => {
+              const active = isActive(pathname, g);
+              const open = openGroup === g.href;
+              const base =
+                "relative flex items-center gap-1 px-4 text-[0.9375rem] font-medium transition-colors";
+              const state = active ? "text-ink" : "text-stone-700 hover:text-petrol-600";
+              const underline = active && (
+                <span aria-hidden className="absolute inset-x-4 bottom-0 h-0.5 bg-petrol-600" />
+              );
+              if (!g.children) {
+                return (
+                  <Link key={g.href} href={g.href} aria-current={active ? "page" : undefined} className={cn(base, state)}>
+                    {g.label[language]}
+                    {underline}
                   </Link>
-                ))}
-              </div>
+                );
+              }
+              return (
+                <div key={g.href} className="relative flex">
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    aria-haspopup="true"
+                    onClick={() => setOpenGroup(open ? null : g.href)}
+                    className={cn(base, state)}
+                  >
+                    {g.label[language]}
+                    <ChevronDown aria-hidden className={cn("size-4 transition-transform", open && "rotate-180")} />
+                    {underline}
+                  </button>
+                  {open && (
+                    <ul className="absolute left-0 top-full z-50 w-64 border border-stone-200 bg-paper py-2 shadow-md">
+                      {g.children.map((c) => (
+                        <li key={c.href}>
+                          <Link
+                            href={c.href}
+                            className={cn(
+                              "block px-5 py-2.5 text-[0.9375rem] transition-colors hover:bg-stone-100 hover:text-petrol-600",
+                              pathname === c.href ? "text-ink font-medium" : "text-stone-700"
+                            )}
+                          >
+                            {c.label[language]}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
-              <div className="mt-6 sm:mt-8 pb-6">
-                <Link href="/contact" onClick={() => setIsOpen(false)}>
-                  <Button variant="primary" size="lg" className="w-full">
-                    {t("nav.cta")}
-                  </Button>
+          <div className="flex items-center gap-3">
+            {/* Tombol sekunder: tombol utama milik isi halaman (DESIGN.md) */}
+            <Link
+              href="/contact"
+              className="hidden h-10 items-center rounded-lg border border-ink px-5 text-[0.9375rem] font-semibold text-ink transition-colors hover:bg-stone-100 md:inline-flex"
+            >
+              {t("nav.contactUs")}
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-expanded={mobileOpen}
+              aria-controls="menu-mobile"
+              aria-label={mobileOpen ? t("nav.close") : t("nav.menu")}
+              className="-mr-2 p-2 text-ink lg:hidden"
+            >
+              {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+            </button>
+          </div>
+        </nav>
+
+        {/* Mobile: panel layar penuh berisi indeks */}
+        {mobileOpen && (
+          <div
+            id="menu-mobile"
+            className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto bg-paper lg:hidden"
+          >
+            <div className="px-5 pb-12 pt-6">
+              <ul className="border-t border-ink">
+                {navGroups.map((g, i) => (
+                  <li key={g.href} className="border-b border-stone-200 py-4">
+                    <div className="flex items-baseline gap-4">
+                      <span className="type-meta w-8 shrink-0 !tracking-normal text-stone-600">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div className="flex-1">
+                        <Link href={g.href} className="type-card block !text-[1.375rem]">
+                          {g.label[language]}
+                        </Link>
+                        {g.children && (
+                          <ul className="mt-2 space-y-1">
+                            {g.children
+                              .filter((c) => c.href !== g.href)
+                              .map((c) => (
+                                <li key={c.href}>
+                                  <Link href={c.href} className="block py-1 text-[0.9375rem] text-stone-700">
+                                    {c.label[language]}
+                                  </Link>
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <ul className="mt-6 space-y-3 text-[0.9375rem] text-stone-700">
+                <li>
+                  <Link href="/verify" className="inline-flex items-center gap-2">
+                    {t("nav.verify")} <ArrowRight aria-hidden className="size-4" />
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/assessment-center" className="inline-flex items-center gap-2">
+                    {t("nav.portal")} <ArrowRight aria-hidden className="size-4" />
+                  </Link>
+                </li>
+              </ul>
+
+              <div className="mt-8 flex items-center justify-between border-t border-stone-200 pt-6">
+                <LanguageToggle />
+                <Link
+                  href="/contact"
+                  className="inline-flex h-12 items-center rounded-lg bg-petrol-600 px-6 text-[0.9375rem] font-semibold text-white hover:bg-petrol-700"
+                >
+                  {t("nav.contactUs")}
                 </Link>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </header>
+      </header>
+    </>
   );
 }

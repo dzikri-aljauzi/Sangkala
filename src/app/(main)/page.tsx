@@ -1,19 +1,25 @@
 import Hero from "@/components/sections/Hero";
-import ValueMetrics from "@/components/sections/ValueMetrics";
-import AboutPreview from "@/components/sections/AboutPreview";
-import ServicesPreview from "@/components/sections/ServicesPreview";
+import ProofStrip from "@/components/sections/ProofStrip";
+import PillarsOverview from "@/components/sections/PillarsOverview";
+import MethodSteps from "@/components/sections/MethodSteps";
+import IndustriesTeaser from "@/components/sections/IndustriesTeaser";
+import PlatformBand from "@/components/sections/PlatformBand";
 import Testimonials from "@/components/sections/Testimonials";
-import CTASection from "@/components/sections/CTASection";
+import InsightsTeaser from "@/components/sections/InsightsTeaser";
+import ClosingCTA from "@/components/sections/ClosingCTA";
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <ValueMetrics />
-      <AboutPreview />
-      <ServicesPreview />
+      <ProofStrip />
+      <PillarsOverview />
+      <MethodSteps />
+      <IndustriesTeaser />
+      <PlatformBand />
       <Testimonials />
-      <CTASection />
+      <InsightsTeaser />
+      <ClosingCTA />
     </>
   );
 }

@@ -1,165 +1,38 @@
 "use client";
 
-import { useRef } from "react";
 import Link from "next/link";
 import TimeRings from "@/components/ui/time-rings";
-import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import { Container } from "@/components/ui/layout";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Cog, Cpu } from "lucide-react";
 
+/** Satu judul, satu paragraf, satu tombol utama, satu visual (DESIGN.md). */
 export default function Hero() {
   const { t, language } = useLanguage();
-  const heroRef = useRef<HTMLDivElement>(null);
-
   return (
-    <section
-      ref={heroRef}
-      className="relative min-h-screen flex items-center bg-petrol-50 overflow-hidden"
-    >
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-20 -left-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-petrol-300/25 rounded-full blur-[100px] sm:blur-[120px]"
-          animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-20 -right-20 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-petrol-300/20 rounded-full blur-[100px] sm:blur-[120px]"
-          animate={{ x: [0, -40, 0], y: [0, -30, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] bg-petrol-200/15 rounded-full blur-[120px] sm:blur-[150px]"
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <div
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage: `radial-gradient(circle, #9aa09c 1px, transparent 1px)`,
-            backgroundSize: "32px 32px",
-          }}
-        />
-      </div>
-
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 sm:pt-28 lg:pt-24 pb-8 sm:pb-12 lg:pb-12">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-
-          {/* Content - Text Section */}
-          <div className="order-1 relative z-20">
-            {/* 3P Pills */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-wrap gap-2 sm:gap-3 mb-5 sm:mb-6"
-            >
-              {[
-                { icon: Users, label: "People" },
-                { icon: Cog, label: "Process" },
-                { icon: Cpu, label: "Technology" },
-              ].map((item, index) => (
-                <motion.span
-                  key={item.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 + 0.3 }}
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/90 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium border border-petrol-100 shadow-sm text-stone-700"
-                >
-                  <item.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-petrol-500" />
-                  {item.label}
-                </motion.span>
-              ))}
-            </motion.div>
-
-            {/* Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-[1.75rem] leading-tight sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold sm:leading-tight mb-4 sm:mb-6 text-stone-800"
-            >
-              {t("hero.headline")}
-            </motion.h1>
-
-            {/* Subheadline */}
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-sm sm:text-base md:text-lg text-stone-600 mb-6 sm:mb-8 max-w-xl leading-relaxed"
-            >
-              {t("hero.subheadline")}
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-3 sm:gap-4"
-            >
-              <Link href="/contact" className="w-full sm:w-auto">
-                <Button variant="primary" size="lg" className="group w-full sm:w-auto justify-center">
-                  {t("hero.ctaPrimary")}
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link href="/programs" className="w-full sm:w-auto">
-                <Button variant="secondary" size="lg" className="w-full sm:w-auto justify-center">
-                  {t("hero.ctaSecondary")}
-                </Button>
-              </Link>
-            </motion.div>
-
-            {/* Trust indicators */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.8 }}
-              className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-stone-200"
-            >
-              <p className="text-xs sm:text-sm text-stone-500 mb-2 sm:mb-3">
-                {language === "id" ? "Dipercaya oleh:" : "Trusted by:"}
-              </p>
-              <div className="flex flex-wrap gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-1 items-center">
-                <span className="text-stone-600 font-medium text-xs sm:text-sm">BUMN Strategis</span>
-                <span className="text-stone-600 font-medium text-xs sm:text-sm">Bank Nasional</span>
-                <span className="text-stone-600 font-medium text-xs sm:text-sm">Fintech Leaders</span>
-              </div>
-            </motion.div>
+    <section className="border-b border-stone-200 bg-paper">
+      <Container className="grid items-center gap-12 py-14 md:py-20 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 lg:py-24">
+        <div>
+          <p className="type-meta mb-6 text-petrol-600">
+            {language === "id" ? "GRC · Kepemimpinan · Asesmen" : "GRC · Leadership · Assessment"}
+          </p>
+          <h1 className="type-display">{t("hero.headline")}</h1>
+          <p className="type-lead mt-6 max-w-[34rem]">{t("hero.subheadline")}</p>
+          <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <Link href="/contact">
+              <Button size="lg">{t("hero.ctaPrimary")}</Button>
+            </Link>
+            <Link href="/programs">
+              <Button variant="text" size="lg">
+                {t("hero.ctaSecondary")} →
+              </Button>
+            </Link>
           </div>
-
-          {/* 3D cincin waktu */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="order-2 relative z-10 w-full flex flex-col items-center justify-center"
-          >
-            {/* Judul mobile di atas visual */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="lg:hidden text-center mb-4"
-            >
-              <h2 className="text-lg sm:text-xl font-semibold text-stone-700">
-                {t("hero.globeTitle")}
-              </h2>
-              <p className="text-xs sm:text-sm text-stone-500 mt-1">
-                {t("hero.globeSubtitle")}
-              </p>
-            </motion.div>
-
-            <div className="relative w-full max-w-[340px] sm:max-w-[420px] md:max-w-[480px] lg:max-w-none h-[400px] sm:h-[440px] md:h-[480px] lg:h-[520px] xl:h-[560px] flex items-center justify-center mx-auto">
-              <TimeRings className="h-full w-full" />
-            </div>
-          </motion.div>
         </div>
-      </div>
-
+        <div className="mx-auto w-full max-w-[420px] lg:max-w-none">
+          <TimeRings className="h-[400px] w-full lg:h-[480px]" />
+        </div>
+      </Container>
     </section>
   );
 }
